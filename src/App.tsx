@@ -23,6 +23,11 @@ import { ResearchLibraryPage } from './pages/ResearchLibraryPage';
 import { CompoundGuidePage } from './pages/CompoundGuidePage';
 import { HplcReportsPage } from './pages/HplcReportsPage';
 import { OurLabPage } from './pages/OurLabPage';
+import { AboutPage } from './pages/AboutPage';
+import { ShippingPage } from './pages/ShippingPage';
+import { ReturnsPage } from './pages/ReturnsPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { TermsPage } from './pages/TermsPage';
 
 const STORAGE_KEY_AGE = 'helix_age_verified';
 const STORAGE_KEY_TERMS = 'helix_terms_agreed';
@@ -77,6 +82,11 @@ function AppContent() {
         {page === 'compound-guide' && <CompoundGuidePage />}
         {page === 'hplc-reports' && <HplcReportsPage />}
         {page === 'our-lab' && <OurLabPage />}
+        {page === 'about' && <AboutPage />}
+        {page === 'shipping' && <ShippingPage />}
+        {page === 'returns' && <ReturnsPage />}
+        {page === 'privacy' && <PrivacyPage />}
+        {page === 'terms' && <TermsPage />}
       </main>
 
       <Footer />

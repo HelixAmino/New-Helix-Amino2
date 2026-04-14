@@ -13,12 +13,12 @@ const RESEARCH_LINKS: { label: string; page: Page | null; href?: string }[] = [
 ];
 
 const COMPANY_LINKS: { label: string; page: Page | null }[] = [
-  { label: 'About Us', page: null },
+  { label: 'About Us', page: 'about' },
   { label: 'Our Lab', page: 'our-lab' },
-  { label: 'Shipping Policy', page: null },
-  { label: 'Returns', page: null },
-  { label: 'Privacy Policy', page: null },
-  { label: 'Terms of Service', page: null },
+  { label: 'Shipping Policy', page: 'shipping' },
+  { label: 'Returns', page: 'returns' },
+  { label: 'Privacy Policy', page: 'privacy' },
+  { label: 'Terms of Service', page: 'terms' },
 ];
 
 const PRODUCT_CATEGORIES = [
@@ -141,9 +141,9 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-gray-600 text-xs">
             <span>© 2024 Helix Amino – Research Peptides Only. All rights reserved.</span>
             <div className="flex items-center gap-4">
-              <span className="hover:text-gray-400 transition-colors cursor-default">Privacy</span>
-              <span className="hover:text-gray-400 transition-colors cursor-default">Terms</span>
-              <span className="hover:text-gray-400 transition-colors cursor-default">Sitemap</span>
+              <button onClick={() => navigate('privacy')} className="hover:text-gray-400 transition-colors">Privacy</button>
+              <button onClick={() => navigate('terms')} className="hover:text-gray-400 transition-colors">Terms</button>
+              <button onClick={() => navigate('about')} className="hover:text-gray-400 transition-colors">About</button>
             </div>
           </div>
         </div>
