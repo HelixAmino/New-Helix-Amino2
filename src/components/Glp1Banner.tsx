@@ -28,11 +28,11 @@ export function Glp1Banner() {
               Restricted Catalog
             </p>
             <h2 className="text-white font-extrabold text-xl sm:text-2xl leading-tight tracking-tight">
-              Due to widespread misuse of research compounds, we are no longer able to display our full product catalog publicly.
+              Due to widespread misuse of research compounds, we are no longer able to display our full product catalog.
             </h2>
             <p className="text-gray-400 text-sm mt-2 leading-relaxed">
               To view our complete catalog, you must be a{' '}
-              <span className="text-teal-400 font-semibold">vetted member</span> of our site.
+              <span className="text-teal-400 font-semibold">vetted member</span> of our site. Join below
             </p>
           </div>
         </div>
