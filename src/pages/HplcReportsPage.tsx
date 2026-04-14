@@ -1,6 +1,7 @@
-import { ChartBar as BarChart3, ExternalLink, Download, FlaskConical, CircleCheck as CheckCircle, FileText } from 'lucide-react';
+import { ChartBar as BarChart3, Download, FlaskConical, CircleCheck as CheckCircle, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 import { PRODUCTS } from '../data/products';
+import { useNavigation } from '../context/NavigationContext';
 
 interface ReportEntry {
   name: string;
@@ -46,11 +47,12 @@ const HOW_IT_WORKS = [
   {
     step: '05',
     title: 'COA Issuance',
-    desc: 'The independent laboratory generates and signs the Certificate of Analysis, which is uploaded to our public GitHub repository.',
+    desc: 'The independent laboratory generates and signs the Certificate of Analysis, which is added to the COA Library.',
   },
 ];
 
 export function HplcReportsPage() {
+  const { navigate } = useNavigation();
   const reports: ReportEntry[] = useMemo(() => {
     return PRODUCTS
       .filter((p) => !!p.coaUrl)
@@ -90,7 +92,7 @@ export function HplcReportsPage() {
             </span>
           </h1>
           <p className="text-gray-400 text-base sm:text-lg max-w-2xl font-light leading-relaxed">
-            Every Certificate of Analysis for every batch we've released — publicly available and directly linked from the independent laboratory repository.
+            Every Certificate of Analysis for every batch we've released — publicly available and directly linked from the independent laboratory.
           </p>
 
           <div className="flex flex-wrap gap-4 mt-8">
@@ -104,15 +106,13 @@ export function HplcReportsPage() {
               <span className="text-white font-bold text-sm">≥99%</span>
               <span className="text-gray-400 text-xs">HPLC Purity Standard</span>
             </div>
-            <a
-              href="https://github.com/HelixAmino/Amino-COA"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => navigate('coa-library')}
               className="flex items-center gap-2 bg-cyan-600/10 border border-cyan-700/40 hover:bg-cyan-600/20 rounded-xl px-4 py-2.5 text-cyan-400 text-xs font-semibold transition-colors duration-200"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Full COA Repository
-            </a>
+              <FileText className="w-3.5 h-3.5" />
+              COA Library
+            </button>
           </div>
         </div>
       </div>

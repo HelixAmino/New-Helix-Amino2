@@ -1,4 +1,5 @@
-import { Award, CircleCheck as CheckCircle, Shield, FlaskConical, ExternalLink, FileCheck, Microscope, Star } from 'lucide-react';
+import { Award, CircleCheck as CheckCircle, Shield, FlaskConical, FileCheck, Microscope, Star } from 'lucide-react';
+import { useNavigation } from '../context/NavigationContext';
 
 const CERTIFICATIONS = [
   {
@@ -61,6 +62,7 @@ const STANDARDS = [
 ];
 
 export function LabCertificationsPage() {
+  const { navigate } = useNavigation();
   return (
     <div className="min-h-screen bg-[#050d14]">
       {/* Hero */}
@@ -133,15 +135,13 @@ export function LabCertificationsPage() {
               <p className="text-gray-400 text-sm">Every batch Certificate of Analysis is publicly available for download.</p>
             </div>
           </div>
-          <a
-            href="https://github.com/HelixAmino/Amino-COA"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => navigate('coa-library')}
             className="flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-bold rounded-xl transition-colors duration-200 whitespace-nowrap shrink-0"
           >
-            <ExternalLink className="w-4 h-4" />
-            COA Repository
-          </a>
+            <FileCheck className="w-4 h-4" />
+            COA Library
+          </button>
         </div>
 
         {/* Disclaimer */}

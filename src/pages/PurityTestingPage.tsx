@@ -61,7 +61,7 @@ const PIPELINE = [
   { step: '01', title: 'Synthesis & Lyophilization', desc: 'Solid-phase peptide synthesis followed by freeze-drying to stable powder form.' },
   { step: '02', title: 'In-House QC Screening', desc: 'Internal HPLC and visual inspection before sending to third-party labs.' },
   { step: '03', title: 'Third-Party HPLC & MS', desc: 'Independent lab performs HPLC purity and LC-MS identity confirmation.' },
-  { step: '04', title: 'COA Issuance', desc: 'Certificate of Analysis generated and uploaded to public COA repository.' },
+  { step: '04', title: 'COA Issuance', desc: 'Certificate of Analysis generated and added to the COA Library.' },
   { step: '05', title: 'Batch Release', desc: 'Product cleared for sale only after all thresholds pass. Failed batches are destroyed.' },
 ];
 

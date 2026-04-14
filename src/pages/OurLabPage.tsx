@@ -1,4 +1,5 @@
-import { Microscope, FlaskConical, Shield, Thermometer, Zap, Award, ExternalLink, CircleCheck as CheckCircle } from 'lucide-react';
+import { Microscope, FlaskConical, Shield, Thermometer, Zap, Award, CircleCheck as CheckCircle } from 'lucide-react';
+import { useNavigation } from '../context/NavigationContext';
 
 const CAPABILITIES = [
   {
@@ -90,6 +91,7 @@ const PROCESS_STEPS = [
 ];
 
 export function OurLabPage() {
+  const { navigate } = useNavigation();
   return (
     <div className="min-h-screen bg-[#050d14]">
       {/* Hero */}
@@ -199,15 +201,13 @@ export function OurLabPage() {
             <h3 className="text-white font-bold text-base mb-1">See the Results For Yourself</h3>
             <p className="text-gray-400 text-sm">Every batch COA is publicly available and independently verified.</p>
           </div>
-          <a
-            href="https://github.com/HelixAmino/Amino-COA"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => navigate('coa-library')}
             className="flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-bold rounded-xl transition-colors duration-200 whitespace-nowrap shrink-0"
           >
-            <ExternalLink className="w-4 h-4" />
-            COA Repository
-          </a>
+            <Award className="w-4 h-4" />
+            COA Library
+          </button>
         </div>
 
         {/* Disclaimer */}
