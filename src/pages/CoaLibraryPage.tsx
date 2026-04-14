@@ -213,7 +213,7 @@ function CoaTable({ products }: CoaTableProps) {
             <div className="shrink-0">
               {hasCoa ? (
                 <a
-                  href={product.coaUrl}
+                  href={`https://docs.google.com/viewer?url=${encodeURIComponent(product.coaUrl!)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-700/30 hover:bg-cyan-600/40 border border-cyan-700/40 hover:border-cyan-500/60 text-cyan-300 hover:text-cyan-200 text-xs font-semibold rounded-lg transition-all duration-150"
