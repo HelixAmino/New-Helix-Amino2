@@ -56,6 +56,8 @@ import imgPnc from '../assets/HApnc.png';
 import imgB12 from '../assets/HAB12.png';
 import imgBac3 from '../assets/HAbac3.png';
 import imgBac10 from '../assets/HAbac10.png';
+import imgTb5 from '../assets/HA5005.png';
+import imgTb10 from '../assets/HA50010.png';
 
 export const PRODUCTS: Product[] = [
   // ─── Recovery & Healing ───────────────────────────────────────────────────
@@ -109,7 +111,7 @@ export const PRODUCTS: Product[] = [
     price: 49,
     category: 'Recovery & Healing',
     quantityLabel: '5mg',
-    image: imgWol5,
+    image: imgTb5,
     cas: '885340-08-9',
     molecularWeight: '889.02 g/mol',
     description: 'Thymosin Beta-4 fragment researched for actin sequestration and wound healing.',
@@ -124,7 +126,7 @@ export const PRODUCTS: Product[] = [
     price: 79,
     category: 'Recovery & Healing',
     quantityLabel: '10mg',
-    image: imgWol10,
+    image: imgTb10,
     cas: '885340-08-9',
     molecularWeight: '889.02 g/mol',
     description: 'Higher-dose TB-500 for advanced tissue repair research.',
