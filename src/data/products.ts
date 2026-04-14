@@ -1059,6 +1059,7 @@ const VARIANT_GROUPS: Record<string, string[]> = {
   'group-ghrp6': ['ghrp6-5mg', 'ghrp6-10mg'],
   'group-tesamorelin': ['tesamorelin-10mg', 'tesamorelin-20mg'],
   'group-glutathione': ['glutathione-600mg', 'glutathione-1500mg'],
+  'group-dsip': ['dsip-15mg', 'dsip-5mg'],
 };
 
 const GROUP_BASE_NAMES: Record<string, string> = {
@@ -1078,6 +1079,7 @@ const GROUP_BASE_NAMES: Record<string, string> = {
   'group-ghrp6': 'GHRP-6 Acetate',
   'group-tesamorelin': 'Tesamorelin',
   'group-glutathione': 'Glutathione',
+  'group-dsip': 'DSIP',
 };
 
 export function getProductGroups(): ProductGroup[] {
