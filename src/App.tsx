@@ -22,7 +22,6 @@ import { PurityTestingPage } from './pages/PurityTestingPage';
 import { ResearchLibraryPage } from './pages/ResearchLibraryPage';
 import { CompoundGuidePage } from './pages/CompoundGuidePage';
 import { HplcReportsPage } from './pages/HplcReportsPage';
-import { OurLabPage } from './pages/OurLabPage';
 import { AboutPage } from './pages/AboutPage';
 import { ShippingPage } from './pages/ShippingPage';
 import { ReturnsPage } from './pages/ReturnsPage';
@@ -82,7 +81,6 @@ function AppContent() {
         {page === 'research-library' && <ResearchLibraryPage />}
         {page === 'compound-guide' && <CompoundGuidePage />}
         {page === 'hplc-reports' && <HplcReportsPage />}
-        {page === 'our-lab' && <OurLabPage />}
         {page === 'about' && <AboutPage />}
         {page === 'shipping' && <ShippingPage />}
         {page === 'returns' && <ReturnsPage />}

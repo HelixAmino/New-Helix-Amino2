@@ -15,7 +15,7 @@ const RESEARCH_NAV: { label: string; page: Page }[] = [
   { label: 'Research Library', page: 'research-library' },
   { label: 'Compound Guide', page: 'compound-guide' },
   { label: 'HPLC Reports', page: 'hplc-reports' },
-  { label: 'Our Lab', page: 'our-lab' },
+
 ];
 
 const NAV_CATEGORIES = CATEGORIES.filter((c) => c !== 'All');

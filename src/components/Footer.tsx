@@ -14,7 +14,7 @@ const RESEARCH_LINKS: { label: string; page: Page | null; href?: string }[] = [
 
 const COMPANY_LINKS: { label: string; page: Page | null }[] = [
   { label: 'About Us', page: 'about' },
-  { label: 'Our Lab', page: 'our-lab' },
+
   { label: 'Shipping Policy', page: 'shipping' },
   { label: 'Returns', page: 'returns' },
   { label: 'Privacy Policy', page: 'privacy' },
