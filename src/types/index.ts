@@ -7,7 +7,7 @@ export type Category =
   | 'Hormones & Reproductive'
   | 'Blends & Specialty'
   | 'Misc / Rare'
-  | 'Accessories & Injectables';
+  | 'Accessories';
 
 export interface BlendComponent {
   name: string;

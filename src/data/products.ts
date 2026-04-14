@@ -975,12 +975,12 @@ export const PRODUCTS: Product[] = [
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/B12%2010ml_261050.pdf',
   },
 
-  // ─── Accessories & Injectables ────────────────────────────────────────────
+  // ─── Accessories ──────────────────────────────────────────────────────────
   {
     id: 'bac-water-3ml',
     name: 'Reconstitution Water (3ml)',
     price: 12,
-    category: 'Accessories & Injectables',
+    category: 'Accessories',
     quantityLabel: '3ml',
     image: imgBac3,
     cas: 'N/A (solvent)',
@@ -994,7 +994,7 @@ export const PRODUCTS: Product[] = [
     id: 'bac-water-10ml',
     name: 'Reconstitution Water (10ml)',
     price: 18,
-    category: 'Accessories & Injectables',
+    category: 'Accessories',
     quantityLabel: '10ml',
     image: imgBac10,
     cas: 'N/A (solvent)',
@@ -1027,7 +1027,7 @@ export const CATEGORIES: string[] = [
   'Hormones & Reproductive',
   'Blends & Specialty',
   'Misc / Rare',
-  'Accessories & Injectables',
+  'Accessories',
 ];
 
 export function getDiscountedPrice(basePrice: number, qty: number): number {

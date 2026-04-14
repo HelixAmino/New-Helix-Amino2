@@ -15,7 +15,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Hormones & Reproductive': 'text-pink-400 bg-pink-950/40 border-pink-800/40',
   'Blends & Specialty': 'text-amber-400 bg-amber-950/40 border-amber-800/40',
   'Misc / Rare': 'text-teal-400 bg-teal-950/40 border-teal-800/40',
-  'Accessories & Injectables': 'text-gray-400 bg-gray-900/40 border-gray-800/40',
+  'Accessories': 'text-gray-400 bg-gray-900/40 border-gray-800/40',
 };
 
 export function GroupedProductCard({ group }: Props) {
