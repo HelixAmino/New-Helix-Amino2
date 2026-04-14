@@ -58,6 +58,8 @@ import imgBac3 from '../assets/HAbac3.png';
 import imgBac10 from '../assets/HAbac10.png';
 import imgTb5 from '../assets/HA5005.png';
 import imgTb10 from '../assets/HA50010.png';
+import imgGhkcu50 from '../assets/HAcu50.png';
+import imgGhkcu100 from '../assets/HAcu100.png';
 
 export const PRODUCTS: Product[] = [
   // ─── Recovery & Healing ───────────────────────────────────────────────────
@@ -228,7 +230,7 @@ export const PRODUCTS: Product[] = [
     price: 79,
     category: 'Recovery & Healing',
     quantityLabel: '50mg',
-    image: imgGlow,
+    image: imgGhkcu50,
     cas: '49557-75-7',
     molecularWeight: '403.9 g/mol',
     description: 'Copper peptide GHK-Cu studied for skin regeneration and wound healing research.',
@@ -243,7 +245,7 @@ export const PRODUCTS: Product[] = [
     price: 129,
     category: 'Recovery & Healing',
     quantityLabel: '100mg',
-    image: imgGlow,
+    image: imgGhkcu100,
     cas: '49557-75-7',
     molecularWeight: '403.9 g/mol',
     description: 'Higher-dose copper peptide GHK-Cu for extended skin and tissue research.',
