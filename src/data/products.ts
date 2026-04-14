@@ -4,7 +4,6 @@ import imgBpc10 from '../assets/HAbpc10.png';
 import imgBpc20 from '../assets/HAbpc20.png';
 import imgWol5 from '../assets/HAwol5.png';
 import imgWol10 from '../assets/HAwol10.png';
-import imgGlow from '../assets/Hallow.png';
 import imgKlow from '../assets/HAklow.png';
 import imgL37 from '../assets/HAll37.png';
 import imgSerm10 from '../assets/HAserm10.png';
@@ -176,7 +175,7 @@ export const PRODUCTS: Product[] = [
     price: 159,
     category: 'Recovery & Healing',
     quantityLabel: '50mg GHK-Cu + 10mg BPC-157 + 10mg TB500',
-    image: imgGlow,
+    image: imgGl50,
     blendComponents: [
       { name: 'GHK-Cu', cas: '49557-75-7', mw: '403.9 g/mol' },
       { name: 'BPC-157', cas: '137525-51-0', mw: '1419.54 g/mol' },
