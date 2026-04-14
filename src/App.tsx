@@ -1,0 +1,91 @@
+import { useState } from 'react';
+import { CartProvider } from './context/CartContext';
+import { NavigationProvider, useNavigation } from './context/NavigationContext';
+import { AuthProvider } from './context/AuthContext';
+import { RedBanner } from './components/RedBanner';
+import { Header } from './components/Header';
+import { HeroSection } from './components/HeroSection';
+import { TrustBadges } from './components/TrustBadges';
+import { Footer } from './components/Footer';
+import { ChatBubble } from './components/ChatBubble';
+import { BottomBar } from './components/BottomBar';
+import { AgeGateModal } from './components/AgeGateModal';
+import { AgreementModal } from './components/AgreementModal';
+import { HomePage } from './pages/HomePage';
+import { ProductDetailPage } from './pages/ProductDetailPage';
+import { CartPage } from './pages/CartPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogArticlePage } from './pages/BlogArticlePage';
+import { AdminChatPage } from './pages/AdminChatPage';
+
+const STORAGE_KEY_AGE = 'helix_age_verified';
+const STORAGE_KEY_TERMS = 'helix_terms_agreed';
+
+function AppContent() {
+  const { page } = useNavigation();
+
+  const [ageVerified, setAgeVerified] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY_AGE) === '1';
+  });
+  const [termsAgreed, setTermsAgreed] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY_TERMS) === '1';
+  });
+
+  const handleAgeVerified = () => {
+    setAgeVerified(true);
+    localStorage.setItem(STORAGE_KEY_AGE, '1');
+  };
+
+  const handleTermsAgreed = () => {
+    setTermsAgreed(true);
+    localStorage.setItem(STORAGE_KEY_TERMS, '1');
+  };
+
+  const showAgeGate = !ageVerified;
+  const showAgreement = ageVerified && !termsAgreed;
+
+  return (
+    <div className="min-h-screen bg-[#050d14] text-white">
+      {/* Compliance modals — block the site until verified */}
+      {showAgeGate && <AgeGateModal onVerified={handleAgeVerified} />}
+      {showAgreement && <AgreementModal onAgreed={handleTermsAgreed} />}
+
+      <RedBanner />
+      <Header />
+
+      <main>
+        {page === 'home' && (
+          <>
+            <HeroSection />
+            <TrustBadges />
+            <HomePage />
+          </>
+        )}
+        {page === 'product' && <ProductDetailPage />}
+        {page === 'cart' && <CartPage />}
+        {page === 'blog' && <BlogPage />}
+        {page === 'blog-article' && <BlogArticlePage />}
+      </main>
+
+      <Footer />
+      <ChatBubble />
+      <BottomBar />
+
+      {page === 'admin-chat' && <AdminChatPage />}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <NavigationProvider>
+      <AuthProvider>
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
+      </AuthProvider>
+    </NavigationProvider>
+  );
+}
+
+export default App;
