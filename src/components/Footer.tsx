@@ -1,7 +1,38 @@
 import logoImg from '../assets/transparentlogo.png';
 import { Mail, MapPin } from 'lucide-react';
+import { useNavigation } from '../context/NavigationContext';
+import { Page } from '../types';
+
+const RESEARCH_LINKS: { label: string; page: Page | null; href?: string }[] = [
+  { label: 'COA Database', page: null, href: 'https://github.com/HelixAmino/Amino-COA' },
+  { label: 'Lab Certifications', page: 'lab-certifications' },
+  { label: 'Purity Testing', page: 'purity-testing' },
+  { label: 'Research Library', page: 'research-library' },
+  { label: 'Compound Guide', page: 'compound-guide' },
+  { label: 'HPLC Reports', page: 'hplc-reports' },
+];
+
+const COMPANY_LINKS: { label: string; page: Page | null }[] = [
+  { label: 'About Us', page: null },
+  { label: 'Our Lab', page: 'our-lab' },
+  { label: 'Shipping Policy', page: null },
+  { label: 'Returns', page: null },
+  { label: 'Privacy Policy', page: null },
+  { label: 'Terms of Service', page: null },
+];
+
+const PRODUCT_CATEGORIES = [
+  { label: 'Recovery & Healing', cat: 'Recovery & Healing' },
+  { label: 'GH & Growth Axis', cat: 'GH & Growth Axis' },
+  { label: 'Metabolic & GLP-1', cat: 'Metabolic & GLP-1 Related' },
+  { label: 'Nootropics & Cognition', cat: 'Nootropics and Cognition' },
+  { label: 'Longevity & Mitochondrial', cat: 'Longevity and Mitochondrial' },
+  { label: 'Blends & Specialty', cat: 'Blends & Specialty' },
+];
 
 export function Footer() {
+  const { navigate } = useNavigation();
+
   return (
     <footer className="bg-[#040b11] border-t border-cyan-900/20 pt-16 pb-28 px-4">
       <div className="max-w-7xl mx-auto">
@@ -34,9 +65,14 @@ export function Footer() {
           <div>
             <h4 className="text-white font-bold text-sm tracking-widest uppercase mb-5">Products</h4>
             <ul className="space-y-3">
-              {['Recovery & Healing', 'GH & Growth Axis', 'Metabolic & GLP-1', 'Nootropics & Cognition', 'Longevity & Mitochondrial', 'Blends & Specialty'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200">{item}</a>
+              {PRODUCT_CATEGORIES.map((item) => (
+                <li key={item.label}>
+                  <button
+                    onClick={() => navigate('home', undefined, item.cat)}
+                    className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200 text-left"
+                  >
+                    {item.label}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -46,9 +82,27 @@ export function Footer() {
           <div>
             <h4 className="text-white font-bold text-sm tracking-widest uppercase mb-5">Research</h4>
             <ul className="space-y-3">
-              {['COA Database', 'Lab Certifications', 'Purity Testing', 'Research Library', 'Compound Guide', 'HPLC Reports'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200">{item}</a>
+              {RESEARCH_LINKS.map((item) => (
+                <li key={item.label}>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200"
+                    >
+                      {item.label}
+                    </a>
+                  ) : item.page ? (
+                    <button
+                      onClick={() => navigate(item.page!)}
+                      className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200 text-left"
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <span className="text-gray-500 text-xs">{item.label}</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -58,9 +112,18 @@ export function Footer() {
           <div>
             <h4 className="text-white font-bold text-sm tracking-widest uppercase mb-5">Company</h4>
             <ul className="space-y-3">
-              {['About Us', 'Our Lab', 'Shipping Policy', 'Returns', 'Privacy Policy', 'Terms of Service'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200">{item}</a>
+              {COMPANY_LINKS.map((item) => (
+                <li key={item.label}>
+                  {item.page ? (
+                    <button
+                      onClick={() => navigate(item.page!)}
+                      className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200 text-left"
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <span className="text-gray-500 text-xs cursor-default">{item.label}</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -78,9 +141,9 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-gray-600 text-xs">
             <span>© 2024 Helix Amino – Research Peptides Only. All rights reserved.</span>
             <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-gray-400 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-gray-400 transition-colors">Terms</a>
-              <a href="#" className="hover:text-gray-400 transition-colors">Sitemap</a>
+              <span className="hover:text-gray-400 transition-colors cursor-default">Privacy</span>
+              <span className="hover:text-gray-400 transition-colors cursor-default">Terms</span>
+              <span className="hover:text-gray-400 transition-colors cursor-default">Sitemap</span>
             </div>
           </div>
         </div>

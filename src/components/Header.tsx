@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, Menu, X, FlaskConical, LogIn, ChevronDown, LogOut, User, MessageSquare } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, FlaskConical, LogIn, ChevronDown, LogOut, User, MessageSquare, Microscope } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import logoImg from '../assets/transparentlogo.png';
 import { useCart } from '../context/CartContext';
@@ -7,6 +7,16 @@ import { useAuth } from '../context/AuthContext';
 import { useIsAdmin } from '../hooks/useIsAdmin';
 import { CATEGORIES } from '../data/products';
 import { AuthModal } from './AuthModal';
+import { Page } from '../types';
+
+const RESEARCH_NAV: { label: string; page: Page }[] = [
+  { label: 'Lab Certifications', page: 'lab-certifications' },
+  { label: 'Purity Testing', page: 'purity-testing' },
+  { label: 'Research Library', page: 'research-library' },
+  { label: 'Compound Guide', page: 'compound-guide' },
+  { label: 'HPLC Reports', page: 'hplc-reports' },
+  { label: 'Our Lab', page: 'our-lab' },
+];
 
 const NAV_CATEGORIES = CATEGORIES.filter((c) => c !== 'All');
 
@@ -19,6 +29,7 @@ export function Header() {
   const userDropRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [catDropOpen, setCatDropOpen] = useState(false);
+  const [researchDropOpen, setResearchDropOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [authOpen, setAuthOpen] = useState(false);
@@ -26,6 +37,7 @@ export function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const catDropRef = useRef<HTMLDivElement>(null);
+  const researchDropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (searchOpen) {
@@ -37,6 +49,7 @@ export function Header() {
     setMenuOpen(false);
     setSearchOpen(false);
     setCatDropOpen(false);
+    setResearchDropOpen(false);
   }, [page]);
 
   useEffect(() => {
@@ -46,6 +59,9 @@ export function Header() {
       }
       if (catDropRef.current && !catDropRef.current.contains(e.target as Node)) {
         setCatDropOpen(false);
+      }
+      if (researchDropRef.current && !researchDropRef.current.contains(e.target as Node)) {
+        setResearchDropOpen(false);
       }
       if (userDropRef.current && !userDropRef.current.contains(e.target as Node)) {
         setUserDropOpen(false);
@@ -131,6 +147,31 @@ export function Header() {
             >
               Blog
             </button>
+
+            {/* Research dropdown */}
+            <div ref={researchDropRef} className="relative">
+              <button
+                onClick={() => setResearchDropOpen((v) => !v)}
+                className={`flex items-center gap-1 text-xs font-medium tracking-wide transition-colors duration-200 px-2.5 py-2 rounded-lg hover:bg-cyan-950/40 whitespace-nowrap ${researchDropOpen ? 'text-cyan-400 bg-cyan-950/40' : 'text-gray-400 hover:text-cyan-400'}`}
+              >
+                Research
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${researchDropOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {researchDropOpen && (
+                <div className="absolute top-full left-0 mt-1.5 w-56 bg-[#060e17] border border-cyan-900/40 rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.7)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150 z-50">
+                  {RESEARCH_NAV.map((item) => (
+                    <button
+                      key={item.page}
+                      onClick={() => navigate(item.page)}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left text-sm text-gray-300 hover:text-white hover:bg-cyan-950/50 transition-colors duration-150"
+                    >
+                      <Microscope className="w-3.5 h-3.5 text-cyan-500/70 shrink-0" />
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* Right icons */}
@@ -291,6 +332,21 @@ export function Header() {
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/70 shrink-0 mt-0.5" />
                 Blog
               </button>
+            </div>
+            <div className="border-t border-cyan-900/30 pt-3 mt-1 pb-1">
+              <p className="text-gray-500 text-[10px] uppercase tracking-widest font-semibold mb-2 px-2">Research</p>
+              <div className="grid grid-cols-2 gap-1 mb-2">
+                {RESEARCH_NAV.map((item) => (
+                  <button
+                    key={item.page}
+                    onClick={() => { navigate(item.page); setMenuOpen(false); }}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-cyan-950/50 transition-all duration-150 text-xs font-medium text-left"
+                  >
+                    <Microscope className="w-3.5 h-3.5 text-cyan-500/70 shrink-0" />
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="border-t border-cyan-900/30 pt-3 mt-1 pb-1">
               {user ? (

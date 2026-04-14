@@ -17,6 +17,12 @@ import { CartPage } from './pages/CartPage';
 import { BlogPage } from './pages/BlogPage';
 import { BlogArticlePage } from './pages/BlogArticlePage';
 import { AdminChatPage } from './pages/AdminChatPage';
+import { LabCertificationsPage } from './pages/LabCertificationsPage';
+import { PurityTestingPage } from './pages/PurityTestingPage';
+import { ResearchLibraryPage } from './pages/ResearchLibraryPage';
+import { CompoundGuidePage } from './pages/CompoundGuidePage';
+import { HplcReportsPage } from './pages/HplcReportsPage';
+import { OurLabPage } from './pages/OurLabPage';
 
 const STORAGE_KEY_AGE = 'helix_age_verified';
 const STORAGE_KEY_TERMS = 'helix_terms_agreed';
@@ -65,6 +71,12 @@ function AppContent() {
         {page === 'cart' && <CartPage />}
         {page === 'blog' && <BlogPage />}
         {page === 'blog-article' && <BlogArticlePage />}
+        {page === 'lab-certifications' && <LabCertificationsPage />}
+        {page === 'purity-testing' && <PurityTestingPage />}
+        {page === 'research-library' && <ResearchLibraryPage />}
+        {page === 'compound-guide' && <CompoundGuidePage />}
+        {page === 'hplc-reports' && <HplcReportsPage />}
+        {page === 'our-lab' && <OurLabPage />}
       </main>
 
       <Footer />
