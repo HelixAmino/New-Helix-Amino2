@@ -1,11 +1,29 @@
 import { Product, ProductGroup } from '../types';
 
-import imgCag from '../assets/HACAG.png';
 import imgMaz from '../assets/HAmaz.png';
 import imgSurv from '../assets/HAsurv.png';
-import imgReta from '../assets/HArta.png';
-import imgSema from '../assets/HAserm10.png';
-import imgTirz from '../assets/HAty10.png';
+
+import imgReta10 from '../assets/HAReta10.png';
+import imgReta20 from '../assets/HAReta20.png';
+import imgReta30 from '../assets/HAReta30.png';
+import imgReta40 from '../assets/HAReta40.png';
+import imgReta50 from '../assets/HAReta50.png';
+import imgReta60 from '../assets/HAReta60.png';
+
+import imgSema10 from '../assets/HAsema10.png';
+import imgSema20 from '../assets/HAsema20.png';
+import imgSema30 from '../assets/HAsema30.png';
+
+import imgTirz10 from '../assets/HATriz10.png';
+import imgTirz20 from '../assets/HATriz20.png';
+import imgTirz30 from '../assets/HATriz30.png';
+import imgTirz40 from '../assets/HATriz40.png';
+import imgTirz50 from '../assets/HATriz50.png';
+import imgTirz60 from '../assets/HATriz60.png';
+
+import imgCag25 from '../assets/HACag2.5.png';
+import imgCag5 from '../assets/HACag5.png';
+import imgCag10 from '../assets/HACAG.png';
 
 export const MEMBERS_PRODUCTS: Product[] = [
   // ── Retatrutide ──────────────────────────────────────────────────────────────
@@ -15,7 +33,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 89,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
-    image: imgReta,
+    image: imgReta10,
     cas: '2381272-77-9',
     molecularWeight: '4731.4 g/mol',
     description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
@@ -29,7 +47,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 159,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '20mg',
-    image: imgReta,
+    image: imgReta20,
     cas: '2381272-77-9',
     molecularWeight: '4731.4 g/mol',
     description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
@@ -43,7 +61,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 219,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '30mg',
-    image: imgReta,
+    image: imgReta30,
     cas: '2381272-77-9',
     molecularWeight: '4731.4 g/mol',
     description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
@@ -57,7 +75,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 279,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '40mg',
-    image: imgReta,
+    image: imgReta40,
     cas: '2381272-77-9',
     molecularWeight: '4731.4 g/mol',
     description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
@@ -71,7 +89,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 329,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '50mg',
-    image: imgReta,
+    image: imgReta50,
     cas: '2381272-77-9',
     molecularWeight: '4731.4 g/mol',
     description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
@@ -85,7 +103,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 379,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '60mg',
-    image: imgReta,
+    image: imgReta60,
     cas: '2381272-77-9',
     molecularWeight: '4731.4 g/mol',
     description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
@@ -101,7 +119,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 69,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
-    image: imgSema,
+    image: imgSema10,
     cas: '910463-68-2',
     molecularWeight: '4113.58 g/mol',
     description: 'GLP-1 receptor agonist widely studied for glucose homeostasis and metabolic research.',
@@ -115,7 +133,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 119,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '20mg',
-    image: imgSema,
+    image: imgSema20,
     cas: '910463-68-2',
     molecularWeight: '4113.58 g/mol',
     description: 'GLP-1 receptor agonist widely studied for glucose homeostasis and metabolic research.',
@@ -129,7 +147,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 159,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '30mg',
-    image: imgSema,
+    image: imgSema30,
     cas: '910463-68-2',
     molecularWeight: '4113.58 g/mol',
     description: 'GLP-1 receptor agonist widely studied for glucose homeostasis and metabolic research.',
@@ -145,7 +163,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 79,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
-    image: imgTirz,
+    image: imgTirz10,
     cas: '2023788-19-2',
     molecularWeight: '4813.48 g/mol',
     description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
@@ -159,7 +177,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 139,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '20mg',
-    image: imgTirz,
+    image: imgTirz20,
     cas: '2023788-19-2',
     molecularWeight: '4813.48 g/mol',
     description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
@@ -173,7 +191,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 189,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '30mg',
-    image: imgTirz,
+    image: imgTirz30,
     cas: '2023788-19-2',
     molecularWeight: '4813.48 g/mol',
     description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
@@ -187,7 +205,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 239,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '40mg',
-    image: imgTirz,
+    image: imgTirz40,
     cas: '2023788-19-2',
     molecularWeight: '4813.48 g/mol',
     description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
@@ -201,7 +219,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 289,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '50mg',
-    image: imgTirz,
+    image: imgTirz50,
     cas: '2023788-19-2',
     molecularWeight: '4813.48 g/mol',
     description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
@@ -215,7 +233,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 329,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '60mg',
-    image: imgTirz,
+    image: imgTirz60,
     cas: '2023788-19-2',
     molecularWeight: '4813.48 g/mol',
     description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
@@ -231,7 +249,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 59,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '2.5mg',
-    image: imgCag,
+    image: imgCag25,
     cas: '2054934-60-8',
     molecularWeight: '3918.5 g/mol',
     description: 'Long-acting amylin analogue studied for appetite regulation and metabolic homeostasis.',
@@ -245,7 +263,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 99,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '5mg',
-    image: imgCag,
+    image: imgCag5,
     cas: '2054934-60-8',
     molecularWeight: '3918.5 g/mol',
     description: 'Long-acting amylin analogue studied for appetite regulation and metabolic homeostasis.',
@@ -259,7 +277,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
     price: 169,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
-    image: imgCag,
+    image: imgCag10,
     cas: '2054934-60-8',
     molecularWeight: '3918.5 g/mol',
     description: 'Long-acting amylin analogue studied for appetite regulation and metabolic homeostasis.',
