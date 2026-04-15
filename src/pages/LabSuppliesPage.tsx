@@ -29,18 +29,6 @@ const LAB_SUPPLIES: Product[] = [
     image: 'https://images.pexels.com/photos/4021775/pexels-photo-4021775.jpeg?auto=compress&cs=tinysrgb&w=400',
   },
   {
-    id: 'lab-syringe-filters-022',
-    name: 'Syringe Filters 0.22µm (10-pack)',
-    price: 18.99,
-    category: 'Accessories',
-    quantityLabel: '10 filters',
-    description: 'Sterile 0.22µm PES membrane syringe filters with Luer-lock inlet. Eliminates bacteria and particulates for sterile filtration in research applications.',
-    form: 'Syringe Filter',
-    purity: 'Sterile / 0.22µm PES',
-    storage: 'Dry, room temperature',
-    image: 'https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
     id: 'lab-peptide-calculator',
     name: 'Digital Micro Scale 0.001g',
     price: 34.99,
