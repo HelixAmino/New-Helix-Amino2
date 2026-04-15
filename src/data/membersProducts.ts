@@ -2,6 +2,8 @@ import { Product, ProductGroup } from '../types';
 
 import imgMaz from '../assets/HAmaz.png';
 import imgSurv from '../assets/HAsurv.png';
+import imgBac3 from '../assets/HAbac3.png';
+import imgBac10 from '../assets/HAbac10.png';
 
 import imgReta10 from '../assets/HAReta10.png';
 import imgReta20 from '../assets/HAReta20.png';
@@ -316,6 +318,36 @@ export const MEMBERS_PRODUCTS: Product[] = [
     form: 'Lyophilized powder (vial)',
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+
+  // ── Bacteriostatic Water ──────────────────────────────────────────────────
+  {
+    id: 'members-bac-water-3ml',
+    name: 'Reconstitution Water (3mL)',
+    price: 12,
+    category: 'Accessories',
+    quantityLabel: '3mL vial',
+    image: imgBac3,
+    cas: 'N/A (solvent)',
+    molecularWeight: 'N/A (solvent)',
+    description: 'USP-grade bacteriostatic water with 0.9% benzyl alcohol for peptide reconstitution. Preserves sterility for up to 28 days after puncture.',
+    form: 'Sterile Solution',
+    purity: 'USP Grade',
+    storage: 'Refrigerate at 2–8°C after opening',
+  },
+  {
+    id: 'members-bac-water-10ml',
+    name: 'Reconstitution Water (10mL)',
+    price: 18,
+    category: 'Accessories',
+    quantityLabel: '10mL vial',
+    image: imgBac10,
+    cas: 'N/A (solvent)',
+    molecularWeight: 'N/A (solvent)',
+    description: 'Larger volume USP-grade bacteriostatic water ideal for high-volume peptide reconstitution in lab workflows.',
+    form: 'Sterile Solution',
+    purity: 'USP Grade',
+    storage: 'Refrigerate at 2–8°C after opening',
   },
 ];
 

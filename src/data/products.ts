@@ -53,8 +53,6 @@ import imgAicar from '../assets/HAACAR.png';
 import imgAra from '../assets/HAara.png';
 import imgPnc from '../assets/HApnc.png';
 import imgB12 from '../assets/HAB12.png';
-import imgBac3 from '../assets/HAbac3.png';
-import imgBac10 from '../assets/HAbac10.png';
 import imgTb5 from '../assets/HA5005.png';
 import imgTb10 from '../assets/HA50010.png';
 import imgGhkcu50 from '../assets/HAcu50.png';
@@ -978,35 +976,6 @@ export const PRODUCTS: Product[] = [
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/B12%2010ml_261050.pdf',
   },
 
-  // ─── Accessories ──────────────────────────────────────────────────────────
-  {
-    id: 'bac-water-3ml',
-    name: 'Reconstitution Water (3ml)',
-    price: 12,
-    category: 'Accessories',
-    quantityLabel: '3ml',
-    image: imgBac3,
-    cas: 'N/A (solvent)',
-    molecularWeight: 'N/A (solvent)',
-    description: 'Bacteriostatic water for peptide reconstitution.',
-    form: 'Liquid solution',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after opening',
-  },
-  {
-    id: 'bac-water-10ml',
-    name: 'Reconstitution Water (10ml)',
-    price: 18,
-    category: 'Accessories',
-    quantityLabel: '10ml',
-    image: imgBac10,
-    cas: 'N/A (solvent)',
-    molecularWeight: 'N/A (solvent)',
-    description: 'Larger volume bacteriostatic water for lab use.',
-    form: 'Liquid solution',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after opening',
-  },
 ];
 
 export const FEATURED_IDS = [

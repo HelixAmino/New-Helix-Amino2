@@ -5,18 +5,6 @@ import { Product } from '../types';
 
 const LAB_SUPPLIES: Product[] = [
   {
-    id: 'lab-bac-water-30ml',
-    name: 'Bacteriostatic Water 30mL',
-    price: 12.99,
-    category: 'Accessories',
-    quantityLabel: '30mL vial',
-    description: 'USP-grade bacteriostatic water with 0.9% benzyl alcohol for multi-dose vial reconstitution. Preserves sterility for up to 28 days after puncture.',
-    form: 'Sterile Solution',
-    purity: 'USP Grade',
-    storage: 'Room temperature, away from light',
-    image: 'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=400',
-  },
-  {
     id: 'lab-mixing-vials-10ml',
     name: 'Sterile Mixing Vials 10mL (5-pack)',
     price: 14.99,
