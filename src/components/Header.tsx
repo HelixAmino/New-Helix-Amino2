@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, Menu, X, FlaskConical, LogIn, ChevronDown, LogOut, User, MessageSquare, Microscope } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, FlaskConical, LogIn, ChevronDown, LogOut, User, MessageSquare, Microscope, ShieldCheck } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import logoImg from '../assets/transparentlogo.png';
 import { useCart } from '../context/CartContext';
@@ -146,6 +146,18 @@ export function Header() {
               className={`text-xs font-medium tracking-wide transition-colors duration-200 px-2.5 py-2 rounded-lg hover:bg-cyan-950/40 whitespace-nowrap ${page === 'blog' ? 'text-cyan-400' : 'text-gray-400 hover:text-cyan-400'}`}
             >
               Blog
+            </button>
+
+            <button
+              onClick={() => navigate('members')}
+              className={`flex items-center gap-1.5 text-xs font-bold tracking-wide transition-all duration-200 px-2.5 py-2 rounded-lg whitespace-nowrap border ${
+                page === 'members'
+                  ? 'text-orange-300 bg-orange-950/40 border-orange-700/50'
+                  : 'text-orange-400 hover:text-white hover:bg-orange-950/40 border-orange-800/40 hover:border-orange-600/60'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+              Members
             </button>
 
             {/* Research dropdown */}
@@ -331,6 +343,13 @@ export function Header() {
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/70 shrink-0 mt-0.5" />
                 Blog
+              </button>
+              <button
+                onClick={() => { navigate('members'); setMenuOpen(false); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-orange-400 hover:text-white hover:bg-orange-950/40 border border-orange-900/30 transition-all duration-150 text-sm font-bold text-left"
+              >
+                <ShieldCheck className="w-4 h-4 shrink-0" />
+                Members — GLP-1 &amp; Metabolic
               </button>
             </div>
             <div className="border-t border-cyan-900/30 pt-3 mt-1 pb-1">

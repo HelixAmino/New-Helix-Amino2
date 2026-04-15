@@ -1,0 +1,21 @@
+User-agent: *
+Disallow: /members
+Disallow: /members/
+Disallow: /?page=members
+Disallow: /*members*
+
+User-agent: Googlebot
+Disallow: /members
+Disallow: /members/
+
+User-agent: Bingbot
+Disallow: /members
+Disallow: /members/
+
+User-agent: Slurp
+Disallow: /members
+Disallow: /members/
+
+Allow: /
+
+Sitemap: https://helixamino.com/sitemap.xml

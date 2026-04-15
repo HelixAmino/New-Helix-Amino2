@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ShieldCheck, FileText, FileDown, Minus, Plus, ShoppingCart, TriangleAlert as AlertTriangle, Package, Thermometer, CircleCheck as CheckCircle } from 'lucide-react';
 import { PRODUCTS, getDiscountedPrice, getDiscountLabel, getGroupByProductId, getProductGroups } from '../data/products';
+import { MEMBERS_PRODUCTS, MEMBERS_GROUPS } from '../data/membersProducts';
 import { useNavigation } from '../context/NavigationContext';
 import { useCart } from '../context/CartContext';
 import { Product } from '../types';
@@ -11,12 +12,15 @@ export function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
-  const group = currentProductId ? getGroupByProductId(currentProductId) : undefined;
-  const initialVariant = PRODUCTS.find((p) => p.id === currentProductId) ?? group?.variants[0];
+  const allProducts = [...PRODUCTS, ...MEMBERS_PRODUCTS];
+  const group = currentProductId
+    ? (getGroupByProductId(currentProductId) ?? MEMBERS_GROUPS.find((g) => g.variants.some((v) => v.id === currentProductId)))
+    : undefined;
+  const initialVariant = allProducts.find((p) => p.id === currentProductId) ?? group?.variants[0];
   const [selectedVariant, setSelectedVariant] = useState<Product | undefined>(initialVariant);
 
   useEffect(() => {
-    const v = PRODUCTS.find((p) => p.id === currentProductId) ?? group?.variants[0];
+    const v = allProducts.find((p) => p.id === currentProductId) ?? group?.variants[0];
     setSelectedVariant(v);
     setQuantity(1);
   }, [currentProductId]);
@@ -48,7 +52,7 @@ export function ProductDetailPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const allGroups = getProductGroups();
+  const allGroups = [...getProductGroups(), ...MEMBERS_GROUPS];
   const related = allGroups
     .filter((g) => g.category === group.category && g.groupId !== group.groupId)
     .slice(0, 4);

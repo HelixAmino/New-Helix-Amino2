@@ -28,6 +28,7 @@ import { ReturnsPage } from './pages/ReturnsPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
 import { CoaLibraryPage } from './pages/CoaLibraryPage';
+import { MembersPage } from './pages/MembersPage';
 
 const STORAGE_KEY_AGE = 'helix_age_verified';
 const STORAGE_KEY_TERMS = 'helix_terms_agreed';
@@ -87,6 +88,7 @@ function AppContent() {
         {page === 'privacy' && <PrivacyPage />}
         {page === 'terms' && <TermsPage />}
         {page === 'coa-library' && <CoaLibraryPage />}
+        {page === 'members' && <MembersPage />}
       </main>
 
       <Footer />
