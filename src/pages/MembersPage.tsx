@@ -43,77 +43,68 @@ export function MembersPage() {
 
 function MembersGate({ onSignIn }: { onSignIn: () => void }) {
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-20 relative overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none select-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-orange-500/5 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[300px] bg-cyan-500/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative z-10 max-w-lg w-full flex flex-col items-center text-center">
-        <div className="mb-6 relative">
-          <div className="w-20 h-20 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center">
-            <Lock className="w-9 h-9 text-orange-400" />
+      <div className="flex-1 flex items-center justify-center px-4 py-20">
+        <div className="relative z-10 max-w-md w-full flex flex-col items-center text-center">
+          <div className="mb-6 relative">
+            <div className="w-20 h-20 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center">
+              <Lock className="w-9 h-9 text-orange-400" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#050d14] border border-orange-700/60 flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
+            </div>
           </div>
-          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#050d14] border border-orange-800/50 flex items-center justify-center">
-            <span className="text-orange-400 text-[10px] font-black">!</span>
+
+          <h1 className="text-white font-black text-3xl sm:text-4xl mb-4 tracking-tight flex items-center gap-2.5">
+            Members Only
+          </h1>
+
+          <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-sm">
+            This portion of the catalog includes many of the most popular metabolic compounds exclusively available to members. Sign in or create a membership account to access the full catalog.
+          </p>
+
+          <div className="flex items-center gap-2 mb-6 px-4 py-2.5 rounded-xl bg-[#07111d] border border-orange-900/30">
+            <div className="flex -space-x-1.5">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400/60 to-orange-700/60 border border-[#07111d]" />
+              ))}
+            </div>
+            <span className="text-gray-400 text-xs font-medium">Trusted by <span className="text-orange-300 font-semibold">1,200+</span> research labs.</span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
+            <button
+              onClick={onSignIn}
+              className="flex-1 flex items-center justify-center gap-2.5 px-6 py-3.5 bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm rounded-xl transition-all duration-200 shadow-[0_0_24px_rgba(249,115,22,0.3)]"
+            >
+              <LogIn className="w-4 h-4 shrink-0" />
+              Sign In to Access
+            </button>
+            <button
+              onClick={onSignIn}
+              className="flex-1 flex items-center justify-center gap-2.5 px-6 py-3.5 bg-transparent border border-orange-700/50 hover:border-orange-500 text-orange-300 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200"
+            >
+              Create Account
+              <ChevronRight className="w-4 h-4 shrink-0" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 mt-5 text-gray-600 text-xs">
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-gray-600" />
+            <span>For research professionals only.</span>
           </div>
         </div>
+      </div>
 
-        <h1 className="text-white font-black text-3xl sm:text-4xl mb-3 tracking-tight">Members Only</h1>
-        <div className="flex items-center gap-2 mb-5">
-          <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-orange-950/40 border border-orange-700/40 text-orange-400">
-            GLP-1 &amp; Metabolic Catalog
-          </span>
-        </div>
-
-        <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-sm">
-          This catalog contains advanced GLP-1 receptor agonists and metabolic compounds available exclusively to registered members.
-          Sign in or create a free account to access the full catalog.
+      <div className="relative z-10 border-t border-white/5 bg-[#030a10]/60 backdrop-blur-sm px-6 py-3">
+        <p className="text-center text-gray-600 text-[10px] leading-relaxed max-w-2xl mx-auto">
+          All compounds are for research use only. Not for human consumption or clinical use. Intended for laboratory and in vitro research purposes only.
         </p>
-
-        <div className="w-full bg-[#07111d] border border-orange-900/30 rounded-2xl p-5 mb-8">
-          <p className="text-gray-500 text-[10px] uppercase tracking-widest font-bold mb-4">What's inside</p>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { name: 'Retatrutide', sizes: '6 sizes' },
-              { name: 'Semaglutide', sizes: '3 sizes' },
-              { name: 'Tirzepatide', sizes: '6 sizes' },
-              { name: 'Cagrilintide', sizes: '3 sizes' },
-              { name: 'Mazdutide', sizes: '100mg' },
-              { name: 'Survodutide', sizes: '10mg' },
-            ].map((item) => (
-              <div key={item.name} className="flex items-center gap-2.5 px-3 py-2.5 bg-[#050d14] border border-orange-900/20 rounded-xl">
-                <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
-                <div className="text-left">
-                  <p className="text-gray-300 text-xs font-semibold leading-tight">{item.name}</p>
-                  <p className="text-gray-600 text-[10px]">{item.sizes}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 w-full">
-          <button
-            onClick={onSignIn}
-            className="flex-1 flex items-center justify-center gap-2.5 px-6 py-3.5 bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm rounded-xl transition-all duration-200 shadow-[0_0_24px_rgba(249,115,22,0.3)]"
-          >
-            <LogIn className="w-4 h-4 shrink-0" />
-            Sign In to Access
-          </button>
-          <button
-            onClick={onSignIn}
-            className="flex-1 flex items-center justify-center gap-2.5 px-6 py-3.5 bg-transparent border border-orange-700/50 hover:border-orange-500 text-orange-300 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200"
-          >
-            Create Free Account
-            <ChevronRight className="w-4 h-4 shrink-0" />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2 mt-6 text-gray-600 text-xs">
-          <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-          <span>Free account · For research professionals only</span>
-        </div>
       </div>
     </div>
   );
