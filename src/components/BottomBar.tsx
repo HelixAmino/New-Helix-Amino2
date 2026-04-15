@@ -7,7 +7,7 @@ export function BottomBar() {
   if (page === 'cart') return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#060e17]/95 backdrop-blur-md border-t border-cyan-900/30 px-4 py-3 shadow-[0_-4px_30px_rgba(0,0,0,0.5)]">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#060e17]/95 backdrop-blur-md border-t border-cyan-900/30 px-4 pt-3 shadow-[0_-4px_30px_rgba(0,0,0,0.5)]" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}>
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         <div className="hidden sm:flex items-center gap-2 text-gray-400 text-xs sm:text-sm">
           <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />

@@ -186,7 +186,7 @@ export function ChatBubble() {
       {open && (
         <div
           className="bg-[#07111d] border border-cyan-800/40 rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.7)] w-[340px] sm:w-[360px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200"
-          style={{ maxHeight: 'calc(100vh - 160px)', minHeight: '460px' }}
+          style={{ maxHeight: 'calc(100dvh - 160px - env(safe-area-inset-bottom, 0px))', minHeight: '460px' }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-900/30 bg-[#060f1a] flex-shrink-0">
