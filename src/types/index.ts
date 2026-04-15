@@ -37,7 +37,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export type Page = 'home' | 'product' | 'cart' | 'blog' | 'blog-article' | 'admin-chat' | 'lab-certifications' | 'purity-testing' | 'research-library' | 'compound-guide' | 'hplc-reports' | 'about' | 'shipping' | 'returns' | 'privacy' | 'terms' | 'coa-library' | 'members';
+export type Page = 'home' | 'product' | 'cart' | 'blog' | 'blog-article' | 'admin-chat' | 'lab-certifications' | 'purity-testing' | 'research-library' | 'compound-guide' | 'hplc-reports' | 'about' | 'shipping' | 'returns' | 'privacy' | 'terms' | 'coa-library' | 'members' | 'lab-supplies';
 
 export type ChatSessionStatus = 'waiting' | 'open' | 'closed';
 

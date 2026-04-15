@@ -30,6 +30,10 @@ const PRODUCT_CATEGORIES = [
   { label: 'Blends & Specialty', cat: 'Blends & Specialty' },
 ];
 
+const PRODUCT_PAGES: { label: string; page: Page }[] = [
+  { label: 'Lab Supplies', page: 'lab-supplies' },
+];
+
 export function Footer() {
   const { navigate } = useNavigation();
 
@@ -69,6 +73,16 @@ export function Footer() {
                 <li key={item.label}>
                   <button
                     onClick={() => navigate('home', undefined, item.cat)}
+                    className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200 text-left"
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+              {PRODUCT_PAGES.map((item) => (
+                <li key={item.label}>
+                  <button
+                    onClick={() => navigate(item.page)}
                     className="text-gray-500 hover:text-cyan-300 text-xs transition-colors duration-200 text-left"
                   >
                     {item.label}

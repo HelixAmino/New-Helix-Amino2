@@ -137,6 +137,14 @@ export function Header() {
                       {cat}
                     </button>
                   ))}
+                  <div className="border-t border-cyan-900/30 mt-1" />
+                  <button
+                    onClick={() => { navigate('lab-supplies'); setCatDropOpen(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left text-sm text-gray-300 hover:text-white hover:bg-cyan-950/50 transition-colors duration-150"
+                  >
+                    <FlaskConical className="w-3.5 h-3.5 text-cyan-500/70 shrink-0" />
+                    Lab Supplies
+                  </button>
                 </div>
               )}
             </div>
@@ -337,6 +345,13 @@ export function Header() {
                   {cat}
                 </button>
               ))}
+              <button
+                onClick={() => { navigate('lab-supplies'); setMenuOpen(false); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-cyan-950/50 transition-all duration-150 text-sm font-medium text-left"
+              >
+                <FlaskConical className="w-4 h-4 text-cyan-500 shrink-0" />
+                Lab Supplies
+              </button>
               <button
                 onClick={() => { navigate('blog'); setMenuOpen(false); }}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-cyan-950/50 transition-all duration-150 text-sm font-medium text-left"
