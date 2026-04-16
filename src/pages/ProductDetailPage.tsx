@@ -70,11 +70,11 @@ export function ProductDetailPage() {
 
       <div className="grid lg:grid-cols-2 gap-10 mb-12">
         {/* Left: product image */}
-        <div className="relative bg-[#07111d] border border-cyan-900/20 rounded-2xl min-h-[420px] overflow-hidden flex items-center justify-center p-6">
+        <div className="relative bg-[#07111d] border border-cyan-900/20 rounded-2xl h-[480px] overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-contain max-h-[400px] transition-all duration-300"
+            className="w-full h-full object-contain transition-all duration-300"
           />
 
           <div className="absolute top-4 left-4 flex flex-col gap-2">
