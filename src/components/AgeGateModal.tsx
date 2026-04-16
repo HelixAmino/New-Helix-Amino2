@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { ShieldAlert, Circle as XCircle } from 'lucide-react';
 import { DnaHelixLogoSmall } from './DnaHelixSvg';
+import { IS_BOT } from '../lib/botDetection';
 
 interface Props {
   onVerified: () => void;
 }
 
 export function AgeGateModal({ onVerified }: Props) {
+  if (IS_BOT) return null;
+
   const [month, setMonth] = useState('');
   const [day, setDay] = useState('');
   const [year, setYear] = useState('');

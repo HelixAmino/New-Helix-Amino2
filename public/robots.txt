@@ -3,19 +3,51 @@ Disallow: /members
 Disallow: /members/
 Disallow: /?page=members
 Disallow: /*members*
+Allow: /
 
 User-agent: Googlebot
 Disallow: /members
 Disallow: /members/
+Allow: /
 
 User-agent: Bingbot
 Disallow: /members
 Disallow: /members/
+Allow: /
 
 User-agent: Slurp
 Disallow: /members
 Disallow: /members/
+Allow: /
 
+User-agent: GPTBot
+Disallow: /members
+Disallow: /members/
+Allow: /
+
+User-agent: Claude-Web
+Disallow: /members
+Disallow: /members/
+Allow: /
+
+User-agent: ClaudeBot
+Disallow: /members
+Disallow: /members/
+Allow: /
+
+User-agent: PerplexityBot
+Disallow: /members
+Disallow: /members/
+Allow: /
+
+User-agent: OAI-SearchBot
+Disallow: /members
+Disallow: /members/
+Allow: /
+
+User-agent: ChatGPT-User
+Disallow: /members
+Disallow: /members/
 Allow: /
 
 Sitemap: https://helixamino.com/sitemap.xml

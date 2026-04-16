@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CartProvider } from './context/CartContext';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
 import { AuthProvider } from './context/AuthContext';
+import { IS_BOT } from './lib/botDetection';
 import { RedBanner } from './components/RedBanner';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
@@ -39,10 +40,10 @@ function AppContent() {
   const { page } = useNavigation();
 
   const [ageVerified, setAgeVerified] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY_AGE) === '1';
+    return IS_BOT || localStorage.getItem(STORAGE_KEY_AGE) === '1';
   });
   const [termsAgreed, setTermsAgreed] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY_TERMS) === '1';
+    return IS_BOT || localStorage.getItem(STORAGE_KEY_TERMS) === '1';
   });
 
   const handleAgeVerified = () => {
