@@ -179,11 +179,11 @@ function MembersProductCard({ group, onSelect }: { group: ProductGroup; onSelect
       className="group bg-[#07111d] border border-orange-900/20 rounded-2xl overflow-hidden hover:border-orange-700/40 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(249,115,22,0.07)] flex flex-col cursor-pointer"
       onClick={onSelect}
     >
-      <div className="relative h-[420px] overflow-hidden bg-white">
+      <div className="relative h-[480px] overflow-hidden bg-white">
         <img
           src={group.image}
           alt={group.baseName}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover p-1 group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/60 via-transparent to-transparent" />
 
