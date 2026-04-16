@@ -35,11 +35,11 @@ export function GroupedProductCard({ group }: Props) {
       onClick={handleClick}
     >
       {/* Image */}
-      <div className="relative h-[480px] overflow-hidden bg-white">
+      <div className="relative h-[480px] overflow-hidden bg-[#07111d]">
         <img
           src={group.image}
           alt={group.baseName}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/60 via-transparent to-transparent" />
 

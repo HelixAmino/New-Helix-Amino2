@@ -73,13 +73,13 @@ export function ProductCard({ product }: Props) {
     <div className="group bg-[#07111d] border border-cyan-900/20 rounded-2xl overflow-hidden hover:border-cyan-700/40 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(0,212,255,0.07)] flex flex-col">
       {/* Product image */}
       <div
-        className="relative h-[480px] overflow-hidden cursor-pointer bg-white"
+        className="relative h-[480px] overflow-hidden cursor-pointer bg-[#07111d]"
         onClick={() => navigate('product', product.id)}
       >
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/60 via-transparent to-transparent" />
 
