@@ -32,7 +32,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-reta-10mg',
     name: 'Retatrutide (10mg)',
-    price: 89,
+    price: 85,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
     image: imgReta10,
@@ -46,7 +46,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-reta-20mg',
     name: 'Retatrutide (20mg)',
-    price: 159,
+    price: 170,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '20mg',
     image: imgReta20,
@@ -60,7 +60,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-reta-30mg',
     name: 'Retatrutide (30mg)',
-    price: 219,
+    price: 230,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '30mg',
     image: imgReta30,
@@ -74,7 +74,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-reta-40mg',
     name: 'Retatrutide (40mg)',
-    price: 279,
+    price: 285,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '40mg',
     image: imgReta40,
@@ -88,7 +88,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-reta-50mg',
     name: 'Retatrutide (50mg)',
-    price: 329,
+    price: 330,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '50mg',
     image: imgReta50,
@@ -102,7 +102,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-reta-60mg',
     name: 'Retatrutide (60mg)',
-    price: 379,
+    price: 370,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '60mg',
     image: imgReta60,
@@ -118,7 +118,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-sema-10mg',
     name: 'Semaglutide (10mg)',
-    price: 69,
+    price: 65,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
     image: imgSema10,
@@ -132,7 +132,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-sema-20mg',
     name: 'Semaglutide (20mg)',
-    price: 119,
+    price: 105,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '20mg',
     image: imgSema20,
@@ -146,7 +146,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-sema-30mg',
     name: 'Semaglutide (30mg)',
-    price: 159,
+    price: 140,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '30mg',
     image: imgSema30,
@@ -176,7 +176,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-tirz-20mg',
     name: 'Tirzepatide (20mg)',
-    price: 139,
+    price: 125,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '20mg',
     image: imgTirz20,
@@ -190,7 +190,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-tirz-30mg',
     name: 'Tirzepatide (30mg)',
-    price: 189,
+    price: 175,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '30mg',
     image: imgTirz30,
@@ -204,7 +204,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-tirz-40mg',
     name: 'Tirzepatide (40mg)',
-    price: 239,
+    price: 220,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '40mg',
     image: imgTirz40,
@@ -218,7 +218,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-tirz-50mg',
     name: 'Tirzepatide (50mg)',
-    price: 289,
+    price: 260,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '50mg',
     image: imgTirz50,
@@ -232,7 +232,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-tirz-60mg',
     name: 'Tirzepatide (60mg)',
-    price: 329,
+    price: 295,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '60mg',
     image: imgTirz60,
@@ -248,7 +248,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-cag-2.5mg',
     name: 'Cagrilintide (2.5mg)',
-    price: 59,
+    price: 62,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '2.5mg',
     image: imgCag25,
@@ -262,7 +262,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-cag-5mg',
     name: 'Cagrilintide (5mg)',
-    price: 99,
+    price: 89,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '5mg',
     image: imgCag5,
@@ -276,7 +276,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-cag-10mg',
     name: 'Cagrilintide (10mg)',
-    price: 169,
+    price: 99,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
     image: imgCag10,
@@ -292,7 +292,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-maz-100mg',
     name: 'Mazdutide (100mg)',
-    price: 249,
+    price: 110,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '100mg',
     image: imgMaz,
@@ -308,7 +308,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-surv-10mg',
     name: 'Survodutide (10mg)',
-    price: 119,
+    price: 165,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
     image: imgSurv,
@@ -324,7 +324,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-bac-water-3ml',
     name: 'Reconstitution Water (3mL)',
-    price: 12,
+    price: 15,
     category: 'Accessories',
     quantityLabel: '3mL vial',
     image: imgBac3,
@@ -338,7 +338,7 @@ export const MEMBERS_PRODUCTS: Product[] = [
   {
     id: 'members-bac-water-10ml',
     name: 'Reconstitution Water (10mL)',
-    price: 18,
+    price: 22,
     category: 'Accessories',
     quantityLabel: '10mL vial',
     image: imgBac10,

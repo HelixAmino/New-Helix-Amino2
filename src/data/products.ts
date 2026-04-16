@@ -63,7 +63,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'bpc-157-5mg',
     name: 'BPC-157 (5mg)',
-    price: 45,
+    price: 39,
     category: 'Recovery & Healing',
     quantityLabel: '5mg',
     image: imgBpc10,
@@ -77,7 +77,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'bpc-157-10mg',
     name: 'BPC-157 (10mg)',
-    price: 69,
+    price: 50,
     category: 'Recovery & Healing',
     quantityLabel: '10mg',
     image: imgBpc10,
@@ -93,7 +93,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'bpc-157-20mg',
     name: 'BPC-157 (20mg)',
-    price: 119,
+    price: 80,
     category: 'Recovery & Healing',
     quantityLabel: '20mg',
     image: imgBpc20,
@@ -109,7 +109,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'tb500-5mg',
     name: 'Thymosin Beta 4 (TB500) (5mg)',
-    price: 49,
+    price: 47,
     category: 'Recovery & Healing',
     quantityLabel: '5mg',
     image: imgTb5,
@@ -125,7 +125,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'tb500-10mg',
     name: 'Thymosin Beta 4 (TB500) (10mg)',
-    price: 79,
+    price: 70,
     category: 'Recovery & Healing',
     quantityLabel: '10mg',
     image: imgTb10,
@@ -140,7 +140,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'wolverine-blend-5mg',
     name: 'Wolverine Blend – BPC-157 (5mg) / TB500 (5mg)',
-    price: 89,
+    price: 65,
     category: 'Recovery & Healing',
     quantityLabel: '5mg BPC-157 + 5mg TB500',
     image: imgWol5,
@@ -158,7 +158,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'wolverine-blend-10mg',
     name: 'Wolverine Blend – BPC-157 (10mg) / TB500 (10mg)',
-    price: 139,
+    price: 105,
     category: 'Recovery & Healing',
     quantityLabel: '10mg BPC-157 + 10mg TB500',
     image: imgWol10,
@@ -176,7 +176,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'glow-blend',
     name: 'GLOW – GHK-Cu (50mg) / BPC-157 (10mg) / TB500 (10mg)',
-    price: 159,
+    price: 120,
     category: 'Recovery & Healing',
     quantityLabel: '50mg GHK-Cu + 10mg BPC-157 + 10mg TB500',
     image: imgGl50,
@@ -194,7 +194,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'klow-blend',
     name: 'KLOW – GHK-Cu (50mg) / KPV (10mg) / BPC-157 (10mg) / TB500 (10mg)',
-    price: 169,
+    price: 140,
     category: 'Recovery & Healing',
     quantityLabel: '50mg GHK-Cu + 10mg KPV + 10mg BPC-157 + 10mg TB500',
     image: imgKlow,
@@ -213,7 +213,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'll37-5mg',
     name: 'LL37 (5mg)',
-    price: 89,
+    price: 55,
     category: 'Recovery & Healing',
     quantityLabel: '5mg',
     image: imgL37,
@@ -230,7 +230,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ghkcu-50mg',
     name: 'GHK-Cu (50mg)',
-    price: 79,
+    price: 35,
     category: 'Recovery & Healing',
     quantityLabel: '50mg',
     image: imgGhkcu50,
@@ -246,7 +246,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ghkcu-100mg',
     name: 'GHK-Cu (100mg)',
-    price: 129,
+    price: 65,
     category: 'Recovery & Healing',
     quantityLabel: '100mg',
     image: imgGhkcu100,
@@ -264,7 +264,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'sermorelin-10mg',
     name: 'Sermorelin (10mg)',
-    price: 89,
+    price: 85,
     category: 'GH & Growth Axis',
     quantityLabel: '10mg',
     image: imgSerm10,
@@ -280,7 +280,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'cjc1295-no-dac-10mg',
     name: 'CJC-1295 Without DAC (10mg)',
-    price: 59,
+    price: 99,
     category: 'GH & Growth Axis',
     quantityLabel: '10mg',
     image: imgCjcNo,
@@ -295,7 +295,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'cjc1295-dac-5mg',
     name: 'CJC-1295 With DAC (5mg)',
-    price: 69,
+    price: 89,
     category: 'GH & Growth Axis',
     quantityLabel: '5mg',
     image: imgCjcW,
@@ -310,7 +310,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '2x-blend-cjc-ipamorelin',
     name: '2X Blend – CJC-1295 Without DAC (5mg) / Ipamorelin (5mg)',
-    price: 79,
+    price: 75,
     category: 'GH & Growth Axis',
     quantityLabel: '5mg CJC-1295 + 5mg Ipamorelin',
     image: img2x5,
@@ -327,7 +327,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ipamorelin-10mg',
     name: 'Ipamorelin (10mg)',
-    price: 59,
+    price: 55,
     category: 'GH & Growth Axis',
     quantityLabel: '10mg',
     image: imgIpa10,
@@ -342,7 +342,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ghrp6-10mg',
     name: 'GHRP-6 Acetate (10mg)',
-    price: 49,
+    price: 45,
     category: 'GH & Growth Axis',
     quantityLabel: '10mg',
     image: imgGhrp,
@@ -357,7 +357,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ghrp6-5mg',
     name: 'GHRP-6 Acetate (5mg)',
-    price: 39,
+    price: 32,
     category: 'GH & Growth Axis',
     quantityLabel: '5mg',
     image: imgGhrp,
@@ -371,7 +371,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'hexarelin-5mg',
     name: 'Hexarelin Acetate (5mg)',
-    price: 49,
+    price: 53,
     category: 'GH & Growth Axis',
     quantityLabel: '5mg',
     image: imgHex,
@@ -386,7 +386,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'tesamorelin-10mg',
     name: 'Tesamorelin (10mg)',
-    price: 89,
+    price: 84,
     category: 'GH & Growth Axis',
     quantityLabel: '10mg',
     image: imgTesa,
@@ -400,7 +400,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'tesamorelin-20mg',
     name: 'Tesamorelin (20mg)',
-    price: 139,
+    price: 160,
     category: 'GH & Growth Axis',
     quantityLabel: '20mg',
     image: imgTes20,
@@ -416,7 +416,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'cagrilintide-10mg',
     name: 'Cagrilintide (10mg)',
-    price: 149,
+    price: 99,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
     image: imgCag,
@@ -431,7 +431,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'mazdutide-100mg',
     name: 'Mazdutide (100mg)',
-    price: 219,
+    price: 110,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '100mg',
     image: imgMaz,
@@ -445,7 +445,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'survodutide-10mg',
     name: 'Survodutide (10mg)',
-    price: 159,
+    price: 165,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '10mg',
     image: imgSurv,
@@ -459,7 +459,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '5amino1mq-5mg',
     name: '5-Amino-1MQ (5mg)',
-    price: 89,
+    price: 45,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '5mg',
     image: img5aq,
@@ -474,7 +474,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '5amino1mq-50mg',
     name: '5-Amino-1MQ (50mg)',
-    price: 299,
+    price: 125,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '50mg',
     image: img5a50,
@@ -489,7 +489,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'slu-pp-332-5mg',
     name: 'SLU-PP-332 (5mg)',
-    price: 109,
+    price: 75,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '5mg',
     image: imgSlp,
@@ -504,7 +504,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'aod9604-5mg',
     name: 'AOD9604 (5mg)',
-    price: 69,
+    price: 59,
     category: 'Metabolic & GLP-1 Related',
     quantityLabel: '5mg',
     image: imgAod,
@@ -521,7 +521,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'selank-10mg',
     name: 'Selank (10mg)',
-    price: 59,
+    price: 50,
     category: 'Nootropics and Cognition',
     quantityLabel: '10mg',
     image: imgSel,
@@ -536,7 +536,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'semax-10mg',
     name: 'Semax (10mg)',
-    price: 59,
+    price: 50,
     category: 'Nootropics and Cognition',
     quantityLabel: '10mg',
     image: imgSmx,
@@ -565,7 +565,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'dsip-5mg',
     name: 'DSIP (5mg)',
-    price: 39,
+    price: 26,
     category: 'Nootropics and Cognition',
     quantityLabel: '5mg',
     image: imgDisp5,
@@ -579,7 +579,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'n-acetyl-epitalon-5mg',
     name: 'N-Acetyl Epitalon Amidate (5mg)',
-    price: 79,
+    price: 40,
     category: 'Nootropics and Cognition',
     quantityLabel: '5mg',
     image: imgNae5,
@@ -593,7 +593,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'epitalon-10mg',
     name: 'Epitalon (10mg)',
-    price: 59,
+    price: 30,
     category: 'Nootropics and Cognition',
     quantityLabel: '10mg',
     image: imgEpi10,
@@ -608,7 +608,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'epitalon-50mg',
     name: 'Epitalon (50mg)',
-    price: 179,
+    price: 75,
     category: 'Nootropics and Cognition',
     quantityLabel: '50mg',
     image: imgEpi50,
@@ -622,7 +622,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'pinealon-20mg',
     name: 'Pinealon (20mg)',
-    price: 69,
+    price: 74,
     category: 'Nootropics and Cognition',
     quantityLabel: '20mg',
     image: imgPine,
@@ -636,7 +636,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'snap8-10mg',
     name: 'Snap-8 (10mg)',
-    price: 59,
+    price: 39,
     category: 'Nootropics and Cognition',
     quantityLabel: '10mg',
     image: imgS8,
@@ -650,7 +650,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'vip10-10mg',
     name: 'VIP10 (10mg)',
-    price: 89,
+    price: 85.99,
     category: 'Nootropics and Cognition',
     quantityLabel: '10mg',
     image: imgVip,
@@ -666,7 +666,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'motsc-10mg',
     name: 'MOTS-c (10mg)',
-    price: 69,
+    price: 55,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '10mg',
     image: imgMot10,
@@ -681,7 +681,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'motsc-40mg',
     name: 'MOTS-c (40mg)',
-    price: 149,
+    price: 125,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '40mg',
     image: imgMot40,
@@ -695,7 +695,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ss31-10mg',
     name: 'SS-31 (10mg)',
-    price: 79,
+    price: 200,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '10mg',
     image: imgSs50,
@@ -710,7 +710,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ss31-50mg',
     name: 'SS-31 (50mg)',
-    price: 229,
+    price: 200,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '50mg',
     image: imgSs50,
@@ -725,7 +725,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'nad-500mg',
     name: 'NAD+ (500mg)',
-    price: 89,
+    price: 75,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '500mg',
     image: imgNad5,
@@ -739,7 +739,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'nad-1000mg',
     name: 'NAD+ (1000mg)',
-    price: 149,
+    price: 105,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '1000mg',
     image: imgNad10k,
@@ -753,7 +753,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'glutathione-600mg',
     name: 'Glutathione (600mg)',
-    price: 59,
+    price: 39,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '600mg',
     image: imgGlut,
@@ -767,7 +767,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'glutathione-1500mg',
     name: 'Glutathione (1500mg)',
-    price: 99,
+    price: 54.99,
     category: 'Longevity and Mitochondrial',
     quantityLabel: '1500mg',
     image: imgGl50,
@@ -784,7 +784,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'hcg-10000iu',
     name: 'HCG (10000iu)',
-    price: 69,
+    price: 75,
     category: 'Hormones & Reproductive',
     quantityLabel: '10000iu',
     image: imgHcg,
@@ -798,7 +798,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'hmg-75iu',
     name: 'HMG (75iu)',
-    price: 79,
+    price: 50,
     category: 'Hormones & Reproductive',
     quantityLabel: '75iu',
     image: imgHmg,
@@ -812,7 +812,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'kisspeptin-10mg',
     name: 'KissPeptin (10mg)',
-    price: 89,
+    price: 55,
     category: 'Hormones & Reproductive',
     quantityLabel: '10mg',
     image: imgKiss,
@@ -826,7 +826,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'igf1lr3-1mg',
     name: 'IGF-1LR3 (1mg)',
-    price: 79,
+    price: 95,
     category: 'Hormones & Reproductive',
     quantityLabel: '1mg',
     image: imgIgf1,
@@ -840,7 +840,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'igf1lr3-01mg',
     name: 'IGF-1LR3 (0.1mg)',
-    price: 39,
+    price: 30,
     category: 'Hormones & Reproductive',
     quantityLabel: '0.1mg',
     image: imgIgf01,
@@ -854,7 +854,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'igfdes-01mg',
     name: 'IGF-DES (0.1mg)',
-    price: 49,
+    price: 34,
     category: 'Hormones & Reproductive',
     quantityLabel: '0.1mg',
     image: imgIgfd,
@@ -870,7 +870,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '8x-blend',
     name: '8X Blend – L-Carnitine / L-Arginine / Methionine / Inositol / Choline / B6 / B5 / B12',
-    price: 69,
+    price: 50,
     category: 'Blends & Specialty',
     quantityLabel: 'L-Carnitine 20mg / L-Arginine 20mg / Methionine 25mg / Inositol 50mg / Choline 50mg / B6 25mg / B5 5mg / B12 1mg',
     image: img8x,
@@ -884,7 +884,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '4x-blend',
     name: '4X Blend – Methionine / Choline Chloride / Carnitine / Dexpanthenol',
-    price: 49,
+    price: 50,
     category: 'Blends & Specialty',
     quantityLabel: 'Methionine 15mg / Choline Chloride 50mg / Carnitine 50mg / Dexpanthenol 5mg',
     image: img4x,
@@ -900,7 +900,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'gdf8-1mg',
     name: 'GDF-8 (1mg)',
-    price: 89,
+    price: 130,
     category: 'Misc / Rare',
     quantityLabel: '1mg',
     image: imgGdf,
@@ -930,7 +930,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'aicar-50mg',
     name: 'AICAR (50mg)',
-    price: 119,
+    price: 43,
     category: 'Misc / Rare',
     quantityLabel: '50mg',
     image: imgAicar,
@@ -944,7 +944,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'ara290-10mg',
     name: 'ARA-290 (10mg)',
-    price: 79,
+    price: 49,
     category: 'Misc / Rare',
     quantityLabel: '10mg',
     image: imgAra,
@@ -958,7 +958,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'pnc27-10mg',
     name: 'PNC-27 (10mg)',
-    price: 99,
+    price: 65,
     category: 'Misc / Rare',
     quantityLabel: '10mg',
     image: imgPnc,
@@ -972,7 +972,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'b12-10ml',
     name: 'B12 (10ml)',
-    price: 29,
+    price: 39,
     category: 'Misc / Rare',
     quantityLabel: '10ml',
     image: imgB12,
