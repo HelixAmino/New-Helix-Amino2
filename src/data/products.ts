@@ -88,6 +88,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/Summary%20Report%20YPB.213%20BPC-157%20(10mg)%202-7-26%20-%201.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/BPC-157-SDS.pdf',
   },
   {
     id: 'bpc-157-20mg',
@@ -103,6 +104,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/BPC%20157%2020mg_261046.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/BPC-157-SDS.pdf',
   },
   {
     id: 'tb500-5mg',
@@ -118,6 +120,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/Summary%20Report%20YPB.214%20Thymosin%20Beta%204%20(TB500)%20(5mg)%2012-22-25.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/TB500-SDS.pdf',
   },
   {
     id: 'tb500-10mg',
@@ -132,6 +135,7 @@ export const PRODUCTS: Product[] = [
     form: 'Lyophilized powder (vial)',
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/TB500-SDS.pdf',
   },
   {
     id: 'wolverine-blend-5mg',
@@ -149,6 +153,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/Summary%20Report%2C%20YPB.216%2C%20Wolverine%20Blend%20-%20BPC-157%20(5mg)%20-%20TB-500%20(5mg)%2C%2012-22-25.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/Wolverine-Blend-SDS.pdf',
   },
   {
     id: 'wolverine-blend-10mg',
@@ -166,6 +171,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/Summary%20Report%2C%20YPB.216%2C%20Wolverine%20Blend%20-%20BPC-157%20(5mg)%20-%20TB-500%20(5mg)%2C%2012-22-25.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/Wolverine-Blend-SDS.pdf',
   },
   {
     id: 'glow-blend',
@@ -235,6 +241,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/Summary%20Report%2C%20YPB.221%2C%20GHK-Cu%20(50mg)%2C%2012-22-25.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/GHK-Cu-SDS.pdf',
   },
   {
     id: 'ghkcu-100mg',
@@ -250,6 +257,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/Summary%20Report%20YPB.222%20GHK-Cu%20(100mg)%202-7-26.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/GHK-Cu-SDS.pdf',
   },
 
   // ─── GH & Growth Axis ─────────────────────────────────────────────────────
@@ -267,6 +275,7 @@ export const PRODUCTS: Product[] = [
     purity: '≥99% (third-party tested)',
     storage: 'Refrigerate at 2–8°C after reconstitution',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/Sermorelin%2010mg_261040.pdf',
+    sdsUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/Sermorelin-SDS.pdf',
   },
   {
     id: 'cjc1295-no-dac-10mg',

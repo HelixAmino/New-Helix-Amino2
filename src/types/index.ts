@@ -30,6 +30,7 @@ export interface Product {
   molecularWeight?: string;
   blendComponents?: BlendComponent[];
   coaUrl?: string;
+  sdsUrl?: string;
 }
 
 export interface CartItem {
@@ -37,7 +38,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export type Page = 'home' | 'product' | 'cart' | 'blog' | 'blog-article' | 'admin-chat' | 'lab-certifications' | 'purity-testing' | 'research-library' | 'compound-guide' | 'hplc-reports' | 'about' | 'shipping' | 'returns' | 'privacy' | 'terms' | 'coa-library' | 'members' | 'lab-supplies';
+export type Page = 'home' | 'product' | 'cart' | 'blog' | 'blog-article' | 'admin-chat' | 'lab-certifications' | 'purity-testing' | 'research-library' | 'compound-guide' | 'hplc-reports' | 'about' | 'shipping' | 'returns' | 'privacy' | 'terms' | 'coa-library' | 'members' | 'lab-supplies' | 'sds-library';
 
 export type ChatSessionStatus = 'waiting' | 'open' | 'closed';
 
@@ -70,5 +71,6 @@ export interface ProductGroup {
   cas?: string;
   molecularWeight?: string;
   blendComponents?: BlendComponent[];
+  sdsUrl?: string;
   variants: Product[];
 }

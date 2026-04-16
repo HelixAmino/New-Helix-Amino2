@@ -5,6 +5,7 @@ import { Page } from '../types';
 
 const RESEARCH_LINKS: { label: string; page: Page | null; href?: string }[] = [
   { label: 'COA Library', page: 'coa-library' },
+  { label: 'SDS Library', page: 'sds-library' },
   { label: 'Lab Certifications', page: 'lab-certifications' },
   { label: 'Purity Testing', page: 'purity-testing' },
   { label: 'Research Library', page: 'research-library' },

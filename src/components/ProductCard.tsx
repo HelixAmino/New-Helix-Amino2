@@ -1,4 +1,4 @@
-import { ShoppingCart, FlaskConical, FileText } from 'lucide-react';
+import { ShoppingCart, FlaskConical, FileText, ShieldAlert } from 'lucide-react';
 import { Product } from '../types';
 import { useNavigation } from '../context/NavigationContext';
 import { useCart } from '../context/CartContext';
@@ -138,6 +138,27 @@ export function ProductCard({ product }: Props) {
                 title="COA pending"
               >
                 <FileText className="w-3.5 h-3.5" />
+              </span>
+            )}
+            {product.sdsUrl ? (
+              <a
+                href={product.sdsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="p-2 bg-amber-600/15 border border-amber-700/40 text-amber-400 rounded-xl hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200 active:scale-90"
+                title="View Safety Data Sheet (SDS)"
+                aria-label={`View Safety Data Sheet for ${product.name}`}
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+              </a>
+            ) : (
+              <span
+                className="p-2 bg-gray-800/30 border border-gray-700/20 text-gray-700 rounded-xl cursor-not-allowed"
+                title="SDS pending"
+                aria-label="Safety Data Sheet pending"
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
               </span>
             )}
             <button

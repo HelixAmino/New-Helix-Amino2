@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ShieldCheck, FileText, FileDown, Minus, Plus, ShoppingCart, TriangleAlert as AlertTriangle, Package, Thermometer, CircleCheck as CheckCircle } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, FileText, FileDown, Minus, Plus, ShoppingCart, TriangleAlert as AlertTriangle, Package, Thermometer, CircleCheck as CheckCircle, ShieldAlert } from 'lucide-react';
 import { PRODUCTS, getDiscountedPrice, getDiscountLabel, getGroupByProductId, getProductGroups } from '../data/products';
 import { MEMBERS_PRODUCTS, MEMBERS_GROUPS } from '../data/membersProducts';
 import { useNavigation } from '../context/NavigationContext';
@@ -303,23 +303,62 @@ export function ProductDetailPage() {
             </button>
           </div>
 
-          {/* COA View */}
-          {product.coaUrl ? (
-            <a
-              href={`https://docs.google.com/viewer?url=${encodeURIComponent(product.coaUrl!)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 mb-5 bg-teal-950/50 border border-teal-700/50 text-teal-300 font-semibold rounded-xl text-sm hover:bg-teal-900/60 hover:border-teal-500 hover:text-white transition-all duration-200 active:scale-[0.98]"
-            >
-              <FileText className="w-4 h-4" />
-              View Certificate of Analysis
-            </a>
-          ) : (
-            <div className="w-full flex items-center justify-center gap-2.5 py-3.5 mb-5 bg-gray-900/40 border border-gray-700/20 text-gray-600 font-semibold rounded-xl text-sm cursor-not-allowed">
-              <FileText className="w-4 h-4" />
-              Certificate of Analysis — Coming Soon
+          {/* Lab Documents */}
+          <div className="rounded-xl border border-cyan-900/20 bg-[#07111d] overflow-hidden mb-5">
+            <div className="bg-cyan-950/30 border-b border-cyan-900/20 px-4 py-2.5 flex items-center gap-2">
+              <FileDown className="w-3.5 h-3.5 text-cyan-400" />
+              <p className="text-cyan-300 text-xs font-bold tracking-widest uppercase">Lab Documents</p>
             </div>
-          )}
+            <div className="p-3 flex flex-col gap-2">
+              {product.coaUrl ? (
+                <a
+                  href={`https://docs.google.com/viewer?url=${encodeURIComponent(product.coaUrl!)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 px-3 py-2.5 bg-teal-950/30 border border-teal-800/40 text-teal-300 font-semibold rounded-lg text-sm hover:bg-teal-900/50 hover:border-teal-600/60 hover:text-white transition-all duration-200 active:scale-[0.98] group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <FileText className="w-4 h-4 shrink-0" />
+                    <span>Certificate of Analysis (COA)</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-teal-500 group-hover:text-teal-300 transition-colors uppercase tracking-widest">Open PDF</span>
+                </a>
+              ) : (
+                <div className="flex items-center justify-between gap-3 px-3 py-2.5 bg-gray-900/30 border border-gray-700/20 text-gray-600 font-semibold rounded-lg text-sm cursor-not-allowed">
+                  <div className="flex items-center gap-2.5">
+                    <FileText className="w-4 h-4 shrink-0" />
+                    <span>Certificate of Analysis (COA)</span>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Coming Soon</span>
+                </div>
+              )}
+              {product.sdsUrl ? (
+                <a
+                  href={product.sdsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 px-3 py-2.5 bg-amber-950/30 border border-amber-800/40 text-amber-300 font-semibold rounded-lg text-sm hover:bg-amber-900/50 hover:border-amber-600/60 hover:text-white transition-all duration-200 active:scale-[0.98] group"
+                  aria-label={`View Safety Data Sheet for ${product.name}`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <ShieldAlert className="w-4 h-4 shrink-0" />
+                    <span>Safety Data Sheet (SDS / GHS)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-amber-500 group-hover:text-amber-300 transition-colors uppercase tracking-widest">Open PDF</span>
+                  </div>
+                </a>
+              ) : (
+                <div className="flex items-center justify-between gap-3 px-3 py-2.5 bg-gray-900/30 border border-gray-700/20 text-gray-600 font-semibold rounded-lg text-sm cursor-not-allowed">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldAlert className="w-4 h-4 shrink-0" />
+                    <span>Safety Data Sheet (SDS / GHS)</span>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Coming Soon</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

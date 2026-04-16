@@ -30,6 +30,7 @@ import { TermsPage } from './pages/TermsPage';
 import { CoaLibraryPage } from './pages/CoaLibraryPage';
 import { MembersPage } from './pages/MembersPage';
 import { LabSuppliesPage } from './pages/LabSuppliesPage';
+import { SdsLibraryPage } from './pages/SdsLibraryPage';
 
 const STORAGE_KEY_AGE = 'helix_age_verified';
 const STORAGE_KEY_TERMS = 'helix_terms_agreed';
@@ -91,6 +92,7 @@ function AppContent() {
         {page === 'coa-library' && <CoaLibraryPage />}
         {page === 'members' && <MembersPage />}
         {page === 'lab-supplies' && <LabSuppliesPage />}
+        {page === 'sds-library' && <SdsLibraryPage />}
       </main>
 
       <Footer />
