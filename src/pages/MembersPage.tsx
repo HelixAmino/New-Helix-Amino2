@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Lock, ShieldCheck, FlaskConical, Layers, FileText, LogIn, Dna, ChevronRight, ShoppingCart, Plus, Minus, CircleCheck as CheckCircle } from 'lucide-react';
+import { Lock, ShieldCheck, FlaskConical, Layers, FileText, LogIn, Dna, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '../context/NavigationContext';
-import { useCart } from '../context/CartContext';
-import { MEMBERS_GROUPS, MEMBERS_PRODUCTS } from '../data/membersProducts';
+import { MEMBERS_GROUPS } from '../data/membersProducts';
 import { AuthModal } from '../components/AuthModal';
-import { Product, ProductGroup } from '../types';
+import { ProductGroup } from '../types';
 
 export function MembersPage() {
   const { user, loading } = useAuth();
@@ -111,8 +110,6 @@ function MembersGate({ onSignIn }: { onSignIn: () => void }) {
   );
 }
 
-const MEMBERS_ACCESSORIES = MEMBERS_PRODUCTS.filter((p) => p.category === 'Accessories');
-
 function MembersCatalog() {
   const { navigate } = useNavigation();
 
@@ -168,26 +165,6 @@ function MembersCatalog() {
         ))}
       </div>
 
-      {MEMBERS_ACCESSORIES.length > 0 && (
-        <div className="mt-14">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-px flex-1 bg-orange-900/20" />
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-orange-950/30 border border-orange-800/30">
-              <FlaskConical className="w-3.5 h-3.5 text-orange-400" />
-              <span className="text-orange-400 text-[11px] font-bold uppercase tracking-widest">Reconstitution Supplies</span>
-            </div>
-            <div className="h-px flex-1 bg-orange-900/20" />
-          </div>
-          <p className="text-gray-500 text-xs text-center mb-6">
-            Members-only reconstitution supplies to complement your peptide orders.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {MEMBERS_ACCESSORIES.map((product) => (
-              <MembersAccessoryCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -306,88 +283,3 @@ function MembersProductCard({ group, onSelect }: { group: ProductGroup; onSelect
   );
 }
 
-function MembersAccessoryCard({ product }: { product: Product }) {
-  const { addItem } = useCart();
-  const [qty, setQty] = useState(1);
-  const [added, setAdded] = useState(false);
-
-  function handleAdd() {
-    addItem(product, qty);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  }
-
-  return (
-    <div className="group bg-[#07111d] border border-orange-900/20 rounded-2xl overflow-hidden hover:border-orange-700/40 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(249,115,22,0.07)] flex flex-col">
-      <div className="relative h-48 overflow-hidden bg-white">
-        <img
-          src={typeof product.image === 'string' ? product.image : ''}
-          alt={product.name}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/60 via-transparent to-transparent" />
-        <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-[#050d14]/80 border border-orange-800/40 rounded-full px-2.5 py-1 backdrop-blur-sm">
-          <ShieldCheck className="w-3 h-3 text-orange-400" />
-          <span className="text-orange-300 text-[10px] font-bold">Members Only</span>
-        </div>
-      </div>
-
-      <div className="p-4 flex flex-col flex-1">
-        <span className="self-start text-[10px] font-bold border rounded-full px-2 py-0.5 mb-2.5 text-orange-400 bg-orange-950/40 border-orange-800/40">
-          Accessories
-        </span>
-        <h3 className="text-white font-bold text-sm leading-tight mb-1 group-hover:text-orange-300 transition-colors duration-200">
-          {product.name}
-        </h3>
-        <p className="text-gray-500 text-xs leading-relaxed mb-3 flex-1 line-clamp-2">{product.description}</p>
-        <div className="flex items-center gap-1.5 mb-4">
-          <span className="text-[10px] text-gray-600 font-medium uppercase tracking-wider">{product.quantityLabel}</span>
-          <span className="w-1 h-1 rounded-full bg-gray-700" />
-          <span className="text-[10px] text-gray-600 font-medium">{product.purity}</span>
-        </div>
-
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-orange-300 font-black text-xl tracking-tight">
-            ${product.price.toFixed(2)}
-          </span>
-          <div className="flex items-center gap-2 bg-[#040b11] border border-orange-900/30 rounded-xl px-2 py-1">
-            <button
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-orange-950/60"
-            >
-              <Minus className="w-3 h-3" />
-            </button>
-            <span className="text-white text-sm font-bold w-5 text-center">{qty}</span>
-            <button
-              onClick={() => setQty((q) => Math.min(50, q + 1))}
-              className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-orange-950/60"
-            >
-              <Plus className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
-
-        <button
-          onClick={handleAdd}
-          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-            added
-              ? 'bg-orange-600/20 border border-orange-500/40 text-orange-300'
-              : 'bg-orange-500 hover:bg-orange-400 text-white shadow-[0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_0_28px_rgba(249,115,22,0.35)]'
-          }`}
-        >
-          {added ? (
-            <>
-              <CheckCircle className="w-4 h-4" />
-              Added to Cart
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="w-4 h-4" />
-              Add to Cart
-            </>
-          )}
-        </button>
-      </div>
-    </div>
-  );
-}
