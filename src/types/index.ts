@@ -6,8 +6,7 @@ export type Category =
   | 'Longevity and Mitochondrial'
   | 'Hormones & Reproductive'
   | 'Blends & Specialty'
-  | 'Misc / Rare'
-  | 'Accessories';
+  | 'Misc / Rare';
 
 export interface BlendComponent {
   name: string;

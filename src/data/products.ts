@@ -1008,7 +1008,6 @@ export const CATEGORIES: string[] = [
   'Hormones & Reproductive',
   'Blends & Specialty',
   'Misc / Rare',
-  'Accessories',
 ];
 
 export function getDiscountedPrice(basePrice: number, qty: number): number {
