@@ -83,5 +83,6 @@ export default {
       },
     },
   },
+  safelist: ['h-[480px]'],
   plugins: [require('tailwindcss-animate')],
 };
