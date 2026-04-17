@@ -28,9 +28,17 @@ function SdsRow({ group }: { group: ProductGroup }) {
       <div className="shrink-0">
         {sdsUrl ? (
           <a
-            href={sdsUrl}
+            href={`https://docs.google.com/viewer?url=${encodeURIComponent(sdsUrl)}&embedded=false`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              window.open(
+                `https://docs.google.com/viewer?url=${encodeURIComponent(sdsUrl)}&embedded=false`,
+                '_blank',
+                'noopener,noreferrer'
+              );
+            }}
             className="flex items-center gap-2 px-3.5 py-2 bg-amber-600/15 border border-amber-700/40 text-amber-400 rounded-xl hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200 active:scale-95 text-xs font-bold whitespace-nowrap"
             aria-label={`View Safety Data Sheet for ${group.baseName}`}
           >
