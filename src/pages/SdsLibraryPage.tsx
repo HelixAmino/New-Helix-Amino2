@@ -46,8 +46,18 @@ function SdsRow({ group, onView }: { group: ProductGroup; onView: (url: string, 
   );
 }
 
+function toInlinePdfUrl(url: string): string {
+  const match = url.match(/^https?:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/);
+  if (match) {
+    const [, owner, repo, branch, path] = match;
+    return `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/${path}`;
+  }
+  return url;
+}
+
 function SdsViewer({ url, name, onClose }: { url: string; name: string; onClose: () => void }) {
-  const viewerSrc = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+  const inlineUrl = toInlinePdfUrl(url);
+  const viewerSrc = `${inlineUrl}#toolbar=1&navpanes=0&view=FitH`;
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6" onClick={onClose}>
       <div className="bg-[#07111d] border border-amber-900/30 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
