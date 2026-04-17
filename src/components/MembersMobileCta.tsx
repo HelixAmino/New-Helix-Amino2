@@ -47,7 +47,7 @@ export function MembersMobileCta() {
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm rounded-xl transition-all duration-200 shadow-[0_0_24px_rgba(249,115,22,0.35)] active:scale-[0.98]"
               >
                 <ShieldCheck className="w-4 h-4 shrink-0" />
-                Create Free Membership
+                Activate Membership
                 <ChevronRight className="w-4 h-4 shrink-0" />
               </button>
               <div className="flex items-center gap-2">
