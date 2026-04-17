@@ -987,7 +987,7 @@ export const PRODUCTS: Product[] = [
 
 ];
 
-const SDS_BASE = 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/';
+const SDS_BASE = 'https://szjlwtduovilkflbbdhz.supabase.co/storage/v1/object/public/HA%20SDS%20Files/';
 
 const SDS_FILENAME_BY_PRODUCT_ID: Record<string, string> = {
   'bpc-157-5mg': 'bpc-157-pentadecapeptide-SDS.pdf',
