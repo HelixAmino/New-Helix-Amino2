@@ -37,8 +37,8 @@ export function MembersMobileCta() {
               Unlock Access to the Full Catalog
             </h3>
             <p className="text-gray-400 text-xs leading-relaxed mb-4">
-              Sign in or create a free membership account to unlock the complete
-              research catalog reserved for verified members.
+              Become a vetted research partner and gain exclusive access to the
+              complete research catalog reserved for membership.
             </p>
 
             <div className="flex flex-col gap-2">
