@@ -79,7 +79,7 @@ export function ProductCard({ product }: Props) {
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-contain scale-[2.5] group-hover:scale-[2.7] transition-transform duration-500"
+          className="w-full h-full object-contain scale-[3.5] md:scale-[2.5] group-hover:scale-[3.7] md:group-hover:scale-[2.7] transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/60 via-transparent to-transparent" />
 
