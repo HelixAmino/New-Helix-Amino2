@@ -183,7 +183,7 @@ function MembersProductCard({ group, onSelect }: { group: ProductGroup; onSelect
         <img
           src={group.image}
           alt={group.baseName}
-          className="w-full h-full object-contain scale-[3] md:scale-[2.5] group-hover:scale-[3.2] md:group-hover:scale-[2.7] transition-transform duration-500"
+          className="w-full h-full object-contain scale-[3.5] md:scale-[3] group-hover:scale-[3.7] md:group-hover:scale-[3.2] transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/60 via-transparent to-transparent" />
 
