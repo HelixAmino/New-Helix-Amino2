@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { ShieldAlert, Search, ExternalLink, FileX, ChevronDown } from 'lucide-react';
+import { ShieldAlert, Search, FileX, ChevronDown, X } from 'lucide-react';
 import { getProductGroups, CATEGORIES } from '../data/products';
 import { ProductGroup } from '../types';
 
 const ALL_CATEGORIES = 'All Categories';
 
-function SdsRow({ group }: { group: ProductGroup }) {
+function SdsRow({ group, onView }: { group: ProductGroup; onView: (url: string, name: string) => void }) {
   const sdsUrl = group.sdsUrl ?? group.variants.find((v) => v.sdsUrl)?.sdsUrl;
   const hasMultiVariants = group.variants.length > 1;
 
@@ -27,25 +27,14 @@ function SdsRow({ group }: { group: ProductGroup }) {
       </div>
       <div className="shrink-0">
         {sdsUrl ? (
-          <a
-            href={`https://docs.google.com/viewer?url=${encodeURIComponent(sdsUrl)}&embedded=false`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              window.open(
-                `https://docs.google.com/viewer?url=${encodeURIComponent(sdsUrl)}&embedded=false`,
-                '_blank',
-                'noopener,noreferrer'
-              );
-            }}
+          <button
+            onClick={() => onView(sdsUrl, group.baseName)}
             className="flex items-center gap-2 px-3.5 py-2 bg-amber-600/15 border border-amber-700/40 text-amber-400 rounded-xl hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200 active:scale-95 text-xs font-bold whitespace-nowrap"
             aria-label={`View Safety Data Sheet for ${group.baseName}`}
           >
             <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
             <span>View SDS</span>
-            <ExternalLink className="w-3 h-3 shrink-0 opacity-60" />
-          </a>
+          </button>
         ) : (
           <span className="flex items-center gap-2 px-3.5 py-2 bg-gray-800/30 border border-gray-700/20 text-gray-600 rounded-xl text-xs font-bold whitespace-nowrap cursor-not-allowed">
             <FileX className="w-3.5 h-3.5 shrink-0" />
@@ -57,10 +46,39 @@ function SdsRow({ group }: { group: ProductGroup }) {
   );
 }
 
+function SdsViewer({ url, name, onClose }: { url: string; name: string; onClose: () => void }) {
+  const viewerSrc = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6" onClick={onClose}>
+      <div className="bg-[#07111d] border border-amber-900/30 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-amber-900/20 bg-amber-950/20">
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+            <span className="text-white text-sm font-bold truncate">{name} — Safety Data Sheet</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="shrink-0 w-8 h-8 rounded-lg bg-amber-600/15 border border-amber-700/40 text-amber-400 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors"
+            aria-label="Close SDS viewer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <iframe
+          src={viewerSrc}
+          title={`${name} SDS`}
+          className="flex-1 w-full bg-white"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function SdsLibraryPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
   const [showCategoryDrop, setShowCategoryDrop] = useState(false);
+  const [viewer, setViewer] = useState<{ url: string; name: string } | null>(null);
 
   const allGroups = getProductGroups();
 
@@ -174,7 +192,7 @@ export function SdsLibraryPage() {
                 <span className="text-amber-500/70 text-xs font-mono">{withSds.length} documents</span>
               </div>
               {withSds.map((g) => (
-                <SdsRow key={g.groupId} group={g} />
+                <SdsRow key={g.groupId} group={g} onView={(url, name) => setViewer({ url, name })} />
               ))}
             </div>
           )}
@@ -189,12 +207,14 @@ export function SdsLibraryPage() {
                 <span className="text-gray-600 text-xs font-mono">{withoutSds.length} compounds</span>
               </div>
               {withoutSds.map((g) => (
-                <SdsRow key={g.groupId} group={g} />
+                <SdsRow key={g.groupId} group={g} onView={(url, name) => setViewer({ url, name })} />
               ))}
             </div>
           )}
         </div>
       )}
+
+      {viewer && <SdsViewer url={viewer.url} name={viewer.name} onClose={() => setViewer(null)} />}
 
       {/* OSHA note */}
       <div className="mt-10 bg-[#07111d] border border-cyan-900/20 rounded-2xl p-5">
