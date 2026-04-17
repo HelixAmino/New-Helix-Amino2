@@ -4,6 +4,7 @@ import { CATEGORIES, getProductGroups } from '../data/products';
 import { CategoryTabs } from '../components/CategoryTabs';
 import { GroupedProductCard } from '../components/GroupedProductCard';
 import { Glp1Banner } from '../components/Glp1Banner';
+import { MembersMobileCta } from '../components/MembersMobileCta';
 import { useNavigation } from '../context/NavigationContext';
 
 const GLP1_CATEGORY = 'Metabolic & GLP-1 Related';
@@ -76,6 +77,8 @@ export function HomePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <MembersMobileCta />
+
       {/* Search bar */}
       <div className="relative mb-8 max-w-xl">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
