@@ -182,11 +182,11 @@ export function ChatBubble() {
   const visitorId = getOrCreateVisitorId();
 
   return (
-    <div className="fixed bottom-24 right-5 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-20 right-3 sm:bottom-24 sm:right-5 z-50 flex flex-col items-end gap-3 max-w-[100vw]">
       {open && (
         <div
-          className="bg-[#07111d] border border-cyan-800/40 rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.7)] w-[340px] sm:w-[360px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200"
-          style={{ maxHeight: 'calc(100dvh - 160px - env(safe-area-inset-bottom, 0px))', minHeight: '460px' }}
+          className="bg-[#07111d] border border-cyan-800/40 shadow-[0_24px_80px_rgba(0,0,0,0.7)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200 fixed inset-x-2 bottom-2 rounded-2xl min-h-[70dvh] sm:static sm:inset-auto sm:w-[360px] sm:rounded-2xl sm:min-h-[460px]"
+          style={{ maxHeight: 'calc(100dvh - 1rem - env(safe-area-inset-bottom, 0px))' }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-900/30 bg-[#060f1a] flex-shrink-0">
@@ -229,7 +229,7 @@ export function ChatBubble() {
 
           {/* Bot messages */}
           {mode === 'bot' && (
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-3">
               {botMessages.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} gap-2`}>
                   {msg.role === 'assistant' && (
@@ -281,7 +281,7 @@ export function ChatBubble() {
 
           {/* Live messages */}
           {mode === 'live' && (
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-3">
               {liveMessages.length === 0 && (
                 <div className="text-center text-gray-500 text-sm py-4">Agent has joined. Say hello!</div>
               )}
@@ -384,7 +384,7 @@ export function ChatBubble() {
       )}
 
       {!dismissed && !open && (
-        <div className="flex items-center gap-2 bg-[#07111d] border border-cyan-800/40 rounded-full pl-3 pr-2 py-2 shadow-lg">
+        <div className="hidden sm:flex items-center gap-2 bg-[#07111d] border border-cyan-800/40 rounded-full pl-3 pr-2 py-2 shadow-lg">
           <span className="text-gray-300 text-xs whitespace-nowrap">Need help? Chat with us</span>
           <button onClick={() => setDismissed(true)} className="text-gray-600 hover:text-gray-400 transition-colors">
             <X className="w-3.5 h-3.5" />
@@ -394,11 +394,11 @@ export function ChatBubble() {
 
       <button
         onClick={() => { setOpen(!open); setDismissed(true); }}
-        className="relative w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white shadow-[0_8px_30px_rgba(0,212,255,0.35)] hover:shadow-[0_8px_40px_rgba(0,212,255,0.5)] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center"
+        className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white shadow-[0_8px_30px_rgba(0,212,255,0.35)] hover:shadow-[0_8px_40px_rgba(0,212,255,0.5)] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center"
       >
-        <MessageCircle className={`w-6 h-6 transition-all duration-200 ${open ? 'opacity-0 scale-75' : 'opacity-100 scale-100'} absolute`} />
-        <X className={`w-6 h-6 transition-all duration-200 ${open ? 'opacity-100 scale-100' : 'opacity-0 scale-75'} absolute`} />
-        {!open && <span className="absolute inset-0 rounded-full bg-cyan-400/30 animate-ping" />}
+        <MessageCircle className={`w-5 h-5 sm:w-6 sm:h-6 transition-all duration-200 ${open ? 'opacity-0 scale-75' : 'opacity-100 scale-100'} absolute`} />
+        <X className={`w-5 h-5 sm:w-6 sm:h-6 transition-all duration-200 ${open ? 'opacity-100 scale-100' : 'opacity-0 scale-75'} absolute`} />
+        {!open && <span className="hidden sm:block absolute inset-0 rounded-full bg-cyan-400/30 animate-ping" />}
         {!open && mode === 'waiting' && (
           <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-400 border-2 border-[#050d14] animate-pulse" />
         )}
