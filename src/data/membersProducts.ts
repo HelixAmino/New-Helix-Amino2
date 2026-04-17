@@ -26,6 +26,8 @@ import imgTirz60 from '../assets/HATriz60.png';
 import imgCag25 from '../assets/HACag2.5.png';
 import imgCag5 from '../assets/HACag5.png';
 import imgCag10 from '../assets/HACAG.png';
+import imgCagSema5 from '../assets/HACag5.png';
+import imgCagSema25 from '../assets/HACag2.5.png';
 
 export const MEMBERS_PRODUCTS: Product[] = [
   // ── Retatrutide ──────────────────────────────────────────────────────────────
@@ -288,6 +290,40 @@ export const MEMBERS_PRODUCTS: Product[] = [
     storage: 'Refrigerate at 2–8°C after reconstitution',
   },
 
+  // ── Cagrilintide + Semaglutide Blend (Members Only) ─────────────────────────
+  {
+    id: 'members-cagsema-5-5mg',
+    name: 'Cagrilintide 5mg + Semaglutide 5mg',
+    price: 149,
+    category: 'Metabolic & GLP-1 Related',
+    quantityLabel: '5mg Cagrilintide + 5mg Semaglutide',
+    image: imgCagSema5,
+    blendComponents: [
+      { name: 'Cagrilintide', cas: '2054934-60-8', mw: '3918.5 g/mol' },
+      { name: 'Semaglutide', cas: '910463-68-2', mw: '4113.58 g/mol' },
+    ],
+    description: 'Dual-peptide research blend combining an amylin analogue with a GLP-1 receptor agonist for advanced metabolic and appetite regulation studies.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+  {
+    id: 'members-cagsema-25-25mg',
+    name: 'Cagrilintide 2.5mg + Semaglutide 2.5mg',
+    price: 99,
+    category: 'Metabolic & GLP-1 Related',
+    quantityLabel: '2.5mg Cagrilintide + 2.5mg Semaglutide',
+    image: imgCagSema25,
+    blendComponents: [
+      { name: 'Cagrilintide', cas: '2054934-60-8', mw: '3918.5 g/mol' },
+      { name: 'Semaglutide', cas: '910463-68-2', mw: '4113.58 g/mol' },
+    ],
+    description: 'Lower-dose Cagrilintide + Semaglutide research blend for metabolic and appetite regulation studies.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+
   // ── Mazdutide ─────────────────────────────────────────────────────────────────
   {
     id: 'members-maz-100mg',
@@ -391,6 +427,10 @@ export const MEMBERS_GROUPS: ProductGroup[] = [
     'members-cag-2.5mg',
     'members-cag-5mg',
     'members-cag-10mg',
+  ]),
+  buildGroup('Cagrilintide + Semaglutide Blend', [
+    'members-cagsema-25-25mg',
+    'members-cagsema-5-5mg',
   ]),
   buildGroup('Mazdutide', ['members-maz-100mg']),
   buildGroup('Survodutide', ['members-surv-10mg']),
