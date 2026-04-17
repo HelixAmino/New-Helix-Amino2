@@ -57,7 +57,7 @@ function toInlinePdfUrl(url: string): string {
 
 function SdsViewer({ url, name, onClose }: { url: string; name: string; onClose: () => void }) {
   const inlineUrl = toInlinePdfUrl(url);
-  const viewerSrc = `${inlineUrl}#toolbar=1&navpanes=0&view=FitH`;
+  const viewerSrc = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(inlineUrl)}`;
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6" onClick={onClose}>
       <div className="bg-[#07111d] border border-amber-900/30 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
