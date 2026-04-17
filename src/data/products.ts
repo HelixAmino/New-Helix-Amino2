@@ -987,6 +987,78 @@ export const PRODUCTS: Product[] = [
 
 ];
 
+const SDS_BASE = 'https://raw.githubusercontent.com/HelixAmino/Amino-SDS/main/';
+
+const SDS_FILENAME_BY_PRODUCT_ID: Record<string, string> = {
+  'bpc-157-5mg': 'BPC-157-SDS.pdf',
+  'bpc-157-10mg': 'BPC-157-SDS.pdf',
+  'bpc-157-20mg': 'BPC-157-SDS.pdf',
+  'tb500-5mg': 'TB500-SDS.pdf',
+  'tb500-10mg': 'TB500-SDS.pdf',
+  'wolverine-blend-5mg': 'Wolverine-Blend-SDS.pdf',
+  'wolverine-blend-10mg': 'Wolverine-Blend-SDS.pdf',
+  'glow-blend': 'GLOW-Blend-SDS.pdf',
+  'klow-blend': 'KLOW-Blend-SDS.pdf',
+  'll37-5mg': 'LL37-SDS.pdf',
+  'ghkcu-50mg': 'GHK-Cu-SDS.pdf',
+  'ghkcu-100mg': 'GHK-Cu-SDS.pdf',
+  'sermorelin-10mg': 'Sermorelin-SDS.pdf',
+  'cjc1295-no-dac-10mg': 'CJC-1295-No-DAC-SDS.pdf',
+  'cjc1295-dac-5mg': 'CJC-1295-DAC-SDS.pdf',
+  '2x-blend-cjc-ipamorelin': '2X-Blend-SDS.pdf',
+  'ipamorelin-10mg': 'Ipamorelin-SDS.pdf',
+  'ghrp6-10mg': 'GHRP-6-SDS.pdf',
+  'ghrp6-5mg': 'GHRP-6-SDS.pdf',
+  'hexarelin-5mg': 'Hexarelin-SDS.pdf',
+  'tesamorelin-10mg': 'Tesamorelin-SDS.pdf',
+  'tesamorelin-20mg': 'Tesamorelin-SDS.pdf',
+  'cagrilintide-10mg': 'Cagrilintide-SDS.pdf',
+  'mazdutide-100mg': 'Mazdutide-SDS.pdf',
+  'survodutide-10mg': 'Survodutide-SDS.pdf',
+  '5amino1mq-5mg': '5-Amino-1MQ-SDS.pdf',
+  '5amino1mq-50mg': '5-Amino-1MQ-SDS.pdf',
+  'slu-pp-332-5mg': 'SLU-PP-332-SDS.pdf',
+  'aod9604-5mg': 'AOD9604-SDS.pdf',
+  'selank-10mg': 'Selank-SDS.pdf',
+  'semax-10mg': 'Semax-SDS.pdf',
+  'dsip-15mg': 'DSIP-SDS.pdf',
+  'dsip-5mg': 'DSIP-SDS.pdf',
+  'n-acetyl-epitalon-5mg': 'N-Acetyl-Epitalon-SDS.pdf',
+  'epitalon-10mg': 'Epitalon-SDS.pdf',
+  'epitalon-50mg': 'Epitalon-SDS.pdf',
+  'pinealon-20mg': 'Pinealon-SDS.pdf',
+  'snap8-10mg': 'Snap-8-SDS.pdf',
+  'vip10-10mg': 'VIP10-SDS.pdf',
+  'motsc-10mg': 'MOTS-c-SDS.pdf',
+  'motsc-40mg': 'MOTS-c-SDS.pdf',
+  'ss31-10mg': 'SS-31-SDS.pdf',
+  'ss31-50mg': 'SS-31-SDS.pdf',
+  'nad-500mg': 'NAD-SDS.pdf',
+  'nad-1000mg': 'NAD-SDS.pdf',
+  'glutathione-600mg': 'Glutathione-SDS.pdf',
+  'glutathione-1500mg': 'Glutathione-SDS.pdf',
+  'hcg-10000iu': 'HCG-SDS.pdf',
+  'hmg-75iu': 'HMG-SDS.pdf',
+  'kisspeptin-10mg': 'KissPeptin-SDS.pdf',
+  'igf1lr3-1mg': 'IGF-1LR3-SDS.pdf',
+  'igf1lr3-01mg': 'IGF-1LR3-SDS.pdf',
+  'igfdes-01mg': 'IGF-DES-SDS.pdf',
+  '8x-blend': '8X-Blend-SDS.pdf',
+  '4x-blend': '4X-Blend-SDS.pdf',
+  'gdf8-1mg': 'GDF-8-SDS.pdf',
+  'ace031-1mg': 'ACE-031-SDS.pdf',
+  'aicar-50mg': 'AICAR-SDS.pdf',
+  'ara290-10mg': 'ARA-290-SDS.pdf',
+  'pnc27-10mg': 'PNC-27-SDS.pdf',
+  'b12-10ml': 'B12-SDS.pdf',
+};
+
+for (const product of PRODUCTS) {
+  if (!product.sdsUrl && SDS_FILENAME_BY_PRODUCT_ID[product.id]) {
+    product.sdsUrl = SDS_BASE + SDS_FILENAME_BY_PRODUCT_ID[product.id];
+  }
+}
+
 export const FEATURED_IDS = [
   'cagrilintide-10mg',
   'survodutide-10mg',
