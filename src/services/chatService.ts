@@ -5,6 +5,53 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
+const RESEARCH_ONLY_REFUSAL =
+  'Our products are sold strictly for in-vitro laboratory research use only. I am not able to answer questions about dosage, injections, administration, cycles, stacking, or human/animal use. For research context, please consult peer-reviewed literature or your institution. For product, shipping, or COA questions, I am happy to help.';
+
+const RESEARCH_ONLY_PATTERNS: RegExp[] = [
+  /dosage/i,
+  /\bdose\b/i,
+  /\bdosing\b/i,
+  /how (much|many|to (use|take|inject|administer|dose|run|cycle|mix|reconstitute))/i,
+  /how do i (use|take|inject|administer|dose|run|cycle|mix|reconstitute)/i,
+  /\binject/i,
+  /injection/i,
+  /\bim\b/i,
+  /\bsubq\b/i,
+  /\bsub-?cutaneous/i,
+  /intramuscular/i,
+  /\bsyringe/i,
+  /\bneedle/i,
+  /reconstitut/i,
+  /\bmix(ing)?\b/i,
+  /bacteriostatic/i,
+  /\bbac\s?water/i,
+  /\bml\b.*(dose|inject|take)/i,
+  /\biu\b/i,
+  /\bmcg\b/i,
+  /micrograms?/i,
+  /milligrams?.*(dose|take|inject)/i,
+  /\bcycle\b/i,
+  /\bstack(ing)?\b/i,
+  /protocol/i,
+  /regimen/i,
+  /\btaper/i,
+  /pct\b/i,
+  /post cycle/i,
+  /side effect/i,
+  /\bsides\b/i,
+  /recommend.*(dose|dosage|protocol|cycle|amount|stack)/i,
+  /what.*(dose|dosage|protocol|cycle|amount).*(should|do|can) i/i,
+  /safe.*(dose|dosage|amount|to take|to use|to inject)/i,
+  /how (often|frequently).*(take|inject|use|dose|administer)/i,
+  /best.*(dose|dosage|protocol|cycle|stack|way to take|way to use)/i,
+  /for (weight loss|muscle|bulking|cutting|fat loss|healing|recovery|sleep|libido|ed|erectile|tanning|hair)/i,
+  /human use/i,
+  /on (myself|me|my body)/i,
+  /take it/i,
+  /administer/i,
+];
+
 const FAQ: { patterns: RegExp[]; answer: string }[] = [
   {
     patterns: [/bpc.?157/i, /bpc/i],
@@ -40,11 +87,6 @@ const FAQ: { patterns: RegExp[]; answer: string }[] = [
     patterns: [/stock/i, /available/i, /back in stock/i, /out of stock/i],
     answer:
       'All products shown on the site are in stock and ready to ship. If a product is out of stock it will be marked accordingly.',
-  },
-  {
-    patterns: [/dosage/i, /dose/i, /how to use/i, /reconstitute/i, /mixing/i],
-    answer:
-      'Our compounds are sold strictly for research purposes. We are not able to provide dosage or administration guidance.',
   },
   {
     patterns: [/contact/i, /email/i, /phone/i, /reach/i, /support/i],
@@ -93,6 +135,10 @@ let fallbackIndex = 0;
 
 export function getBotResponse(userText: string): string {
   const normalised = userText.trim().toLowerCase();
+
+  if (RESEARCH_ONLY_PATTERNS.some((p) => p.test(normalised))) {
+    return RESEARCH_ONLY_REFUSAL;
+  }
 
   for (const entry of FAQ) {
     if (entry.patterns.some((p) => p.test(normalised))) {
