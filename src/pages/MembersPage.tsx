@@ -173,6 +173,11 @@ function MembersProductCard({ group, onSelect }: { group: ProductGroup; onSelect
   const isMulti = group.variants.length > 1;
   const lowestPrice = Math.min(...group.variants.map((v) => v.price));
   const coaUrl = group.variants.find((v) => v.coaUrl)?.coaUrl;
+  const isLargeSourceImage =
+    group.groupId.startsWith('members-maz') || group.groupId.startsWith('members-surv');
+  const imageScaleClasses = isLargeSourceImage
+    ? 'scale-[1.3] md:scale-[1.1] group-hover:scale-[1.4] md:group-hover:scale-[1.2]'
+    : 'scale-[3] md:scale-[2.5] group-hover:scale-[3.2] md:group-hover:scale-[2.7]';
 
   return (
     <div
@@ -183,7 +188,7 @@ function MembersProductCard({ group, onSelect }: { group: ProductGroup; onSelect
         <img
           src={group.image}
           alt={group.baseName}
-          className="w-full h-full object-contain scale-[3] md:scale-[2.5] group-hover:scale-[3.2] md:group-hover:scale-[2.7] transition-transform duration-500"
+          className={`w-full h-full object-contain ${imageScaleClasses} transition-transform duration-500`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/60 via-transparent to-transparent" />
 
