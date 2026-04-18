@@ -176,7 +176,7 @@ function MembersProductCard({ group, onSelect }: { group: ProductGroup; onSelect
   const isLargeSourceImage =
     group.groupId.startsWith('members-maz') || group.groupId.startsWith('members-surv');
   const imageScaleClasses = isLargeSourceImage
-    ? 'scale-[1.9] md:scale-[1.7] group-hover:scale-[2.05] md:group-hover:scale-[1.85]'
+    ? 'scale-[2.19] md:scale-[1.96] group-hover:scale-[2.36] md:group-hover:scale-[2.13]'
     : 'scale-[4.5] md:scale-[3.8] group-hover:scale-[4.8] md:group-hover:scale-[4.1]';
 
   return (
