@@ -183,7 +183,7 @@ export function CheckoutPage() {
                     url={method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF}
                     size={280}
                     zoom={method === 'zelle' ? 3.5 : 1}
-                    offsetY={method === 'zelle' ? 60 : 0}
+                    offsetY={method === 'zelle' ? 140 : 0}
                     alt={`${method} QR code`}
                     className="rounded-lg"
                   />
