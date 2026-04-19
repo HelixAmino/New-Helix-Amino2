@@ -220,6 +220,30 @@ export function CheckoutPage() {
                     )}
                   </button>
                 )}
+                {method === 'venmo' && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleCopy(
+                        `Venmo Username: ${VENMO_HANDLE}\nAmount: $${activeOrder.total.toFixed(2)}\nMemo: Order #${activeOrder.order_number}`,
+                        'venmo-details'
+                      )
+                    }
+                    className="mt-4 w-full min-h-[56px] inline-flex items-center justify-center gap-2 px-6 py-4 bg-cyan-500 hover:bg-cyan-400 active:bg-cyan-600 text-[#041018] font-black text-base rounded-xl shadow-[0_0_24px_rgba(0,212,255,0.35)] transition-all"
+                  >
+                    {copied === 'venmo-details' ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-5 h-5" />
+                        Copy Venmo Details
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
               {/* Instructions */}
