@@ -196,6 +196,30 @@ export function CheckoutPage() {
                 >
                   Scan with your phone camera · Tap to enlarge
                 </a>
+                {method === 'zelle' && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleCopy(
+                        `Zelle: ${ZELLE_EMAIL}\nAmount: $${activeOrder.total.toFixed(2)}\nMemo: Order #${activeOrder.order_number}`,
+                        'zelle-details'
+                      )
+                    }
+                    className="mt-4 w-full min-h-[56px] inline-flex items-center justify-center gap-2 px-6 py-4 bg-cyan-500 hover:bg-cyan-400 active:bg-cyan-600 text-[#041018] font-black text-base rounded-xl shadow-[0_0_24px_rgba(0,212,255,0.35)] transition-all"
+                  >
+                    {copied === 'zelle-details' ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-5 h-5" />
+                        Copy Zelle Details
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
               {/* Instructions */}
