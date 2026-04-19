@@ -1,41 +1,39 @@
 import { supabase } from '../lib/supabase';
 import { Order, OrderLineItem } from '../types';
 
+function generateOrderNumber(): string {
+  const stamp = Date.now().toString(36).toUpperCase().slice(-6);
+  const rand = Math.random().toString(36).toUpperCase().slice(2, 6);
+  return `HA-${stamp}${rand}`;
+}
+
 export interface CreateOrderInput {
   items: OrderLineItem[];
   subtotal: number;
   total: number;
+  cartKey: string;
   userId: string | null;
   customerName?: string;
   customerEmail?: string;
 }
 
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
-  const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-woo-order`;
+  const order_number = generateOrderNumber();
 
-  const res = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-    },
-    body: JSON.stringify(input),
+  const { data, error } = await supabase.rpc('create_order', {
+    p_order_number: order_number,
+    p_user_id: input.userId,
+    p_cart_key: input.cartKey,
+    p_items: input.items,
+    p_subtotal: input.subtotal,
+    p_total: input.total,
+    p_customer_name: input.customerName ?? '',
+    p_customer_email: input.customerEmail ?? '',
   });
 
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    throw new Error(
-      (data && (data.error || data.message)) ||
-        `Checkout failed (${res.status})`
-    );
-  }
-
-  if (!data?.order) {
-    throw new Error('Order creation returned no data');
-  }
-
-  return data.order as Order;
+  if (error) throw error;
+  if (!data) throw new Error('Failed to create order');
+  return data as Order;
 }
 
 export async function markOrderSubmitted(

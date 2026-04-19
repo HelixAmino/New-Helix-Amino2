@@ -1,11 +1,18 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import type { User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import {
+  loginWithPassword,
+  registerUser,
+  validateToken,
+  logout as wooLogout,
+  getCurrentUser,
+  WooUser,
+} from '../services/wooAuth';
 
 export interface AuthUser {
   id: string;
   email: string;
   user_metadata: { full_name?: string };
+  wooId: number;
 }
 
 interface AuthContextValue {
@@ -22,14 +29,12 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function toAuthUser(u: User | null): AuthUser | null {
-  if (!u) return null;
+function toAuthUser(u: WooUser): AuthUser {
   return {
-    id: u.id,
-    email: u.email ?? '',
-    user_metadata: {
-      full_name: (u.user_metadata?.full_name as string | undefined) ?? '',
-    },
+    id: String(u.id),
+    email: u.email,
+    user_metadata: { full_name: u.displayName },
+    wooId: u.id,
   };
 }
 
@@ -40,38 +45,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (cancelled) return;
-      setUser(toAuthUser(data.session?.user ?? null));
-      setLoading(false);
-    });
-
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(toAuthUser(session?.user ?? null));
-    });
+    (async () => {
+      const stored = getCurrentUser();
+      if (stored) {
+        const valid = await validateToken();
+        if (!cancelled) {
+          if (valid) setUser(toAuthUser(stored));
+          else {
+            wooLogout();
+            setUser(null);
+          }
+        }
+      }
+      if (!cancelled) setLoading(false);
+    })();
 
     return () => {
       cancelled = true;
-      sub.subscription.unsubscribe();
     };
   }, []);
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
+    try {
+      const u = await loginWithPassword(email, password);
+      setUser(toAuthUser(u));
+      return { error: null };
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : 'Login failed' };
+    }
   }
 
   async function signUp(email: string, password: string, fullName: string) {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    });
-    return { error: error?.message ?? null };
+    try {
+      const u = await registerUser(email, password, fullName);
+      setUser(toAuthUser(u));
+      return { error: null };
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : 'Sign up failed' };
+    }
   }
 
   async function signOut() {
-    await supabase.auth.signOut();
+    wooLogout();
+    setUser(null);
   }
 
   return (
