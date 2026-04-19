@@ -85,7 +85,11 @@ export function PdfQrImage({ url, size = 320, alt = 'QR code', className = '' }:
     (async () => {
       try {
         const pdfjsLib = await loadPdfJs();
-        const doc = await pdfjsLib.getDocument({ url }).promise;
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+        const proxied = supabaseUrl
+          ? `${supabaseUrl}/functions/v1/pdf-proxy?url=${encodeURIComponent(url)}`
+          : url;
+        const doc = await pdfjsLib.getDocument({ url: proxied }).promise;
         const page = await doc.getPage(1);
 
         const baseViewport = page.getViewport({ scale: 1 });
