@@ -72,15 +72,24 @@ type Props = {
   size?: number;
   alt?: string;
   className?: string;
+  zoom?: number;
 };
 
-export function PdfQrImage({ url, size = 320, alt = 'QR code', className = '' }: Props) {
+export function PdfQrImage({
+  url,
+  size = 320,
+  alt = 'QR code',
+  className = '',
+  zoom = 1,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => {
     let cancelled = false;
     setStatus('loading');
+    setDims(null);
 
     (async () => {
       try {
@@ -94,9 +103,23 @@ export function PdfQrImage({ url, size = 320, alt = 'QR code', className = '' }:
 
         const baseViewport = page.getViewport({ scale: 1 });
         const dpr = Math.min(window.devicePixelRatio || 1, 3);
-        const scale =
-          (size / Math.max(baseViewport.width, baseViewport.height)) * 2;
-        const viewport = page.getViewport({ scale });
+
+        const aspect = baseViewport.width / baseViewport.height;
+        let displayW: number;
+        let displayH: number;
+        if (aspect >= 1) {
+          displayW = size;
+          displayH = size / aspect;
+        } else {
+          displayH = size;
+          displayW = size * aspect;
+        }
+
+        const renderScale =
+          (Math.max(displayW, displayH) / Math.max(baseViewport.width, baseViewport.height)) *
+          2 *
+          Math.max(zoom, 1);
+        const viewport = page.getViewport({ scale: renderScale });
 
         const canvas = canvasRef.current;
         if (!canvas || cancelled) return;
@@ -105,12 +128,13 @@ export function PdfQrImage({ url, size = 320, alt = 'QR code', className = '' }:
 
         canvas.width = Math.floor(viewport.width * dpr);
         canvas.height = Math.floor(viewport.height * dpr);
-        canvas.style.width = `${size}px`;
-        canvas.style.height = `${size}px`;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
         await page.render({ canvasContext: ctx, viewport }).promise;
-        if (!cancelled) setStatus('ready');
+        if (!cancelled) {
+          setDims({ w: displayW, h: displayH });
+          setStatus('ready');
+        }
       } catch {
         if (!cancelled) setStatus('error');
       }
@@ -119,19 +143,27 @@ export function PdfQrImage({ url, size = 320, alt = 'QR code', className = '' }:
     return () => {
       cancelled = true;
     };
-  }, [url, size]);
+  }, [url, size, zoom]);
+
+  const canvasW = dims ? dims.w * zoom : size;
+  const canvasH = dims ? dims.h * zoom : size;
 
   return (
     <div
-      className={`relative bg-white ${className}`}
+      className={`relative bg-white overflow-hidden ${className}`}
       style={{ width: size, height: size }}
       role="img"
       aria-label={alt}
     >
       <canvas
         ref={canvasRef}
-        className="block w-full h-full"
-        style={{ imageRendering: 'crisp-edges' }}
+        className="block absolute top-1/2 left-1/2"
+        style={{
+          width: `${canvasW}px`,
+          height: `${canvasH}px`,
+          transform: 'translate(-50%, -50%)',
+          imageRendering: 'crisp-edges',
+        }}
       />
       {status === 'loading' && (
         <div className="absolute inset-0 flex items-center justify-center bg-white">
