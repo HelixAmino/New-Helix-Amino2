@@ -49,7 +49,7 @@ export function CheckoutPage() {
 
   const zelleLink = useMemo(() => {
     if (!activeOrder) return '';
-    return `zelle:${ZELLE_EMAIL}?amount=${activeOrder.total.toFixed(2)}&message=${encodeURIComponent(`Order ${activeOrder.order_number}`)}`;
+    return ZELLE_QR_PDF;
   }, [activeOrder]);
 
   if (!activeOrder) {
@@ -254,8 +254,7 @@ export function CheckoutPage() {
                   rel="noreferrer"
                   className="mt-5 inline-flex items-center justify-center w-full sm:w-auto px-5 py-3 bg-[#050d14] border border-cyan-900/40 hover:border-cyan-600/60 text-cyan-300 font-bold rounded-xl text-sm transition-all"
                 >
-                  Open{' '}
-                  {method === 'venmo' ? 'Venmo app' : 'Zelle'}
+                  {method === 'venmo' ? 'Open Venmo app' : 'Open Zelle QR code'}
                 </a>
               </div>
             </div>
