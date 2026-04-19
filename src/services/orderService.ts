@@ -20,23 +20,16 @@ export interface CreateOrderInput {
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
   const order_number = generateOrderNumber();
 
-  const { data, error } = await supabase
-    .from('orders')
-    .insert({
-      order_number,
-      user_id: input.userId,
-      cart_key: input.cartKey,
-      items: input.items,
-      subtotal: input.subtotal,
-      total: input.total,
-      currency: 'USD',
-      payment_method: 'unpaid',
-      payment_status: 'pending',
-      customer_name: input.customerName ?? '',
-      customer_email: input.customerEmail ?? '',
-    })
-    .select()
-    .maybeSingle();
+  const { data, error } = await supabase.rpc('create_order', {
+    p_order_number: order_number,
+    p_user_id: input.userId,
+    p_cart_key: input.cartKey,
+    p_items: input.items,
+    p_subtotal: input.subtotal,
+    p_total: input.total,
+    p_customer_name: input.customerName ?? '',
+    p_customer_email: input.customerEmail ?? '',
+  });
 
   if (error) throw error;
   if (!data) throw new Error('Failed to create order');
