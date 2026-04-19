@@ -17,9 +17,10 @@ import { markOrderSubmitted } from '../services/orderService';
 const VENMO_HANDLE = '@HelixAmino';
 const ZELLE_EMAIL = 'payments@helixamino.com';
 
-function qrUrl(data: string, size = 220): string {
-  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=8&bgcolor=FFFFFF&color=0B1220&data=${encodeURIComponent(data)}`;
-}
+const VENMO_QR_PDF =
+  'https://backend.helixamino.com/wp-content/uploads/2026/04/Venmo.pdf';
+const ZELLE_QR_PDF =
+  'https://backend.helixamino.com/wp-content/uploads/2026/04/My-Zelle-QR-code.pdf';
 
 type PayMethod = 'venmo' | 'zelle';
 
@@ -176,17 +177,33 @@ export function CheckoutPage() {
               {/* QR code */}
               <div className="mx-auto md:mx-0">
                 <div className="p-3 bg-white rounded-2xl shadow-[0_0_30px_rgba(0,212,255,0.15)]">
-                  <img
-                    src={qrUrl(method === 'venmo' ? venmoLink : zelleLink, 220)}
-                    alt={`${method} QR code`}
-                    width={220}
-                    height={220}
-                    className="block rounded-lg"
-                  />
+                  <object
+                    data={`${method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                    type="application/pdf"
+                    width={240}
+                    height={240}
+                    aria-label={`${method} QR code`}
+                    className="block rounded-lg overflow-hidden"
+                  >
+                    <iframe
+                      title={`${method} QR code`}
+                      src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
+                        method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF
+                      )}`}
+                      width={240}
+                      height={240}
+                      className="block rounded-lg border-0"
+                    />
+                  </object>
                 </div>
-                <p className="text-[11px] text-gray-500 text-center mt-2">
-                  Scan with your phone camera
-                </p>
+                <a
+                  href={method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-cyan-400 hover:text-cyan-300 text-center mt-2 block underline-offset-2 hover:underline"
+                >
+                  Scan with your phone camera · Tap to enlarge
+                </a>
               </div>
 
               {/* Instructions */}
