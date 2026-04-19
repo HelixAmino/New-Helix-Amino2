@@ -13,6 +13,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useNavigation } from '../context/NavigationContext';
 import { markOrderSubmitted } from '../services/orderService';
+import { PdfQrImage } from '../components/PdfQrImage';
 
 const VENMO_HANDLE = '@HelixAmino';
 const ZELLE_EMAIL = 'payments@helixamino.com';
@@ -175,32 +176,21 @@ export function CheckoutPage() {
           <div className="bg-[#07111d] border border-cyan-900/20 rounded-2xl p-6 sm:p-8">
             <div className="grid md:grid-cols-[auto_1fr] gap-6 md:gap-8 items-start">
               {/* QR code */}
-              <div className="mx-auto md:mx-0">
-                <div className="p-3 bg-white rounded-2xl shadow-[0_0_30px_rgba(0,212,255,0.15)]">
-                  <object
-                    data={`${method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                    type="application/pdf"
-                    width={240}
-                    height={240}
-                    aria-label={`${method} QR code`}
-                    className="block rounded-lg overflow-hidden"
-                  >
-                    <iframe
-                      title={`${method} QR code`}
-                      src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
-                        method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF
-                      )}`}
-                      width={240}
-                      height={240}
-                      className="block rounded-lg border-0"
-                    />
-                  </object>
+              <div className="mx-auto md:mx-0 flex flex-col items-center">
+                <div className="p-4 bg-white rounded-2xl shadow-[0_0_30px_rgba(0,212,255,0.18)]">
+                  <PdfQrImage
+                    key={method}
+                    url={method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF}
+                    size={280}
+                    alt={`${method} QR code`}
+                    className="rounded-lg overflow-hidden"
+                  />
                 </div>
                 <a
                   href={method === 'venmo' ? VENMO_QR_PDF : ZELLE_QR_PDF}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[11px] text-cyan-400 hover:text-cyan-300 text-center mt-2 block underline-offset-2 hover:underline"
+                  className="text-[11px] text-cyan-400 hover:text-cyan-300 text-center mt-3 block underline-offset-2 hover:underline"
                 >
                   Scan with your phone camera · Tap to enlarge
                 </a>
