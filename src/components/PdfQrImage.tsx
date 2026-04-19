@@ -73,6 +73,7 @@ type Props = {
   alt?: string;
   className?: string;
   zoom?: number;
+  offsetY?: number;
 };
 
 export function PdfQrImage({
@@ -81,6 +82,7 @@ export function PdfQrImage({
   alt = 'QR code',
   className = '',
   zoom = 1,
+  offsetY = 0,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
@@ -161,7 +163,7 @@ export function PdfQrImage({
         style={{
           width: `${canvasW}px`,
           height: `${canvasH}px`,
-          transform: 'translate(-50%, -50%)',
+          transform: `translate(-50%, calc(-50% + ${offsetY}px))`,
           imageRendering: 'crisp-edges',
         }}
       />
