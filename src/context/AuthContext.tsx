@@ -1,60 +1,97 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import {
+  loginWithPassword,
+  registerUser,
+  validateToken,
+  logout as wooLogout,
+  getCurrentUser,
+  WooUser,
+} from '../services/wooAuth';
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  user_metadata: { full_name?: string };
+  wooId: number;
+}
 
 interface AuthContextValue {
-  session: Session | null;
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string
+  ) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function toAuthUser(u: WooUser): AuthUser {
+  return {
+    id: String(u.id),
+    email: u.email,
+    user_metadata: { full_name: u.displayName },
+    wooId: u.id,
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
+    let cancelled = false;
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-    });
+    (async () => {
+      const stored = getCurrentUser();
+      if (stored) {
+        const valid = await validateToken();
+        if (!cancelled) {
+          if (valid) setUser(toAuthUser(stored));
+          else {
+            wooLogout();
+            setUser(null);
+          }
+        }
+      }
+      if (!cancelled) setLoading(false);
+    })();
 
-    return () => listener.subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  async function signUp(email: string, password: string, fullName: string) {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    });
-    if (error) return { error: error.message };
-    return { error: null };
+  async function signIn(email: string, password: string) {
+    try {
+      const u = await loginWithPassword(email, password);
+      setUser(toAuthUser(u));
+      return { error: null };
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : 'Login failed' };
+    }
   }
 
-  async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: error.message };
-    return { error: null };
+  async function signUp(email: string, password: string, fullName: string) {
+    try {
+      const u = await registerUser(email, password, fullName);
+      setUser(toAuthUser(u));
+      return { error: null };
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : 'Sign up failed' };
+    }
   }
 
   async function signOut() {
-    await supabase.auth.signOut();
+    wooLogout();
+    setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

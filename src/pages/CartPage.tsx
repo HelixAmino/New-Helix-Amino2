@@ -1,11 +1,22 @@
-import { Trash2, Plus, Minus, ShoppingCart, ChevronLeft, Tag } from 'lucide-react';
+import { useState } from 'react';
+import { Trash2, Plus, Minus, ShoppingCart, ChevronLeft, Tag, Loader as Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useNavigation } from '../context/NavigationContext';
 import { getDiscountedPrice, getDiscountLabel } from '../data/products';
 
 export function CartPage() {
-  const { items, updateQuantity, removeItem, grandTotal, totalItems } = useCart();
+  const { items, updateQuantity, removeItem, grandTotal, totalItems, checkout, checkoutLoading } = useCart();
   const { navigate } = useNavigation();
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  async function handleCheckout() {
+    setCheckoutError(null);
+    try {
+      await checkout();
+    } catch (e) {
+      setCheckoutError(e instanceof Error ? e.message : 'Unable to start checkout. Please try again.');
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -154,8 +165,18 @@ export function CartPage() {
               <p className="text-gray-600 text-xs mt-1">+ shipping calculated at checkout</p>
             </div>
 
-            <button className="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold rounded-xl text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] active:scale-95 mb-3">
-              Proceed to Checkout
+            {checkoutError && (
+              <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 mb-3">
+                {checkoutError}
+              </p>
+            )}
+            <button
+              onClick={handleCheckout}
+              disabled={checkoutLoading}
+              className="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] active:scale-95 mb-3 flex items-center justify-center gap-2"
+            >
+              {checkoutLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {checkoutLoading ? 'Preparing checkout…' : 'Proceed to Checkout'}
             </button>
             <button
               onClick={() => navigate('home')}

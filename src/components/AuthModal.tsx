@@ -48,7 +48,7 @@ export function AuthModal({ initialTab = 'login', onClose }: Props) {
     if (err) {
       setError(err);
     } else {
-      setSignupSuccess(true);
+      onClose();
     }
   }
 

@@ -16,6 +16,7 @@ export interface BlendComponent {
 
 export interface Product {
   id: string;
+  wooId?: number;
   name: string;
   price: number;
   category: Category;
