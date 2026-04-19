@@ -2,16 +2,20 @@ import {
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
   ReactNode,
 } from 'react';
 import { CartItem, Order, OrderLineItem, Product } from '../types';
-import { getDiscountedPrice } from '../data/products';
-import * as cocart from '../services/cocart';
-import { getCartKey } from '../lib/api';
+import { getDiscountedPrice, PRODUCTS } from '../data/products';
 import { createOrder } from '../services/orderService';
 import { supabase } from '../lib/supabase';
+
+const STORAGE_KEY = 'helix_cart_v1';
+
+interface StoredCartItem {
+  productId: string;
+  quantity: number;
+}
 
 interface CartContextValue {
   items: CartItem[];
@@ -30,37 +34,44 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function wooId(product: Product): string {
-  return String(product.wooId ?? product.id);
+function loadFromStorage(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as StoredCartItem[];
+    const byId = new Map(PRODUCTS.map((p) => [p.id, p]));
+    return parsed
+      .map((s) => {
+        const product = byId.get(s.productId);
+        if (!product) return null;
+        return { product, quantity: Math.max(1, Math.min(50, s.quantity)) };
+      })
+      .filter((x): x is CartItem => x !== null);
+  } catch {
+    return [];
+  }
+}
+
+function saveToStorage(items: CartItem[]) {
+  try {
+    const stored: StoredCartItem[] = items.map((i) => ({
+      productId: i.product.id,
+      quantity: i.quantity,
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+  } catch {
+    /* ignore */
+  }
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [syncing, setSyncing] = useState(false);
+  const [items, setItems] = useState<CartItem[]>(() => loadFromStorage());
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
-  const itemKeyMap = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setSyncing(true);
-        const remote = await cocart.getCart();
-        if (cancelled) return;
-        for (const it of remote.items ?? []) {
-          itemKeyMap.current.set(String(it.id), it.item_key);
-        }
-      } catch {
-        /* silent */
-      } finally {
-        if (!cancelled) setSyncing(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    saveToStorage(items);
+  }, [items]);
 
   const addItem = (product: Product, quantity: number) => {
     setItems((prev) => {
@@ -72,18 +83,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : i
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { product, quantity: Math.min(50, quantity) }];
     });
-
-    void cocart
-      .addItem(wooId(product), quantity)
-      .then((res) => {
-        const match = res.items?.find(
-          (it) => String(it.id) === wooId(product)
-        );
-        if (match) itemKeyMap.current.set(wooId(product), match.item_key);
-      })
-      .catch(() => {});
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -97,51 +98,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         i.product.id === productId ? { ...i, quantity: clamped } : i
       )
     );
-
-    const item = items.find((i) => i.product.id === productId);
-    if (!item) return;
-    const id = wooId(item.product);
-    const key = itemKeyMap.current.get(id);
-    if (key) {
-      void cocart.updateItem(key, clamped).catch(() => {});
-    } else {
-      void cocart
-        .addItem(id, clamped)
-        .then((res) => {
-          const match = res.items?.find((it) => String(it.id) === id);
-          if (match) itemKeyMap.current.set(id, match.item_key);
-        })
-        .catch(() => {});
-    }
   };
 
   const removeItem = (productId: string) => {
-    const item = items.find((i) => i.product.id === productId);
     setItems((prev) => prev.filter((i) => i.product.id !== productId));
-    if (!item) return;
-    const id = wooId(item.product);
-    const key = itemKeyMap.current.get(id);
-    if (key) {
-      void cocart.removeItem(key).catch(() => {});
-      itemKeyMap.current.delete(id);
-    }
   };
 
   const clearCart = () => {
     setItems([]);
-    itemKeyMap.current.clear();
-    void cocart.clearCart().catch(() => {});
-  };
-
-  const syncAllToCocart = async () => {
-    await cocart.clearCart().catch(() => undefined);
-    itemKeyMap.current.clear();
-    for (const item of items) {
-      const id = wooId(item.product);
-      const res = await cocart.addItem(id, item.quantity);
-      const match = res.items?.find((it) => String(it.id) === id);
-      if (match) itemKeyMap.current.set(id, match.item_key);
-    }
   };
 
   const buildLineItems = (): OrderLineItem[] =>
@@ -161,7 +125,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (items.length === 0) throw new Error('Your cart is empty');
     setCheckoutLoading(true);
     try {
-      await syncAllToCocart();
       const lineItems = buildLineItems();
       const subtotal = +lineItems.reduce((s, l) => s + l.lineTotal, 0).toFixed(2);
       const total = subtotal;
@@ -173,7 +136,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         items: lineItems,
         subtotal,
         total,
-        cartKey: getCartKey() ?? '',
         userId: user?.id ?? null,
         customerName:
           (user?.user_metadata?.full_name as string | undefined) ?? '',
@@ -205,7 +167,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         checkout,
         totalItems,
         grandTotal,
-        syncing,
+        syncing: false,
         checkoutLoading,
         activeOrder,
         setActiveOrder,
