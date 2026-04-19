@@ -1045,10 +1045,78 @@ const SDS_FILENAME_BY_PRODUCT_ID: Record<string, string> = {
   'b12-10ml': 'vitamin-b12-cobalamin-10ml-SDS.pdf',
 };
 
+const WOO_ID_BY_PRODUCT_ID: Record<string, number> = {
+  'bpc-157-5mg': 25,
+  'bpc-157-10mg': 26,
+  'bpc-157-20mg': 45,
+  'tb500-5mg': 27,
+  'tb500-10mg': 28,
+  'wolverine-blend-5mg': 29,
+  'wolverine-blend-10mg': 30,
+  'glow-blend': 31,
+  'klow-blend': 69,
+  'll37-5mg': 50,
+  'ghkcu-50mg': 34,
+  'ghkcu-100mg': 35,
+  'sermorelin-10mg': 23,
+  'cjc1295-no-dac-10mg': 32,
+  'cjc1295-dac-5mg': 33,
+  '2x-blend-cjc-ipamorelin': 46,
+  'ipamorelin-10mg': 68,
+  'ghrp6-10mg': 63,
+  'ghrp6-5mg': 86,
+  'hexarelin-5mg': 66,
+  'tesamorelin-10mg': 83,
+  'tesamorelin-20mg': 91,
+  'cagrilintide-10mg': 47,
+  'mazdutide-100mg': 74,
+  'survodutide-10mg': 82,
+  '5amino1mq-5mg': 48,
+  '5amino1mq-50mg': 53,
+  'slu-pp-332-5mg': 49,
+  'aod9604-5mg': 54,
+  'selank-10mg': 39,
+  'semax-10mg': 40,
+  'dsip-15mg': 41,
+  'dsip-5mg': 58,
+  'n-acetyl-epitalon-5mg': 43,
+  'epitalon-10mg': 59,
+  'epitalon-50mg': 60,
+  'pinealon-20mg': 78,
+  'snap8-10mg': 77,
+  'vip10-10mg': 85,
+  'motsc-10mg': 38,
+  'motsc-40mg': 76,
+  'ss31-10mg': 51,
+  'ss31-50mg': 52,
+  'nad-500mg': 36,
+  'nad-1000mg': 37,
+  'glutathione-600mg': 87,
+  'glutathione-1500mg': 65,
+  'hcg-10000iu': 62,
+  'hmg-75iu': 64,
+  'kisspeptin-10mg': 71,
+  'igf1lr3-1mg': 67,
+  'igf1lr3-01mg': 88,
+  'igfdes-01mg': 89,
+  '8x-blend': 72,
+  '4x-blend': 73,
+  'gdf8-1mg': 44,
+  'ace031-1mg': 55,
+  'aicar-50mg': 56,
+  'ara290-10mg': 81,
+  'pnc27-10mg': 80,
+  'b12-10ml': 57,
+};
+
 for (const product of PRODUCTS) {
   const filename = SDS_FILENAME_BY_PRODUCT_ID[product.id];
   if (filename) {
     product.sdsUrl = SDS_BASE + filename;
+  }
+  const wooId = WOO_ID_BY_PRODUCT_ID[product.id];
+  if (wooId) {
+    product.wooId = wooId;
   }
 }
 
