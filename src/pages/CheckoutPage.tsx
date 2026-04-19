@@ -263,7 +263,7 @@ export function CheckoutPage() {
             <div className="flex items-start gap-2.5 mt-6 pt-6 border-t border-cyan-900/20 text-xs text-gray-500">
               <Clock className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
               <p className="leading-relaxed">
-                After sending, tap <span className="text-white font-semibold">I&apos;ve sent the payment</span> below. Your order is held for 24 hours while we verify the transfer.
+                After sending, tap <span className="text-white font-semibold">I&apos;ve sent the payment</span> below. Your order is held until we verify the transfer.
               </p>
             </div>
           </div>
