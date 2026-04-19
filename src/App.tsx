@@ -15,6 +15,7 @@ import { AgreementModal } from './components/AgreementModal';
 import { HomePage } from './pages/HomePage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CartPage } from './pages/CartPage';
+import { CheckoutPage } from './pages/CheckoutPage';
 import { BlogPage } from './pages/BlogPage';
 import { BlogArticlePage } from './pages/BlogArticlePage';
 import { AdminChatPage } from './pages/AdminChatPage';
@@ -78,6 +79,7 @@ function AppContent() {
         )}
         {page === 'product' && <ProductDetailPage />}
         {page === 'cart' && <CartPage />}
+        {page === 'checkout' && <CheckoutPage />}
         {page === 'blog' && <BlogPage />}
         {page === 'blog-article' && <BlogArticlePage />}
         {page === 'lab-certifications' && <LabCertificationsPage />}

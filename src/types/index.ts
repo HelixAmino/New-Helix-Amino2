@@ -38,7 +38,34 @@ export interface CartItem {
   quantity: number;
 }
 
-export type Page = 'home' | 'product' | 'cart' | 'blog' | 'blog-article' | 'admin-chat' | 'lab-certifications' | 'purity-testing' | 'research-library' | 'compound-guide' | 'hplc-reports' | 'about' | 'shipping' | 'returns' | 'privacy' | 'terms' | 'coa-library' | 'members' | 'lab-supplies' | 'sds-library';
+export type Page = 'home' | 'product' | 'cart' | 'checkout' | 'blog' | 'blog-article' | 'admin-chat' | 'lab-certifications' | 'purity-testing' | 'research-library' | 'compound-guide' | 'hplc-reports' | 'about' | 'shipping' | 'returns' | 'privacy' | 'terms' | 'coa-library' | 'members' | 'lab-supplies' | 'sds-library';
+
+export interface OrderLineItem {
+  productId: string;
+  wooId?: number;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface Order {
+  id: string;
+  order_number: string;
+  user_id: string | null;
+  cart_key: string;
+  items: OrderLineItem[];
+  subtotal: number;
+  total: number;
+  currency: string;
+  payment_method: 'venmo' | 'zelle' | 'unpaid';
+  payment_status: 'pending' | 'submitted' | 'confirmed' | 'cancelled';
+  customer_name: string;
+  customer_email: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export type ChatSessionStatus = 'waiting' | 'open' | 'closed';
 

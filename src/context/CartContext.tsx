@@ -6,10 +6,12 @@ import {
   useState,
   ReactNode,
 } from 'react';
-import { CartItem, Product } from '../types';
+import { CartItem, Order, OrderLineItem, Product } from '../types';
 import { getDiscountedPrice } from '../data/products';
 import * as cocart from '../services/cocart';
-import { getCheckoutUrl } from '../services/cocart';
+import { getCartKey } from '../lib/api';
+import { createOrder } from '../services/orderService';
+import { supabase } from '../lib/supabase';
 
 interface CartContextValue {
   items: CartItem[];
@@ -17,11 +19,13 @@ interface CartContextValue {
   updateQuantity: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
   clearCart: () => void;
-  checkout: () => Promise<void>;
+  checkout: () => Promise<Order>;
   totalItems: number;
   grandTotal: number;
   syncing: boolean;
   checkoutLoading: boolean;
+  activeOrder: Order | null;
+  setActiveOrder: (order: Order | null) => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -34,6 +38,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [syncing, setSyncing] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const itemKeyMap = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
@@ -47,7 +52,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           itemKeyMap.current.set(String(it.id), it.item_key);
         }
       } catch {
-        /* silent: offline or unauthenticated */
+        /* silent */
       } finally {
         if (!cancelled) setSyncing(false);
       }
@@ -78,9 +83,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         );
         if (match) itemKeyMap.current.set(wooId(product), match.item_key);
       })
-      .catch(() => {
-        /* ignore - local state keeps cart usable */
-      });
+      .catch(() => {});
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -131,26 +134,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const syncAllToCocart = async () => {
-    try {
-      await cocart.clearCart().catch(() => undefined);
-      itemKeyMap.current.clear();
-      for (const item of items) {
-        const id = wooId(item.product);
-        const res = await cocart.addItem(id, item.quantity);
-        const match = res.items?.find((it) => String(it.id) === id);
-        if (match) itemKeyMap.current.set(id, match.item_key);
-      }
-    } catch (e) {
-      throw e instanceof Error ? e : new Error('Failed to sync cart');
+    await cocart.clearCart().catch(() => undefined);
+    itemKeyMap.current.clear();
+    for (const item of items) {
+      const id = wooId(item.product);
+      const res = await cocart.addItem(id, item.quantity);
+      const match = res.items?.find((it) => String(it.id) === id);
+      if (match) itemKeyMap.current.set(id, match.item_key);
     }
   };
 
-  const checkout = async () => {
-    if (items.length === 0) return;
+  const buildLineItems = (): OrderLineItem[] =>
+    items.map((item) => {
+      const unit = +getDiscountedPrice(item.product.price, item.quantity).toFixed(2);
+      return {
+        productId: item.product.id,
+        wooId: item.product.wooId,
+        name: item.product.name,
+        quantity: item.quantity,
+        unitPrice: unit,
+        lineTotal: +(unit * item.quantity).toFixed(2),
+      };
+    });
+
+  const checkout = async (): Promise<Order> => {
+    if (items.length === 0) throw new Error('Your cart is empty');
     setCheckoutLoading(true);
     try {
       await syncAllToCocart();
-      window.location.href = getCheckoutUrl();
+      const lineItems = buildLineItems();
+      const subtotal = +lineItems.reduce((s, l) => s + l.lineTotal, 0).toFixed(2);
+      const total = subtotal;
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user ?? null;
+
+      const order = await createOrder({
+        items: lineItems,
+        subtotal,
+        total,
+        cartKey: getCartKey() ?? '',
+        userId: user?.id ?? null,
+        customerName:
+          (user?.user_metadata?.full_name as string | undefined) ?? '',
+        customerEmail: user?.email ?? '',
+      });
+
+      setActiveOrder(order);
+      return order;
     } finally {
       setCheckoutLoading(false);
     }
@@ -176,6 +207,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         grandTotal,
         syncing,
         checkoutLoading,
+        activeOrder,
+        setActiveOrder,
       }}
     >
       {children}

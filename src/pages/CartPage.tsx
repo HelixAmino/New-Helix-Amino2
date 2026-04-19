@@ -13,6 +13,7 @@ export function CartPage() {
     setCheckoutError(null);
     try {
       await checkout();
+      navigate('checkout');
     } catch (e) {
       setCheckoutError(e instanceof Error ? e.message : 'Unable to start checkout. Please try again.');
     }
