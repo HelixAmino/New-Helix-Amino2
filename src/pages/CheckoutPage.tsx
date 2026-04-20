@@ -93,6 +93,8 @@ export function CheckoutPage() {
         console.log('[checkout] backup email sent');
       } catch (err) {
         console.error('[checkout] backup email failed', err);
+        const msg = err instanceof Error ? err.message : String(err);
+        setError(`Order saved, but backup email failed: ${msg}`);
       }
 
       setSubmitted(true);

@@ -95,16 +95,34 @@ export async function sendOrderBackupEmail(order: Order): Promise<void> {
 
   console.log('[orderService] EmailJS send', { templateParams });
 
-  const res = await emailjs.send(
-    EMAILJS_SERVICE_ID,
-    EMAILJS_TEMPLATE_ID,
-    templateParams,
-    { publicKey: EMAILJS_PUBLIC_KEY }
-  );
+  try {
+    const res = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      templateParams,
+      { publicKey: EMAILJS_PUBLIC_KEY }
+    );
+    console.log('[orderService] EmailJS response', res.status, res.text);
 
-  console.log('[orderService] EmailJS response', res.status, res.text);
+    if (res.status < 200 || res.status >= 300) {
+      throw new Error(`EmailJS failed: ${res.status} ${res.text}`);
+    }
 
-  if (res.status < 200 || res.status >= 300) {
-    throw new Error(`EmailJS failed: ${res.status} ${res.text}`);
+    await supabase.from('order_backup_log').insert({
+      order_id: order.id,
+      order_number: order.order_number,
+      status: 'sent',
+      payload: templateParams,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await supabase.from('order_backup_log').insert({
+      order_id: order.id,
+      order_number: order.order_number,
+      status: 'failed',
+      error: message,
+      payload: templateParams,
+    });
+    throw err;
   }
 }
