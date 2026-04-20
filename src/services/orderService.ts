@@ -63,6 +63,7 @@ export async function sendOrderBackupEmail(order: Order): Promise<void> {
     items: order.items?.length,
   });
   const payload = {
+    order_id: order.id,
     order_number: order.order_number,
     subtotal: order.subtotal,
     total: order.total,
