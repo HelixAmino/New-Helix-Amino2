@@ -29,15 +29,29 @@ const BOT_PATTERNS = [
   /bot\b/i,
   /crawler/i,
   /spider/i,
-  /\bai\b/i,
   /scraper/i,
-  /fetch/i,
-  /headlesschrome/i,
   /phantomjs/i,
   /prerender/i,
 ];
 
+const PREVIEW_HOST_PATTERNS = [
+  /localhost/i,
+  /127\.0\.0\.1/,
+  /\.local$/i,
+  /\.webcontainer\.io$/i,
+  /\.stackblitz\.io$/i,
+  /\.bolt\.new$/i,
+  /\.bolt\.host$/i,
+];
+
+function isPreviewEnvironment(): boolean {
+  if (typeof window === 'undefined' || !window.location) return false;
+  const host = window.location.hostname || '';
+  return PREVIEW_HOST_PATTERNS.some((p) => p.test(host));
+}
+
 export function isBot(userAgent?: string): boolean {
+  if (isPreviewEnvironment()) return false;
   const ua = userAgent ?? (typeof navigator !== 'undefined' ? navigator.userAgent : '');
   if (!ua) return false;
   return BOT_PATTERNS.some((pattern) => pattern.test(ua));

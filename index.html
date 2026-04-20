@@ -27,11 +27,35 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js');
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+        var host = location.hostname;
+        var isLocal =
+          host === 'localhost' ||
+          host === '127.0.0.1' ||
+          host.endsWith('.local') ||
+          host.endsWith('.webcontainer.io') ||
+          host.endsWith('.stackblitz.io') ||
+          host.endsWith('.bolt.new') ||
+          host.endsWith('.bolt.host');
+
+        if (isLocal) {
+          // Remove any previously-installed SW + caches so the preview never serves stale content.
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            regs.forEach(function (r) { r.unregister(); });
+          }).catch(function () {});
+          if (window.caches && caches.keys) {
+            caches.keys().then(function (keys) {
+              keys.forEach(function (k) { caches.delete(k); });
+            }).catch(function () {});
+          }
+          return;
+        }
+
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function () {});
         });
-      }
+      })();
     </script>
   </head>
   <body>

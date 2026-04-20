@@ -8,13 +8,13 @@ interface Props {
 }
 
 export function AgeGateModal({ onVerified }: Props) {
-  if (IS_BOT) return null;
-
   const [month, setMonth] = useState('');
   const [day, setDay] = useState('');
   const [year, setYear] = useState('');
   const [denied, setDenied] = useState(false);
   const [error, setError] = useState('');
+
+  if (IS_BOT) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

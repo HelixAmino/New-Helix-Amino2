@@ -46,18 +46,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     (async () => {
-      const stored = getCurrentUser();
-      if (stored) {
-        const valid = await validateToken();
-        if (!cancelled) {
+      try {
+        const stored = getCurrentUser();
+        if (stored) {
+          const valid = await validateToken();
+          if (cancelled) return;
           if (valid) setUser(toAuthUser(stored));
           else {
             wooLogout();
             setUser(null);
           }
         }
+      } catch (err) {
+        console.warn('[auth] bootstrap failed, continuing unauthenticated', err);
+        if (!cancelled) setUser(null);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      if (!cancelled) setLoading(false);
     })();
 
     return () => {
