@@ -1,8 +1,10 @@
+import emailjs from '@emailjs/browser';
 import { supabase } from '../lib/supabase';
 import { Order, OrderLineItem } from '../types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string;
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string;
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string;
 
 function generateOrderNumber(): string {
   const stamp = Date.now().toString(36).toUpperCase().slice(-6);
@@ -62,45 +64,47 @@ export async function sendOrderBackupEmail(order: Order): Promise<void> {
     order_number: order.order_number,
     items: order.items?.length,
   });
-  const payload = {
+
+  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+    throw new Error('EmailJS is not configured (missing VITE_EMAILJS_* env vars)');
+  }
+
+  const currency = order.currency ?? 'USD';
+  const itemsText = order.items
+    .map((i) => {
+      const sku = i.wooId != null ? String(i.wooId) : i.productId;
+      return `- ${i.name} | SKU ${sku} | qty ${i.quantity} | ${currency} ${i.lineTotal.toFixed(2)}`;
+    })
+    .join('\n');
+
+  const templateParams = {
+    to_email: 'orderbackups@helixamino.com',
     order_id: order.id,
     order_number: order.order_number,
-    subtotal: order.subtotal,
-    total: order.total,
-    currency: order.currency,
-    payment_method: order.payment_method,
-    customer_name: order.customer_name,
-    customer_email: order.customer_email,
-    notes: order.notes,
-    cart_key: order.cart_key,
+    payment_method: order.payment_method ?? 'unpaid',
+    customer_name: order.customer_name ?? '',
+    customer_email: order.customer_email ?? '',
+    notes: order.notes ?? '',
+    currency,
+    total: order.total.toFixed(2),
+    subtotal: (order.subtotal ?? order.total).toFixed(2),
+    items_count: order.items.reduce((s, i) => s + i.quantity, 0),
+    items_text: itemsText,
     submitted_at: new Date().toISOString(),
-    items: order.items.map((i) => ({
-      productId: i.productId,
-      wooId: i.wooId,
-      sku: i.wooId != null ? String(i.wooId) : i.productId,
-      name: i.name,
-      quantity: i.quantity,
-      unitPrice: i.unitPrice,
-      lineTotal: i.lineTotal,
-    })),
   };
 
-  const url = `${SUPABASE_URL}/functions/v1/notify-order-backup`;
-  console.log('[orderService] POST', url);
+  console.log('[orderService] EmailJS send', { templateParams });
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  const res = await emailjs.send(
+    EMAILJS_SERVICE_ID,
+    EMAILJS_TEMPLATE_ID,
+    templateParams,
+    { publicKey: EMAILJS_PUBLIC_KEY }
+  );
 
-  const bodyText = await res.text().catch(() => '');
-  console.log('[orderService] response', res.status, bodyText);
+  console.log('[orderService] EmailJS response', res.status, res.text);
 
-  if (!res.ok) {
-    throw new Error(`Backup email failed: ${res.status} ${bodyText}`);
+  if (res.status < 200 || res.status >= 300) {
+    throw new Error(`EmailJS failed: ${res.status} ${res.text}`);
   }
 }
