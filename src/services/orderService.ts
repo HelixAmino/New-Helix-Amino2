@@ -1,10 +1,8 @@
-import emailjs from '@emailjs/browser';
 import { supabase } from '../lib/supabase';
 import { Order, OrderLineItem } from '../types';
 
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string;
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string;
-const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 function generateOrderNumber(): string {
   const stamp = Date.now().toString(36).toUpperCase().slice(-6);
@@ -65,64 +63,68 @@ export async function sendOrderBackupEmail(order: Order): Promise<void> {
     items: order.items?.length,
   });
 
-  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-    throw new Error('EmailJS is not configured (missing VITE_EMAILJS_* env vars)');
-  }
-
-  const currency = order.currency ?? 'USD';
-  const itemsText = order.items
-    .map((i) => {
-      const sku = i.wooId != null ? String(i.wooId) : i.productId;
-      return `- ${i.name} | SKU ${sku} | qty ${i.quantity} | ${currency} ${i.lineTotal.toFixed(2)}`;
-    })
-    .join('\n');
-
-  const templateParams = {
-    to_email: 'orderbackups@helixamino.com',
+  const payload = {
     order_id: order.id,
     order_number: order.order_number,
-    payment_method: order.payment_method ?? 'unpaid',
-    customer_name: order.customer_name ?? '',
-    customer_email: order.customer_email ?? '',
-    notes: order.notes ?? '',
-    currency,
-    total: order.total.toFixed(2),
-    subtotal: (order.subtotal ?? order.total).toFixed(2),
-    items_count: order.items.reduce((s, i) => s + i.quantity, 0),
-    items_text: itemsText,
-    submitted_at: new Date().toISOString(),
+    subtotal: order.subtotal,
+    total: order.total,
+    currency: order.currency,
+    payment_method: order.payment_method,
+    customer_name: order.customer_name,
+    customer_email: order.customer_email,
+    notes: order.notes,
+    items: order.items.map((i) => ({
+      productId: i.productId,
+      wooId: i.wooId,
+      name: i.name,
+      quantity: i.quantity,
+      unitPrice: i.unitPrice,
+      lineTotal: i.lineTotal,
+    })),
   };
 
-  console.log('[orderService] EmailJS send', { templateParams });
+  const url = `${SUPABASE_URL}/functions/v1/send-order-backup-email`;
+
+  let status: 'sent' | 'failed' = 'sent';
+  let errorMessage: string | null = null;
 
   try {
-    const res = await emailjs.send(
-      EMAILJS_SERVICE_ID,
-      EMAILJS_TEMPLATE_ID,
-      templateParams,
-      { publicKey: EMAILJS_PUBLIC_KEY }
-    );
-    console.log('[orderService] EmailJS response', res.status, res.text);
-
-    if (res.status < 200 || res.status >= 300) {
-      throw new Error(`EmailJS failed: ${res.status} ${res.text}`);
-    }
-
-    await supabase.from('order_backup_log').insert({
-      order_id: order.id,
-      order_number: order.order_number,
-      status: 'sent',
-      payload: templateParams,
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
+
+    const bodyText = await res.text().catch(() => '');
+    console.log('[orderService] backup email response', res.status, bodyText);
+
+    if (!res.ok) {
+      status = 'failed';
+      errorMessage = `Backup email failed: ${res.status} ${bodyText}`;
+      throw new Error(errorMessage);
+    }
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+    if (!errorMessage) {
+      errorMessage = err instanceof Error ? err.message : String(err);
+      status = 'failed';
+    }
     await supabase.from('order_backup_log').insert({
       order_id: order.id,
       order_number: order.order_number,
-      status: 'failed',
-      error: message,
-      payload: templateParams,
+      status,
+      error: errorMessage,
+      payload,
     });
     throw err;
   }
+
+  await supabase.from('order_backup_log').insert({
+    order_id: order.id,
+    order_number: order.order_number,
+    status: 'sent',
+    payload,
+  });
 }
