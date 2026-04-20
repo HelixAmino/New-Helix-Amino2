@@ -11,6 +11,7 @@ import { getDiscountedPrice } from '../data/products';
 import * as cocart from '../services/cocart';
 import { getCartKey } from '../lib/api';
 import { createOrder } from '../services/orderService';
+import { createWooOrder } from '../services/wooOrders';
 import { supabase } from '../lib/supabase';
 
 interface CartContextValue {
@@ -169,6 +170,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData.session?.user ?? null;
 
+      let wooOrderNumber: string | null = null;
+      try {
+        const woo = await createWooOrder({ items: lineItems });
+        wooOrderNumber = woo?.number ? String(woo.number) : String(woo.id);
+      } catch (err) {
+        console.warn('[checkout] WooCommerce order creation failed', err);
+      }
+
       const order = await createOrder({
         items: lineItems,
         subtotal,
@@ -180,8 +189,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         customerEmail: user?.email ?? '',
       });
 
-      setActiveOrder(order);
-      return order;
+      const merged: Order = wooOrderNumber
+        ? { ...order, order_number: wooOrderNumber }
+        : order;
+
+      setActiveOrder(merged);
+      return merged;
     } finally {
       setCheckoutLoading(false);
     }
