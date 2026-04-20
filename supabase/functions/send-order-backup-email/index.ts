@@ -63,8 +63,13 @@ Deno.serve(async (req: Request) => {
       })
       .join("\n");
 
+    const recipient = "orderbackups@helixamino.com";
     const templateParams = {
-      to_email: "orderbackups@helixamino.com",
+      to_email: recipient,
+      email: recipient,
+      reply_to: recipient,
+      user_email: recipient,
+      recipient,
       order_id: order.order_id ?? "",
       order_number: order.order_number,
       payment_method: order.payment_method ?? "unpaid",
