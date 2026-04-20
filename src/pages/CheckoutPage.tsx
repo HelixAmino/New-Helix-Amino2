@@ -69,17 +69,31 @@ export function CheckoutPage() {
   const handleMarkPaid = async () => {
     setError(null);
     setSubmitting(true);
+    console.log('[checkout] handleMarkPaid clicked', {
+      orderId: activeOrder.id,
+      orderNumber: activeOrder.order_number,
+      method,
+    });
     try {
       await markOrderSubmitted(activeOrder.id, method, reference.trim());
+      console.log('[checkout] markOrderSubmitted ok');
 
       const backupOrder = {
         ...activeOrder,
         payment_method: method,
         notes: reference.trim(),
       };
-      void sendOrderBackupEmail(backupOrder).catch((err) => {
-        console.warn('[checkout] backup email failed', err);
+      console.log('[checkout] invoking sendOrderBackupEmail', {
+        order_number: backupOrder.order_number,
+        items: backupOrder.items?.length,
+        total: backupOrder.total,
       });
+      try {
+        await sendOrderBackupEmail(backupOrder);
+        console.log('[checkout] backup email sent');
+      } catch (err) {
+        console.error('[checkout] backup email failed', err);
+      }
 
       setSubmitted(true);
       clearCart();

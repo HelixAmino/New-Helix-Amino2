@@ -58,6 +58,10 @@ export async function markOrderSubmitted(
 }
 
 export async function sendOrderBackupEmail(order: Order): Promise<void> {
+  console.log('[orderService] sendOrderBackupEmail start', {
+    order_number: order.order_number,
+    items: order.items?.length,
+  });
   const payload = {
     order_number: order.order_number,
     subtotal: order.subtotal,
@@ -80,20 +84,22 @@ export async function sendOrderBackupEmail(order: Order): Promise<void> {
     })),
   };
 
-  const res = await fetch(
-    `${SUPABASE_URL}/functions/v1/notify-order-backup`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    }
-  );
+  const url = `${SUPABASE_URL}/functions/v1/notify-order-backup`;
+  console.log('[orderService] POST', url);
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const bodyText = await res.text().catch(() => '');
+  console.log('[orderService] response', res.status, bodyText);
 
   if (!res.ok) {
-    const detail = await res.text().catch(() => '');
-    throw new Error(`Backup email failed: ${res.status} ${detail}`);
+    throw new Error(`Backup email failed: ${res.status} ${bodyText}`);
   }
 }

@@ -45,14 +45,22 @@ function money(n: number, currency = "USD"): string {
 }
 
 Deno.serve(async (req: Request) => {
+  console.log("[notify-order-backup] request", req.method, req.url);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
     const order = (await req.json()) as OrderPayload;
+    console.log("[notify-order-backup] payload received", {
+      order_number: order?.order_number,
+      items: Array.isArray(order?.items) ? order.items.length : "n/a",
+      total: order?.total,
+    });
 
     if (!order?.order_number || !Array.isArray(order.items)) {
+      console.error("[notify-order-backup] invalid payload");
       return new Response(
         JSON.stringify({ error: "Invalid payload: order_number and items are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -66,10 +74,22 @@ Deno.serve(async (req: Request) => {
 
     const mailgunDomain = Deno.env.get("MAILGUN_DOMAIN") ?? "mg.helixamino.com";
     const mailgunApiKey = Deno.env.get("MAILGUN_API_KEY") ?? "";
-    const backupRecipient = Deno.env.get("ORDER_BACKUP_EMAIL") ?? "orderbackups@helixamino.com";
-    const fromEmail = Deno.env.get("ORDER_BACKUP_FROM") ?? `info@${mailgunDomain}`;
+    const backupRecipientEnv = Deno.env.get("ORDER_BACKUP_EMAIL");
+    const fromEmailEnv = Deno.env.get("ORDER_BACKUP_FROM");
+    const backupRecipient = backupRecipientEnv ?? "orderbackups@helixamino.com";
+    const fromEmail = fromEmailEnv ?? `info@${mailgunDomain}`;
+
+    console.log("[notify-order-backup] config", {
+      mailgunDomain,
+      hasMailgunKey: Boolean(mailgunApiKey),
+      backupRecipient,
+      backupRecipientFromSecret: Boolean(backupRecipientEnv),
+      fromEmail,
+      fromEmailFromSecret: Boolean(fromEmailEnv),
+    });
 
     if (!mailgunApiKey) {
+      console.error("[notify-order-backup] MAILGUN_API_KEY missing");
       return new Response(
         JSON.stringify({ error: "Mailgun API key not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -190,17 +210,22 @@ Deno.serve(async (req: Request) => {
 
     if (!response.ok) {
       const detail = await response.text();
+      console.error("[notify-order-backup] Mailgun error", response.status, detail);
       return new Response(
-        JSON.stringify({ error: "Mailgun error", detail }),
+        JSON.stringify({ error: "Mailgun error", status: response.status, detail }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    const mgBody = await response.text().catch(() => "");
+    console.log("[notify-order-backup] Mailgun ok", mgBody);
+
+    return new Response(JSON.stringify({ success: true, recipient: backupRecipient }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
+    console.error("[notify-order-backup] exception", err);
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
