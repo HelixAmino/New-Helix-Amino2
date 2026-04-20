@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useNavigation } from '../context/NavigationContext';
-import { markOrderSubmitted } from '../services/orderService';
+import { markOrderSubmitted, sendOrderBackupEmail } from '../services/orderService';
 import { PdfQrImage } from '../components/PdfQrImage';
 
 const VENMO_HANDLE = '@HelixAmino';
@@ -71,6 +71,16 @@ export function CheckoutPage() {
     setSubmitting(true);
     try {
       await markOrderSubmitted(activeOrder.id, method, reference.trim());
+
+      const backupOrder = {
+        ...activeOrder,
+        payment_method: method,
+        notes: reference.trim(),
+      };
+      void sendOrderBackupEmail(backupOrder).catch((err) => {
+        console.warn('[checkout] backup email failed', err);
+      });
+
       setSubmitted(true);
       clearCart();
     } catch (e) {
