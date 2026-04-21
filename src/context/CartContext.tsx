@@ -14,6 +14,8 @@ import { createOrder } from '../services/orderService';
 import { createWooOrder } from '../services/wooOrders';
 import { supabase } from '../lib/supabase';
 
+export const SHIPPING_FLAT = 5;
+
 interface CartContextValue {
   items: CartItem[];
   addItem: (product: Product, quantity: number) => void;
@@ -22,6 +24,8 @@ interface CartContextValue {
   clearCart: () => void;
   checkout: () => Promise<Order>;
   totalItems: number;
+  itemsSubtotal: number;
+  shipping: number;
   grandTotal: number;
   syncing: boolean;
   checkoutLoading: boolean;
@@ -165,7 +169,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       await syncAllToCocart();
       const lineItems = buildLineItems();
       const subtotal = +lineItems.reduce((s, l) => s + l.lineTotal, 0).toFixed(2);
-      const total = subtotal;
+      const total = +(subtotal + SHIPPING_FLAT).toFixed(2);
 
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData.session?.user ?? null;
@@ -202,10 +206,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
-  const grandTotal = items.reduce((sum, i) => {
+  const itemsSubtotal = items.reduce((sum, i) => {
     const discounted = getDiscountedPrice(i.product.price, i.quantity);
     return sum + discounted * i.quantity;
   }, 0);
+
+  const shipping = items.length > 0 ? SHIPPING_FLAT : 0;
+  const grandTotal = itemsSubtotal + shipping;
 
   return (
     <CartContext.Provider
@@ -217,6 +224,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         checkout,
         totalItems,
+        itemsSubtotal,
+        shipping,
         grandTotal,
         syncing,
         checkoutLoading,

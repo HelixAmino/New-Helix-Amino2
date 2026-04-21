@@ -420,8 +420,10 @@ export function CheckoutPage() {
                 </span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-gray-500">Shipping</span>
-                <span className="text-gray-400">Calculated after confirm</span>
+                <span className="text-gray-500">Shipping (flat rate)</span>
+                <span className="text-gray-200 font-semibold">
+                  ${(activeOrder.total - activeOrder.subtotal).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between items-baseline pt-3">
                 <span className="text-gray-400 text-sm">Total due</span>

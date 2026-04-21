@@ -5,7 +5,7 @@ import { useNavigation } from '../context/NavigationContext';
 import { getDiscountedPrice, getDiscountLabel } from '../data/products';
 
 export function CartPage() {
-  const { items, updateQuantity, removeItem, grandTotal, totalItems, checkout, checkoutLoading } = useCart();
+  const { items, updateQuantity, removeItem, itemsSubtotal, shipping, grandTotal, totalItems, checkout, checkoutLoading } = useCart();
   const { navigate } = useNavigation();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
@@ -158,12 +158,19 @@ export function CartPage() {
               })}
             </div>
 
-            <div className="border-t border-cyan-900/20 pt-4 mb-5">
-              <div className="flex justify-between items-baseline">
+            <div className="border-t border-cyan-900/20 pt-4 mb-5 space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-200 font-semibold">${itemsSubtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Shipping (flat rate)</span>
+                <span className="text-gray-200 font-semibold">${shipping.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-baseline pt-2 border-t border-cyan-900/20">
                 <span className="text-gray-400 text-sm">Total</span>
                 <span className="text-white font-black text-2xl">${grandTotal.toFixed(2)}</span>
               </div>
-              <p className="text-gray-600 text-xs mt-1">+ shipping calculated at checkout</p>
             </div>
 
             {checkoutError && (

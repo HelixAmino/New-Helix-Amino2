@@ -101,6 +101,7 @@ Deno.serve(async (req: Request) => {
       customer_email: order.customer_email ?? "",
       notes: order.notes ?? "",
       currency,
+      shipping: (Number(order.total ?? 0) - Number(order.subtotal ?? order.total ?? 0)).toFixed(2),
       total: Number(order.total ?? 0).toFixed(2),
       subtotal: Number(order.subtotal ?? order.total ?? 0).toFixed(2),
       items_count: String(itemsCount),
