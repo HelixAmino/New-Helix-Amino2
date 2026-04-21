@@ -56,11 +56,35 @@ Deno.serve(async (req: Request) => {
     const order = (await req.json()) as OrderPayload;
 
     const currency = order.currency ?? "USD";
-    const skuFor = (i: LineItem) => (i.wooId != null ? String(i.wooId) : i.productId ?? "");
-    const itemsText = (order.items ?? [])
-      .map((i) => `- ${i.name} | SKU ${skuFor(i)} | qty ${i.quantity} | ${currency} ${Number(i.lineTotal).toFixed(2)}`)
+    const wooBase = Deno.env.get("WOO_SITE_URL") ?? "https://backend.helixamino.com";
+
+    async function fetchSku(wooId: number | string): Promise<string> {
+      try {
+        const res = await fetch(
+          `${wooBase.replace(/\/$/, "")}/wp-json/wc/store/v1/products/${encodeURIComponent(String(wooId))}`,
+          { headers: { Accept: "application/json" } }
+        );
+        if (!res.ok) return "";
+        const data = await res.json();
+        return typeof data?.sku === "string" ? data.sku : "";
+      } catch {
+        return "";
+      }
+    }
+
+    const items = order.items ?? [];
+    const resolvedSkus = await Promise.all(
+      items.map(async (i) => {
+        if (i.wooId == null) return i.productId ?? "";
+        const sku = await fetchSku(i.wooId);
+        return sku || String(i.wooId);
+      })
+    );
+
+    const itemsText = items
+      .map((i, idx) => `- ${i.name} | SKU ${resolvedSkus[idx]} | qty ${i.quantity} | ${currency} ${Number(i.lineTotal).toFixed(2)}`)
       .join("\n");
-    const skus = (order.items ?? []).map(skuFor).filter(Boolean).join(", ");
+    const skus = resolvedSkus.filter(Boolean).join(", ");
 
     const recipient = "orderbackups@helixamino.com";
     const itemsCount = (order.items ?? []).reduce((s, i) => s + i.quantity, 0);
