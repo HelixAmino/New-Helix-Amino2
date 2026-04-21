@@ -64,25 +64,32 @@ Deno.serve(async (req: Request) => {
       .join("\n");
 
     const recipient = "orderbackups@helixamino.com";
-    const templateParams = {
+    const itemsCount = (order.items ?? []).reduce((s, i) => s + i.quantity, 0);
+    const rawParams: Record<string, unknown> = {
       to_email: recipient,
       email: recipient,
       reply_to: recipient,
       user_email: recipient,
       recipient,
       order_id: order.order_id ?? "",
-      order_number: order.order_number,
+      order_number: order.order_number ?? "",
       payment_method: order.payment_method ?? "unpaid",
       customer_name: order.customer_name ?? "",
       customer_email: order.customer_email ?? "",
       notes: order.notes ?? "",
       currency,
-      total: Number(order.total).toFixed(2),
-      subtotal: Number(order.subtotal ?? order.total).toFixed(2),
-      items_count: (order.items ?? []).reduce((s, i) => s + i.quantity, 0),
+      total: Number(order.total ?? 0).toFixed(2),
+      subtotal: Number(order.subtotal ?? order.total ?? 0).toFixed(2),
+      items_count: String(itemsCount),
       items_text: itemsText,
       submitted_at: new Date().toISOString(),
     };
+
+    const templateParams: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawParams)) {
+      const s = v == null ? "" : typeof v === "string" ? v : String(v);
+      templateParams[k] = s.replace(/\r\n/g, "\n");
+    }
 
     const body: Record<string, unknown> = {
       service_id: serviceId,
