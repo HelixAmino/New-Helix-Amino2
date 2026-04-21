@@ -56,12 +56,11 @@ Deno.serve(async (req: Request) => {
     const order = (await req.json()) as OrderPayload;
 
     const currency = order.currency ?? "USD";
+    const skuFor = (i: LineItem) => (i.wooId != null ? String(i.wooId) : i.productId ?? "");
     const itemsText = (order.items ?? [])
-      .map((i) => {
-        const sku = i.wooId != null ? String(i.wooId) : i.productId ?? "";
-        return `- ${i.name} | SKU ${sku} | qty ${i.quantity} | ${currency} ${Number(i.lineTotal).toFixed(2)}`;
-      })
+      .map((i) => `- ${i.name} | SKU ${skuFor(i)} | qty ${i.quantity} | ${currency} ${Number(i.lineTotal).toFixed(2)}`)
       .join("\n");
+    const skus = (order.items ?? []).map(skuFor).filter(Boolean).join(", ");
 
     const recipient = "orderbackups@helixamino.com";
     const itemsCount = (order.items ?? []).reduce((s, i) => s + i.quantity, 0);
@@ -82,6 +81,7 @@ Deno.serve(async (req: Request) => {
       subtotal: Number(order.subtotal ?? order.total ?? 0).toFixed(2),
       items_count: String(itemsCount),
       items_text: itemsText,
+      skus,
       submitted_at: new Date().toISOString(),
     };
 
