@@ -11,6 +11,7 @@ import { Footer } from './components/Footer';
 import { ChatBubble } from './components/ChatBubble';
 import { BottomBar } from './components/BottomBar';
 import { FloatingCartButton } from './components/FloatingCartButton';
+import { PageSeo } from './components/PageSeo';
 import { AgeGateModal } from './components/AgeGateModal';
 import { AgreementModal } from './components/AgreementModal';
 import { HomePage } from './pages/HomePage';
@@ -63,6 +64,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-[#050d14] text-white">
+      <PageSeo />
       {/* Compliance modals — block the site until verified */}
       {showAgeGate && <AgeGateModal onVerified={handleAgeVerified} />}
       {showAgreement && <AgreementModal onAgreed={handleTermsAgreed} />}
