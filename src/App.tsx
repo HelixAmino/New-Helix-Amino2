@@ -10,6 +10,7 @@ import { TrustBadges } from './components/TrustBadges';
 import { Footer } from './components/Footer';
 import { ChatBubble } from './components/ChatBubble';
 import { BottomBar } from './components/BottomBar';
+import { FloatingCartButton } from './components/FloatingCartButton';
 import { AgeGateModal } from './components/AgeGateModal';
 import { AgreementModal } from './components/AgreementModal';
 import { HomePage } from './pages/HomePage';
@@ -100,6 +101,7 @@ function AppContent() {
 
       <Footer />
       <ChatBubble />
+      <FloatingCartButton />
       <BottomBar />
 
       {page === 'admin-chat' && <AdminChatPage />}
