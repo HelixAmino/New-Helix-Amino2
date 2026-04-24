@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -7,21 +8,23 @@ import {
   ReactNode,
 } from 'react';
 import { CartItem, Order, OrderLineItem, Product } from '../types';
-import { getDiscountedPrice } from '../data/products';
+import { PRODUCTS, getDiscountedPrice } from '../data/products';
+import { MEMBERS_PRODUCTS } from '../data/membersProducts';
 import * as cocart from '../services/cocart';
 import { getCartKey } from '../lib/api';
 import { createOrder } from '../services/orderService';
 import { createWooOrder } from '../services/wooOrders';
+import { loadProductMap, getSkuForWooId, getWooIdForSku } from '../services/productMap';
 import { supabase } from '../lib/supabase';
 
 export const SHIPPING_FLAT = 5;
 
 interface CartContextValue {
   items: CartItem[];
-  addItem: (product: Product, quantity: number) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  removeItem: (productId: string) => void;
-  clearCart: () => void;
+  addItem: (product: Product, quantity: number) => Promise<void>;
+  updateQuantity: (productId: string, quantity: number) => Promise<void>;
+  removeItem: (productId: string) => Promise<void>;
+  clearCart: () => Promise<void>;
   checkout: () => Promise<Order>;
   totalItems: number;
   itemsSubtotal: number;
@@ -35,8 +38,19 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function wooId(product: Product): string {
-  return String(product.wooId ?? product.id);
+const ALL_PRODUCTS: Product[] = [...PRODUCTS, ...MEMBERS_PRODUCTS];
+
+function findProductByWooId(wooId: number): Product | undefined {
+  const direct = ALL_PRODUCTS.find((p) => p.wooId === wooId);
+  if (direct) return direct;
+  const sku = getSkuForWooId(wooId);
+  if (!sku) return undefined;
+  return ALL_PRODUCTS.find((p) => p.id === sku);
+}
+
+function resolveWooId(product: Product): number | undefined {
+  if (product.wooId) return product.wooId;
+  return getWooIdForSku(product.id);
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -46,16 +60,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const itemKeyMap = useRef<Map<string, string>>(new Map());
 
+  const applyCart = useCallback((res: cocart.CoCartResponse) => {
+    itemKeyMap.current.clear();
+    const next: CartItem[] = [];
+    for (const it of res.items ?? []) {
+      const product = findProductByWooId(Number(it.id));
+      if (!product) continue;
+      itemKeyMap.current.set(product.id, it.item_key);
+      next.push({ product, quantity: it.quantity.value });
+    }
+    setItems(next);
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         setSyncing(true);
+        await loadProductMap();
         const remote = await cocart.getCart();
         if (cancelled) return;
-        for (const it of remote.items ?? []) {
-          itemKeyMap.current.set(String(it.id), it.item_key);
-        }
+        applyCart(remote);
       } catch {
         /* silent */
       } finally {
@@ -65,96 +90,88 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [applyCart]);
 
-  const addItem = (product: Product, quantity: number) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.product.id === product.id);
-      if (existing) {
-        return prev.map((i) =>
-          i.product.id === product.id
-            ? { ...i, quantity: Math.min(50, i.quantity + quantity) }
-            : i
-        );
+  const addItem = useCallback(
+    async (product: Product, quantity: number) => {
+      await loadProductMap();
+      const wooId = resolveWooId(product);
+      if (!wooId) throw new Error(`No WooCommerce id for product ${product.id}`);
+      setSyncing(true);
+      try {
+        const res = await cocart.addItem(wooId, quantity);
+        applyCart(res);
+      } finally {
+        setSyncing(false);
       }
-      return [...prev, { product, quantity }];
-    });
+    },
+    [applyCart],
+  );
 
-    void cocart
-      .addItem(wooId(product), quantity)
-      .then((res) => {
-        const match = res.items?.find(
-          (it) => String(it.id) === wooId(product)
-        );
-        if (match) itemKeyMap.current.set(wooId(product), match.item_key);
-      })
-      .catch(() => {});
-  };
+  const updateQuantity = useCallback(
+    async (productId: string, quantity: number) => {
+      if (quantity < 1) {
+        await removeItemInternal(productId);
+        return;
+      }
+      const clamped = Math.min(50, quantity);
+      const key = itemKeyMap.current.get(productId);
+      setSyncing(true);
+      try {
+        if (key) {
+          const res = await cocart.updateItem(key, clamped);
+          applyCart(res);
+        } else {
+          const product = ALL_PRODUCTS.find((p) => p.id === productId);
+          if (!product) return;
+          const wooId = resolveWooId(product);
+          if (!wooId) return;
+          const res = await cocart.addItem(wooId, clamped);
+          applyCart(res);
+        }
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [applyCart],
+  );
 
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity < 1) {
-      removeItem(productId);
-      return;
+  const removeItemInternal = useCallback(
+    async (productId: string) => {
+      const key = itemKeyMap.current.get(productId);
+      if (!key) {
+        setItems((prev) => prev.filter((i) => i.product.id !== productId));
+        return;
+      }
+      setSyncing(true);
+      try {
+        const res = await cocart.removeItem(key);
+        applyCart(res);
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [applyCart],
+  );
+
+  const removeItem = removeItemInternal;
+
+  const clearCart = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const res = await cocart.clearCart();
+      applyCart(res);
+    } finally {
+      setSyncing(false);
     }
-    const clamped = Math.min(50, quantity);
-    setItems((prev) =>
-      prev.map((i) =>
-        i.product.id === productId ? { ...i, quantity: clamped } : i
-      )
-    );
-
-    const item = items.find((i) => i.product.id === productId);
-    if (!item) return;
-    const id = wooId(item.product);
-    const key = itemKeyMap.current.get(id);
-    if (key) {
-      void cocart.updateItem(key, clamped).catch(() => {});
-    } else {
-      void cocart
-        .addItem(id, clamped)
-        .then((res) => {
-          const match = res.items?.find((it) => String(it.id) === id);
-          if (match) itemKeyMap.current.set(id, match.item_key);
-        })
-        .catch(() => {});
-    }
-  };
-
-  const removeItem = (productId: string) => {
-    const item = items.find((i) => i.product.id === productId);
-    setItems((prev) => prev.filter((i) => i.product.id !== productId));
-    if (!item) return;
-    const id = wooId(item.product);
-    const key = itemKeyMap.current.get(id);
-    if (key) {
-      void cocart.removeItem(key).catch(() => {});
-      itemKeyMap.current.delete(id);
-    }
-  };
-
-  const clearCart = () => {
-    setItems([]);
-    itemKeyMap.current.clear();
-    void cocart.clearCart().catch(() => {});
-  };
-
-  const syncAllToCocart = async () => {
-    await cocart.clearCart().catch(() => undefined);
-    itemKeyMap.current.clear();
-    for (const item of items) {
-      const id = wooId(item.product);
-      const res = await cocart.addItem(id, item.quantity);
-      const match = res.items?.find((it) => String(it.id) === id);
-      if (match) itemKeyMap.current.set(id, match.item_key);
-    }
-  };
+  }, [applyCart]);
 
   const buildLineItems = (): OrderLineItem[] =>
     items.map((item) => {
       const unit = +getDiscountedPrice(item.product.price, item.quantity).toFixed(2);
       return {
         productId: item.product.id,
-        wooId: item.product.wooId,
+        wooId: resolveWooId(item.product),
         name: item.product.name,
         quantity: item.quantity,
         unitPrice: unit,
@@ -166,7 +183,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (items.length === 0) throw new Error('Your cart is empty');
     setCheckoutLoading(true);
     try {
-      await syncAllToCocart();
       const lineItems = buildLineItems();
       const subtotal = +lineItems.reduce((s, l) => s + l.lineTotal, 0).toFixed(2);
       const total = +(subtotal + SHIPPING_FLAT).toFixed(2);
