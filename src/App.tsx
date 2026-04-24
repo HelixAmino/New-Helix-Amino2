@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CartProvider } from './context/CartContext';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
 import { AuthProvider } from './context/AuthContext';
@@ -35,12 +35,32 @@ import { CoaLibraryPage } from './pages/CoaLibraryPage';
 import { MembersPage } from './pages/MembersPage';
 import { LabSuppliesPage } from './pages/LabSuppliesPage';
 import { SdsLibraryPage } from './pages/SdsLibraryPage';
+import { UnitQrPage } from './pages/UnitQrPage';
 
 const STORAGE_KEY_AGE = 'helix_age_verified';
 const STORAGE_KEY_TERMS = 'helix_terms_agreed';
 
 function AppContent() {
   const { page } = useNavigation();
+  const [isUnitQr] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return /^\/unitqr\/?$/i.test(window.location.pathname);
+  });
+
+  useEffect(() => {
+    if (isUnitQr && page !== 'home' && typeof window !== 'undefined') {
+      window.history.replaceState({}, '', '/');
+    }
+  }, [isUnitQr, page]);
+
+  if (isUnitQr && page === 'home') {
+    return (
+      <div className="min-h-screen bg-[#050d14] text-white">
+        <UnitQrPage />
+        <ChatBubble />
+      </div>
+    );
+  }
 
   const [ageVerified, setAgeVerified] = useState(() => {
     return IS_BOT || localStorage.getItem(STORAGE_KEY_AGE) === '1';
