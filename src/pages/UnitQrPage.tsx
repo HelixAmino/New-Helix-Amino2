@@ -13,7 +13,7 @@ export function UnitQrPage() {
   return (
     <div className="min-h-screen bg-[#050d14] text-white flex flex-col">
       <div className="flex items-center justify-center px-4 py-6 border-b border-cyan-900/30">
-        <img src={logoImg} alt="Helix Amino" className="w-12 h-12 object-contain" />
+        <img src={logoImg} alt="Helix Amino" className="w-60 h-60 object-contain" />
       </div>
 
       <main className="flex-1 px-4 py-8 sm:py-12 max-w-3xl mx-auto w-full">
