@@ -1,4 +1,5 @@
 import { Product, ProductGroup } from '../types';
+import { WOO_ID_BY_PRODUCT_ID } from './products';
 
 import imgMaz from '../assets/HAmaz.png';
 import imgSurv from '../assets/HAsurv.png';
@@ -435,3 +436,8 @@ export const MEMBERS_GROUPS: ProductGroup[] = [
   buildGroup('Mazdutide', ['members-maz-100mg']),
   buildGroup('Survodutide', ['members-surv-10mg']),
 ];
+
+for (const product of MEMBERS_PRODUCTS) {
+  const wooId = WOO_ID_BY_PRODUCT_ID[product.id];
+  if (wooId) product.wooId = wooId;
+}

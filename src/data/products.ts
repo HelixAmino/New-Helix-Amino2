@@ -57,6 +57,11 @@ import imgTb5 from '../assets/HA5005.png';
 import imgTb10 from '../assets/HA50010.png';
 import imgGhkcu50 from '../assets/HAcu50.png';
 import imgGhkcu100 from '../assets/HAcu100.png';
+import imgTa1 from '../assets/HAta1.png';
+import imgFox10 from '../assets/HAfox10.png';
+import imgKpv from '../assets/HAkpv.png';
+import imgMel from '../assets/HAmel.png';
+import imgDisp2 from '../assets/HAdisp-2.png';
 
 export const PRODUCTS: Product[] = [
   // ─── Recovery & Healing ───────────────────────────────────────────────────
@@ -984,6 +989,90 @@ export const PRODUCTS: Product[] = [
     storage: 'Refrigerate at 2–8°C',
     coaUrl: 'https://raw.githubusercontent.com/HelixAmino/Amino-COA/main/B12%2010ml_261050.pdf',
   },
+  {
+    id: 'thymosin-alpha-1-10mg',
+    name: 'Thymosin Alpha 1 (10mg)',
+    price: 60,
+    category: 'Misc / Rare',
+    quantityLabel: '10mg',
+    image: imgTa1,
+    cas: '62304-98-7',
+    molecularWeight: '3108.35 g/mol',
+    description: 'Thymosin Alpha 1 (TA1) researched for immune modulation and T-cell signaling studies.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+  {
+    id: 'foxo4-10mg',
+    name: 'FOXO4-DRI (10mg)',
+    price: 75,
+    category: 'Longevity and Mitochondrial',
+    quantityLabel: '10mg',
+    image: imgFox10,
+    cas: 'N/A (FOXO4 peptide)',
+    molecularWeight: '~5.0 kDa',
+    description: 'FOXO4-DRI senolytic peptide researched for selective clearance of senescent cells.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+  {
+    id: 'kpv-10mg',
+    name: 'KPV (Lysine-Proline-Valine) (10mg)',
+    price: 39,
+    category: 'Misc / Rare',
+    quantityLabel: '10mg',
+    image: imgKpv,
+    cas: '67727-97-3',
+    molecularWeight: '342.44 g/mol',
+    description: 'C-terminal alpha-MSH tripeptide researched for anti-inflammatory and gut-related models.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+  {
+    id: 'melanotan2-10mg',
+    name: 'Melanotan II (10mg)',
+    price: 39,
+    category: 'Hormones & Reproductive',
+    quantityLabel: '10mg',
+    image: imgMel,
+    cas: '121062-08-6',
+    molecularWeight: '1024.18 g/mol',
+    description: 'Melanocortin receptor agonist researched for pigmentation and appetite-related studies.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+  {
+    id: 'pt141-10mg',
+    name: 'PT-141 / Bremelanotide (10mg)',
+    price: 49,
+    category: 'Hormones & Reproductive',
+    quantityLabel: '10mg',
+    image: imgDisp2,
+    cas: '189691-06-3',
+    molecularWeight: '1025.18 g/mol',
+    description: 'Bremelanotide researched for melanocortin receptor activity and sexual response models.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
+  {
+    id: 'thymalin-10mg',
+    name: 'Thymalin (10mg)',
+    price: 60,
+    category: 'Misc / Rare',
+    quantityLabel: '10mg',
+    image: imgDisp2,
+    cas: '67724-13-2',
+    molecularWeight: '~1.0 kDa (peptide complex)',
+    description: 'Thymic peptide complex researched for immune regulation and longevity models.',
+    form: 'Lyophilized powder (vial)',
+    purity: '≥99% (third-party tested)',
+    storage: 'Refrigerate at 2–8°C after reconstitution',
+  },
 
 ];
 
@@ -1045,7 +1134,7 @@ const SDS_FILENAME_BY_PRODUCT_ID: Record<string, string> = {
   'b12-10ml': 'vitamin-b12-cobalamin-10ml-SDS.pdf',
 };
 
-const WOO_ID_BY_PRODUCT_ID: Record<string, number> = {
+export const WOO_ID_BY_PRODUCT_ID: Record<string, number> = {
   'bpc-157-5mg': 25,
   'bpc-157-10mg': 26,
   'bpc-157-20mg': 45,
@@ -1107,6 +1196,29 @@ const WOO_ID_BY_PRODUCT_ID: Record<string, number> = {
   'ara290-10mg': 81,
   'pnc27-10mg': 80,
   'b12-10ml': 57,
+  'thymosin-alpha-1-10mg': 42,
+  'foxo4-10mg': 61,
+  'kpv-10mg': 70,
+  'melanotan2-10mg': 75,
+  'pt141-10mg': 79,
+  'thymalin-10mg': 84,
+  'members-sema-10mg': 92,
+  'members-sema-20mg': 93,
+  'members-sema-30mg': 94,
+  'members-tirz-10mg': 95,
+  'members-tirz-20mg': 96,
+  'members-tirz-30mg': 97,
+  'members-tirz-40mg': 98,
+  'members-tirz-50mg': 99,
+  'members-tirz-60mg': 100,
+  'members-reta-10mg': 101,
+  'members-reta-20mg': 102,
+  'members-reta-30mg': 103,
+  'members-reta-40mg': 104,
+  'members-reta-50mg': 105,
+  'members-reta-60mg': 90,
+  'members-cagsema-5-5mg': 106,
+  'members-cagsema-25-25mg': 107,
 };
 
 for (const product of PRODUCTS) {
