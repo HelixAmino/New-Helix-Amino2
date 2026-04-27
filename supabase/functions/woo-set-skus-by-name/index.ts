@@ -144,12 +144,15 @@ Deno.serve(async (req: Request) => {
     const auth = "Basic " + btoa(`${ck}:${cs}`);
     const base = siteUrl.replace(/\/$/, "") + "/wp-json/wc/v3";
 
+    const url = new URL(req.url);
+    const mode = url.searchParams.get("mode") ?? "all";
+
     const all: Product[] = [];
-    const perPage = 20;
-    for (let page = 1; page < 50; page++) {
+    const perPage = 100;
+    for (let page = 1; page < 30; page++) {
       let lastErr = "";
       let data: Product[] | null = null;
-      for (let attempt = 0; attempt < 6; attempt++) {
+      for (let attempt = 0; attempt < 4; attempt++) {
         const r = await fetch(
           `${base}/products?per_page=${perPage}&page=${page}&_fields=id,name,sku&status=any&orderby=id&order=asc`,
           { headers: { Authorization: auth } },
@@ -159,41 +162,49 @@ Deno.serve(async (req: Request) => {
           break;
         }
         lastErr = `${r.status}`;
-        await new Promise((res) => setTimeout(res, 2000 * (attempt + 1)));
+        await new Promise((res) => setTimeout(res, 1000 * (attempt + 1)));
       }
       if (data === null) throw new Error(`list ${lastErr}`);
       if (!Array.isArray(data) || data.length === 0) break;
       all.push(...data);
       if (data.length < perPage) break;
-      await new Promise((res) => setTimeout(res, 500));
     }
 
-    const toDelete = all.filter((p) => p.id >= DELETE_ID_THRESHOLD);
-    const deleted: Array<{ id: number; ok: boolean; status?: number; error?: string }> = [];
+    async function runConcurrent<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+      const results: R[] = new Array(items.length);
+      let i = 0;
+      const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+        while (true) {
+          const idx = i++;
+          if (idx >= items.length) return;
+          results[idx] = await fn(items[idx]);
+        }
+      });
+      await Promise.all(workers);
+      return results;
+    }
 
-    for (const p of toDelete) {
+    const toDelete = mode === "assign" ? [] : all.filter((p) => p.id >= DELETE_ID_THRESHOLD);
+    const deleted = await runConcurrent(toDelete, 6, async (p) => {
       try {
-        const clearR = await fetch(`${base}/products/${p.id}`, {
+        await fetch(`${base}/products/${p.id}`, {
           method: "PUT",
           headers: { Authorization: auth, "Content-Type": "application/json" },
           body: JSON.stringify({ sku: "" }),
         });
-        if (!clearR.ok) {
-        }
         const r = await fetch(`${base}/products/${p.id}?force=true`, {
           method: "DELETE",
           headers: { Authorization: auth },
         });
         if (!r.ok) {
           const t = await r.text();
-          deleted.push({ id: p.id, ok: false, status: r.status, error: t.slice(0, 200) });
-          continue;
+          return { id: p.id, ok: false, status: r.status, error: t.slice(0, 200) } as { id: number; ok: boolean; status?: number; error?: string };
         }
-        deleted.push({ id: p.id, ok: true });
+        return { id: p.id, ok: true } as { id: number; ok: boolean; status?: number; error?: string };
       } catch (e) {
-        deleted.push({ id: p.id, ok: false, error: e instanceof Error ? e.message : String(e) });
+        return { id: p.id, ok: false, error: e instanceof Error ? e.message : String(e) } as { id: number; ok: boolean; status?: number; error?: string };
       }
-    }
+    });
 
     const remaining = all.filter((p) => p.id < DELETE_ID_THRESHOLD);
     const byNorm = new Map<string, Product[]>();
@@ -204,9 +215,7 @@ Deno.serve(async (req: Request) => {
       byNorm.set(k, arr);
     }
 
-    const skuActions: Array<{ id: number; name: string; before: string; after: string; status: string; error?: string }> = [];
     const mappingsNoMatch: Array<{ ypb: string; name: string }> = [];
-
     const targetByWooId = new Map<number, string>();
     for (const m of MAPPINGS) {
       const k = normalize(m.name);
@@ -219,17 +228,12 @@ Deno.serve(async (req: Request) => {
       targetByWooId.set(chosen.id, m.ypb);
     }
 
-    for (const p of remaining) {
-      const target = targetByWooId.get(p.id);
-      if (!target) {
-        if (p.sku && p.sku.length > 0) {
-          continue;
-        }
-        continue;
-      }
+    const toAssign = mode === "delete" ? [] : remaining.filter((p) => targetByWooId.has(p.id));
+    type Action = { id: number; name: string; before: string; after: string; status: string; error?: string };
+    const skuActions = await runConcurrent<Product, Action>(toAssign, 6, async (p) => {
+      const target = targetByWooId.get(p.id)!;
       if (p.sku === target) {
-        skuActions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "skip-already-set" });
-        continue;
+        return { id: p.id, name: p.name, before: p.sku, after: p.sku, status: "skip-already-set" };
       }
       try {
         const r = await fetch(`${base}/products/${p.id}`, {
@@ -239,14 +243,13 @@ Deno.serve(async (req: Request) => {
         });
         if (!r.ok) {
           const t = await r.text();
-          skuActions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: `${r.status} ${t.slice(0, 200)}` });
-          continue;
+          return { id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: `${r.status} ${t.slice(0, 200)}` };
         }
-        skuActions.push({ id: p.id, name: p.name, before: p.sku, after: target, status: "set" });
+        return { id: p.id, name: p.name, before: p.sku, after: target, status: "set" };
       } catch (e) {
-        skuActions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: e instanceof Error ? e.message : String(e) });
+        return { id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: e instanceof Error ? e.message : String(e) };
       }
-    }
+    });
 
     return new Response(JSON.stringify({
       summary: {
