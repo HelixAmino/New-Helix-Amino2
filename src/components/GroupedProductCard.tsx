@@ -1,6 +1,7 @@
-import { FlaskConical, Layers, FileText, ShieldAlert } from 'lucide-react';
+import { FlaskConical, Layers, FileText, ShieldAlert, Plus } from 'lucide-react';
 import { ProductGroup } from '../types';
 import { useNavigation } from '../context/NavigationContext';
+import { QuickAddButton } from './QuickAddButton';
 
 interface Props {
   group: ProductGroup;
@@ -53,6 +54,19 @@ export function GroupedProductCard({ group }: Props) {
             <Layers className="w-3 h-3 text-teal-400" />
             <span className="text-teal-300 text-[10px] font-bold">{group.variants.length} sizes</span>
           </div>
+        )}
+
+        {isMulti ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); navigate('product', group.variants[0].id); }}
+            aria-label={`Choose size for ${group.baseName}`}
+            className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 pl-2.5 pr-3 py-2 rounded-full text-xs font-bold tracking-wide shadow-[0_8px_24px_rgba(0,212,255,0.35)] backdrop-blur-md border bg-cyan-500/90 border-cyan-300/50 text-white hover:bg-cyan-400 hover:shadow-[0_10px_30px_rgba(0,212,255,0.55)] transition-all duration-300 active:scale-90"
+          >
+            <Plus className="w-4 h-4" strokeWidth={3} />
+            <span>Choose Size</span>
+          </button>
+        ) : (
+          <QuickAddButton product={group.variants[0]} />
         )}
       </div>
 

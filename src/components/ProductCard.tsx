@@ -2,6 +2,7 @@ import { ShoppingCart, FlaskConical, FileText, ShieldAlert } from 'lucide-react'
 import { Product } from '../types';
 import { useNavigation } from '../context/NavigationContext';
 import { useCart } from '../context/CartContext';
+import { QuickAddButton } from './QuickAddButton';
 
 interface Props {
   product: Product;
@@ -88,6 +89,8 @@ export function ProductCard({ product }: Props) {
           <FlaskConical className="w-3 h-3 text-cyan-400" />
           <span className="text-cyan-300 text-[10px] font-bold">≥99%</span>
         </div>
+
+        <QuickAddButton product={product} />
       </div>
 
       {/* Info */}
