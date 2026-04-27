@@ -9,10 +9,28 @@ export interface WooOrderResponse {
   currency: string;
 }
 
+export interface WooAddress {
+  first_name: string;
+  last_name: string;
+  email?: string;
+  address_1: string;
+  address_2?: string;
+  city: string;
+  state: string;
+  postcode: string;
+  country: string;
+  phone?: string;
+}
+
 export interface CreateWooOrderInput {
   items: OrderLineItem[];
   paymentMethod?: 'venmo' | 'zelle';
   customerNote?: string;
+  billing?: WooAddress;
+  shipping?: Omit<WooAddress, 'email' | 'phone'>;
+  shippingTotal?: number;
+  shippingMethodId?: string;
+  shippingMethodTitle?: string;
 }
 
 /**
@@ -34,10 +52,10 @@ export async function createWooOrder(
       quantity: i.quantity,
     }));
 
-  const billing = {
+  const billing = input.billing ?? {
     first_name: 'Customer',
     last_name: 'Guest',
-    email: 'mailto:customer@helixamino.com',
+    email: 'customer@helixamino.com',
     address_1: '',
     address_2: '',
     city: '',
@@ -45,6 +63,17 @@ export async function createWooOrder(
     postcode: '',
     country: 'US',
     phone: '',
+  };
+
+  const shipping = input.shipping ?? {
+    first_name: billing.first_name,
+    last_name: billing.last_name,
+    address_1: billing.address_1,
+    address_2: billing.address_2 ?? '',
+    city: billing.city,
+    state: billing.state,
+    postcode: billing.postcode,
+    country: billing.country,
   };
 
   const payload: Record<string, unknown> = {
@@ -58,9 +87,20 @@ export async function createWooOrder(
         ? 'Venmo (off-platform)'
         : 'Venmo / Zelle (off-platform)',
     billing,
+    shipping,
     line_items,
     customer_note: input.customerNote ?? '',
   };
+
+  if (typeof input.shippingTotal === 'number' && input.shippingMethodId) {
+    payload.shipping_lines = [
+      {
+        method_id: input.shippingMethodId,
+        method_title: input.shippingMethodTitle ?? 'Shipping',
+        total: input.shippingTotal.toFixed(2),
+      },
+    ];
+  }
 
   return apiFetch<WooOrderResponse>('/wc/v3/orders', {
     method: 'POST',

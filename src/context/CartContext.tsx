@@ -23,6 +23,46 @@ export interface AppliedCoupon {
   discount: number;
 }
 
+export interface CustomerInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  postcode: string;
+  country: string;
+}
+
+const EMPTY_CUSTOMER: CustomerInfo = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  address1: '',
+  address2: '',
+  city: '',
+  state: '',
+  postcode: '',
+  country: 'US',
+};
+
+const CUSTOMER_STORAGE_KEY = 'helix:customer';
+
+function loadCustomerInfo(): CustomerInfo {
+  if (typeof window === 'undefined') return EMPTY_CUSTOMER;
+  try {
+    const raw = window.localStorage.getItem(CUSTOMER_STORAGE_KEY);
+    if (!raw) return EMPTY_CUSTOMER;
+    const parsed = JSON.parse(raw) as Partial<CustomerInfo>;
+    return { ...EMPTY_CUSTOMER, ...parsed };
+  } catch {
+    return EMPTY_CUSTOMER;
+  }
+}
+
 interface CartContextValue {
   items: CartItem[];
   addItem: (product: Product, quantity: number) => Promise<void>;
@@ -45,6 +85,8 @@ interface CartContextValue {
   shippingRates: ShippingRate[];
   selectShipping: (rateKey: string) => Promise<void>;
   computeShipping: (address?: { country?: string; state?: string; postcode?: string; city?: string }) => Promise<void>;
+  customer: CustomerInfo;
+  setCustomer: (info: CustomerInfo) => void;
   syncing: boolean;
   couponError: string | null;
   checkoutLoading: boolean;
@@ -162,7 +204,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
+  const [customer, setCustomerState] = useState<CustomerInfo>(() => loadCustomerInfo());
   const itemKeyMap = useRef<Map<string, string>>(new Map());
+
+  const setCustomer = useCallback((info: CustomerInfo) => {
+    setCustomerState(info);
+    try {
+      window.localStorage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify(info));
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const applyCart = useCallback((res: cocart.CoCartResponse) => {
     itemKeyMap.current.clear();
@@ -288,8 +340,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
           postcode: address?.postcode,
           city: address?.city,
         });
+        console.log('[computeShipping] CoCart response', {
+          shipping_total: res.totals?.shipping_total,
+          has_calculated_shipping: res.shipping?.has_calculated_shipping,
+          packages: res.shipping?.packages,
+        });
         let final = res;
         const totals = readServerTotals(res);
+        console.log('[computeShipping] parsed rates', totals.shippingRates);
         const hasNonFree = totals.shippingRates.some((r) => r.cost > 0);
         const chosen = totals.shippingRates.find((r) => r.chosen);
         if (
@@ -401,6 +459,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const checkout = async (): Promise<Order> => {
     if (items.length === 0) throw new Error('Your cart is empty');
+    if (!customer.firstName || !customer.lastName || !customer.address1 || !customer.city || !customer.state || !customer.postcode || !customer.country) {
+      throw new Error('Please complete your shipping address before checking out.');
+    }
+    if (!customer.email) {
+      throw new Error('Please enter an email address so we can send your order confirmation.');
+    }
     setCheckoutLoading(true);
     try {
       const lineItems = buildLineItems();
@@ -409,24 +473,52 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData.session?.user ?? null;
+      const chosenRate = serverTotals.shippingRates.find((r) => r.chosen);
 
       let wooOrderNumber: string | null = null;
       try {
-        const woo = await createWooOrder({ items: lineItems });
+        const woo = await createWooOrder({
+          items: lineItems,
+          billing: {
+            first_name: customer.firstName,
+            last_name: customer.lastName,
+            email: customer.email,
+            phone: customer.phone,
+            address_1: customer.address1,
+            address_2: customer.address2,
+            city: customer.city,
+            state: customer.state,
+            postcode: customer.postcode,
+            country: customer.country,
+          },
+          shipping: {
+            first_name: customer.firstName,
+            last_name: customer.lastName,
+            address_1: customer.address1,
+            address_2: customer.address2,
+            city: customer.city,
+            state: customer.state,
+            postcode: customer.postcode,
+            country: customer.country,
+          },
+          shippingTotal: serverTotals.shipping,
+          shippingMethodId: chosenRate?.key.split(':')[0],
+          shippingMethodTitle: chosenRate?.label,
+        });
         wooOrderNumber = woo?.number ? String(woo.number) : String(woo.id);
       } catch (err) {
         console.warn('[checkout] WooCommerce order creation failed', err);
       }
 
+      const fullName = `${customer.firstName} ${customer.lastName}`.trim();
       const order = await createOrder({
         items: lineItems,
         subtotal: subtotalAmt,
         total,
         cartKey: getCartKey() ?? '',
         userId: user?.id ?? null,
-        customerName:
-          (user?.user_metadata?.full_name as string | undefined) ?? '',
-        customerEmail: user?.email ?? '',
+        customerName: fullName || (user?.user_metadata?.full_name as string | undefined) || '',
+        customerEmail: customer.email || user?.email || '',
       });
 
       const merged: Order = wooOrderNumber
@@ -466,6 +558,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         shippingRates: serverTotals.shippingRates,
         selectShipping,
         computeShipping,
+        customer,
+        setCustomer,
         syncing,
         couponError,
         checkoutLoading,

@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import { Trash2, Plus, Minus, ShoppingCart, ChevronLeft, Tag, Loader as Loader2, RefreshCw, X } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import { useEffect, useState } from 'react';
+import { Trash2, Plus, Minus, ShoppingCart, ChevronLeft, Tag, Loader as Loader2, RefreshCw, X, MapPin, Truck } from 'lucide-react';
+import { useCart, CustomerInfo } from '../context/CartContext';
 import { useNavigation } from '../context/NavigationContext';
 import { getDiscountedPrice, getDiscountLabel } from '../data/products';
+
+const US_STATES = [
+  'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC',
+];
 
 export function CartPage() {
   const {
@@ -21,11 +25,69 @@ export function CartPage() {
     totalItems,
     checkout,
     checkoutLoading,
+    customer,
+    setCustomer,
+    computeShipping,
+    selectShipping,
+    shipping,
+    shippingRates,
+    hasCalculatedShipping,
   } = useCart();
   const { navigate } = useNavigation();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [couponInput, setCouponInput] = useState('');
   const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [calculatingShipping, setCalculatingShipping] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
+
+  const addressComplete =
+    !!customer.firstName.trim() &&
+    !!customer.lastName.trim() &&
+    !!customer.email.trim() &&
+    !!customer.address1.trim() &&
+    !!customer.city.trim() &&
+    !!customer.state.trim() &&
+    !!customer.postcode.trim() &&
+    !!customer.country.trim();
+
+  const shippingReady = hasCalculatedShipping && shippingRates.length > 0;
+  const chosenRate = shippingRates.find((r) => r.chosen);
+
+  function updateCustomerField<K extends keyof CustomerInfo>(key: K, value: CustomerInfo[K]) {
+    setCustomer({ ...customer, [key]: value });
+  }
+
+  async function handleCalculateShipping() {
+    if (!addressComplete || calculatingShipping) return;
+    setShippingError(null);
+    setCalculatingShipping(true);
+    try {
+      await computeShipping({
+        country: customer.country,
+        state: customer.state,
+        postcode: customer.postcode,
+        city: customer.city,
+      });
+    } catch (e) {
+      setShippingError(e instanceof Error ? e.message : 'Could not calculate shipping. Try again.');
+    } finally {
+      setCalculatingShipping(false);
+    }
+  }
+
+  async function handleSelectRate(key: string) {
+    try {
+      await selectShipping(key);
+    } catch (e) {
+      setShippingError(e instanceof Error ? e.message : 'Could not switch shipping method.');
+    }
+  }
+
+  useEffect(() => {
+    if (!addressComplete || calculatingShipping || hasCalculatedShipping) return;
+    handleCalculateShipping();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleApplyCoupon() {
     if (!couponInput.trim() || applyingCoupon) return;
@@ -164,6 +226,125 @@ export function CartPage() {
               </div>
             );
           })}
+
+          <div className="bg-[#07111d] border border-cyan-900/20 rounded-2xl p-5 sm:p-6 mt-6">
+            <div className="flex items-center gap-2 mb-1">
+              <MapPin className="w-4 h-4 text-cyan-400" />
+              <h2 className="text-white font-bold text-base">Shipping Address</h2>
+            </div>
+            <p className="text-gray-500 text-xs mb-5">
+              Enter your name and shipping address. Shipping is calculated against carrier zones.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="First name" required>
+                <input type="text" autoComplete="given-name" value={customer.firstName}
+                  onChange={(e) => updateCustomerField('firstName', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="Last name" required>
+                <input type="text" autoComplete="family-name" value={customer.lastName}
+                  onChange={(e) => updateCustomerField('lastName', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="Email" required>
+                <input type="email" autoComplete="email" value={customer.email}
+                  onChange={(e) => updateCustomerField('email', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="Phone (optional)">
+                <input type="tel" autoComplete="tel" value={customer.phone}
+                  onChange={(e) => updateCustomerField('phone', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="Address" required className="sm:col-span-2">
+                <input type="text" autoComplete="address-line1" value={customer.address1}
+                  onChange={(e) => updateCustomerField('address1', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="Apt / Suite (optional)" className="sm:col-span-2">
+                <input type="text" autoComplete="address-line2" value={customer.address2}
+                  onChange={(e) => updateCustomerField('address2', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="City" required>
+                <input type="text" autoComplete="address-level2" value={customer.city}
+                  onChange={(e) => updateCustomerField('city', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="State" required>
+                <select autoComplete="address-level1" value={customer.state}
+                  onChange={(e) => updateCustomerField('state', e.target.value)} className={inputClass}>
+                  <option value="" className="bg-[#050d14]">Select state</option>
+                  {US_STATES.map((s) => (
+                    <option key={s} value={s} className="bg-[#050d14]">{s}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="ZIP / Postcode" required>
+                <input type="text" autoComplete="postal-code" value={customer.postcode}
+                  onChange={(e) => updateCustomerField('postcode', e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="Country" required>
+                <select autoComplete="country" value={customer.country}
+                  onChange={(e) => updateCustomerField('country', e.target.value)} className={inputClass}>
+                  <option value="US" className="bg-[#050d14]">United States</option>
+                </select>
+              </Field>
+            </div>
+
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <button type="button" onClick={handleCalculateShipping}
+                disabled={!addressComplete || calculatingShipping}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-900/40 border border-cyan-700/50 hover:bg-cyan-800/50 disabled:opacity-40 disabled:cursor-not-allowed text-cyan-100 text-xs font-bold rounded-lg transition-colors">
+                {calculatingShipping && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {shippingReady ? 'Recalculate shipping' : 'Calculate shipping'}
+              </button>
+              {shippingReady && (
+                <span className="text-[11px] text-gray-500">
+                  {chosenRate?.label}: <span className="text-cyan-300 font-semibold">{shipping > 0 ? `$${shipping.toFixed(2)}` : 'Free'}</span>
+                </span>
+              )}
+            </div>
+
+            {shippingError && (
+              <p className="text-red-400 text-[11px] mt-3 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                {shippingError}
+              </p>
+            )}
+
+            {shippingReady && shippingRates.length > 0 && (
+              <div className="mt-5 border-t border-cyan-900/20 pt-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-1.5">
+                  <Truck className="w-3 h-3" /> Shipping Method
+                </p>
+                <div className="space-y-2">
+                  {shippingRates.map((rate) => (
+                    <label
+                      key={rate.key}
+                      className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors ${
+                        rate.chosen
+                          ? 'border-cyan-600/60 bg-cyan-950/30'
+                          : 'border-cyan-900/30 hover:border-cyan-800/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <input
+                          type="radio"
+                          name="shippingRate"
+                          checked={rate.chosen}
+                          onChange={() => handleSelectRate(rate.key)}
+                          className="accent-cyan-500"
+                        />
+                        <span className="text-xs text-gray-200 font-medium truncate">{rate.label}</span>
+                      </div>
+                      <span className="text-xs font-bold text-white shrink-0">
+                        {rate.cost > 0 ? `$${rate.cost.toFixed(2)}` : 'Free'}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {shippingRates.length === 1 && (
+                  <p className="text-[10px] text-gray-600 mt-2 leading-snug">
+                    Only one rate is configured for this destination in WooCommerce. Add more rates in Woo &rarr; Shipping Zones if needed.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Order summary */}
@@ -261,8 +442,18 @@ export function CartPage() {
                 </div>
               )}
               <div className="flex justify-between text-xs">
-                <span className="text-gray-500">Shipping</span>
-                <span className="text-gray-400 font-semibold">Calculated at checkout</span>
+                <span className="text-gray-500">{chosenRate?.label ?? 'Shipping'}</span>
+                <span className="text-gray-200 font-semibold">
+                  {shippingReady
+                    ? shipping > 0
+                      ? `$${shipping.toFixed(2)}`
+                      : 'Free'
+                    : calculatingShipping
+                      ? 'Calculating…'
+                      : addressComplete
+                        ? 'Tap calculate'
+                        : 'Enter address'}
+                </span>
               </div>
               {tax > 0 && (
                 <div className="flex justify-between text-xs">
@@ -272,7 +463,9 @@ export function CartPage() {
               )}
               <div className="flex justify-between items-baseline pt-2 border-t border-cyan-900/20">
                 <span className="text-gray-400 text-sm">Total</span>
-                <span className="text-white font-black text-2xl">${Math.max(0, itemsSubtotal + tax - discount).toFixed(2)}</span>
+                <span className="text-white font-black text-2xl">
+                  ${Math.max(0, itemsSubtotal + tax - discount + (shippingReady ? shipping : 0)).toFixed(2)}
+                </span>
               </div>
             </div>
 
@@ -283,11 +476,17 @@ export function CartPage() {
             )}
             <button
               onClick={handleCheckout}
-              disabled={checkoutLoading}
+              disabled={checkoutLoading || !addressComplete || !shippingReady}
               className="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] active:scale-95 mb-3 flex items-center justify-center gap-2"
             >
               {checkoutLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {checkoutLoading ? 'Preparing checkout…' : 'Proceed to Checkout'}
+              {checkoutLoading
+                ? 'Preparing checkout…'
+                : !addressComplete
+                  ? 'Enter shipping address'
+                  : !shippingReady
+                    ? 'Calculate shipping to continue'
+                    : 'Proceed to Checkout'}
             </button>
             <button
               onClick={() => navigate('home')}
@@ -304,5 +503,30 @@ export function CartPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+const inputClass =
+  'w-full bg-[#050d14] border border-cyan-900/30 focus:border-cyan-600/60 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none transition-colors';
+
+function Field({
+  label,
+  required,
+  className,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className={`block ${className ?? ''}`}>
+      <span className="block text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-1.5">
+        {label}
+        {required && <span className="text-cyan-400 ml-1">*</span>}
+      </span>
+      {children}
+    </label>
   );
 }
