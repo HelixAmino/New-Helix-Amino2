@@ -178,13 +178,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const applyWithShippingRecalc = useCallback(
     async (res: cocart.CoCartResponse) => {
-      let final = res;
-      try {
-        final = await cocart.updateCustomer({ country: 'US' });
-      } catch {
-        /* ignore */
-      }
-      applyCart(final);
+      applyCart(res);
     },
     [applyCart],
   );
@@ -192,12 +186,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const refreshCart = useCallback(async () => {
     setSyncing(true);
     try {
-      let remote = await cocart.getCart();
-      try {
-        remote = await cocart.updateCustomer({ country: 'US' });
-      } catch {
-        /* ignore */
-      }
+      const remote = await cocart.getCart();
       applyCart(remote);
     } finally {
       setSyncing(false);
@@ -210,13 +199,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         setSyncing(true);
         await loadProductMap();
-        let remote = await cocart.getCart();
-        if (cancelled) return;
-        try {
-          remote = await cocart.updateCustomer({ country: 'US' });
-        } catch {
-          /* ignore */
-        }
+        const remote = await cocart.getCart();
         if (cancelled) return;
         applyCart(remote);
       } catch {
