@@ -19,18 +19,33 @@ import { supabase } from '../lib/supabase';
 
 export const SHIPPING_FLAT = 5;
 
+export interface AppliedCoupon {
+  code: string;
+  label?: string;
+  discount: number;
+}
+
 interface CartContextValue {
   items: CartItem[];
   addItem: (product: Product, quantity: number) => Promise<void>;
   updateQuantity: (productId: string, quantity: number) => Promise<void>;
   removeItem: (productId: string) => Promise<void>;
   clearCart: () => Promise<void>;
+  refreshCart: () => Promise<void>;
+  applyCoupon: (code: string) => Promise<void>;
+  removeCoupon: (code: string) => Promise<void>;
   checkout: () => Promise<Order>;
   totalItems: number;
   itemsSubtotal: number;
   shipping: number;
+  tax: number;
+  discount: number;
   grandTotal: number;
+  hasCalculatedShipping: boolean;
+  needsShipping: boolean;
+  coupons: AppliedCoupon[];
   syncing: boolean;
+  couponError: string | null;
   checkoutLoading: boolean;
   activeOrder: Order | null;
   setActiveOrder: (order: Order | null) => void;
@@ -53,9 +68,59 @@ function resolveWooId(product: Product): number | undefined {
   return getWooIdForSku(product.id);
 }
 
+function num(v: unknown): number {
+  if (typeof v === 'number') return v;
+  if (typeof v !== 'string' || v.length === 0) return 0;
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+interface ServerTotals {
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  discount: number;
+  total: number;
+  hasCalculatedShipping: boolean;
+  needsShipping: boolean;
+  coupons: AppliedCoupon[];
+}
+
+const EMPTY_TOTALS: ServerTotals = {
+  subtotal: 0,
+  shipping: 0,
+  tax: 0,
+  discount: 0,
+  total: 0,
+  hasCalculatedShipping: false,
+  needsShipping: false,
+  coupons: [],
+};
+
+function readServerTotals(res: cocart.CoCartResponse): ServerTotals {
+  const t = res.totals ?? ({} as cocart.CoCartResponse['totals']);
+  const coupons: AppliedCoupon[] = (res.coupons ?? []).map((c) => ({
+    code: c.coupon,
+    label: c.label,
+    discount: num(c.saving ?? c.discount_amount),
+  }));
+  return {
+    subtotal: num(t.subtotal),
+    shipping: num(t.shipping_total) + num(t.shipping_tax),
+    tax: num(t.tax_total),
+    discount: num(t.discount_total),
+    total: num(t.total),
+    hasCalculatedShipping: Boolean(res.shipping?.has_calculated_shipping),
+    needsShipping: Boolean(res.needs_shipping),
+    coupons,
+  };
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [serverTotals, setServerTotals] = useState<ServerTotals>(EMPTY_TOTALS);
   const [syncing, setSyncing] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const itemKeyMap = useRef<Map<string, string>>(new Map());
@@ -70,7 +135,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       next.push({ product, quantity: it.quantity.value });
     }
     setItems(next);
+    setServerTotals(readServerTotals(res));
   }, []);
+
+  const refreshCart = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const remote = await cocart.getCart();
+      applyCart(remote);
+    } finally {
+      setSyncing(false);
+    }
+  }, [applyCart]);
 
   useEffect(() => {
     let cancelled = false;
@@ -108,6 +184,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [applyCart],
   );
 
+  const removeItemInternal = useCallback(
+    async (productId: string) => {
+      const key = itemKeyMap.current.get(productId);
+      if (!key) {
+        setItems((prev) => prev.filter((i) => i.product.id !== productId));
+        return;
+      }
+      setSyncing(true);
+      try {
+        const res = await cocart.removeItem(key);
+        applyCart(res);
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [applyCart],
+  );
+
   const updateQuantity = useCallback(
     async (productId: string, quantity: number) => {
       if (quantity < 1) {
@@ -133,25 +227,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setSyncing(false);
       }
     },
-    [applyCart],
-  );
-
-  const removeItemInternal = useCallback(
-    async (productId: string) => {
-      const key = itemKeyMap.current.get(productId);
-      if (!key) {
-        setItems((prev) => prev.filter((i) => i.product.id !== productId));
-        return;
-      }
-      setSyncing(true);
-      try {
-        const res = await cocart.removeItem(key);
-        applyCart(res);
-      } finally {
-        setSyncing(false);
-      }
-    },
-    [applyCart],
+    [applyCart, removeItemInternal],
   );
 
   const removeItem = removeItemInternal;
@@ -166,6 +242,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [applyCart]);
 
+  const applyCouponCode = useCallback(
+    async (code: string) => {
+      const trimmed = code.trim();
+      if (!trimmed) return;
+      setSyncing(true);
+      setCouponError(null);
+      try {
+        const res = await cocart.applyCoupon(trimmed);
+        applyCart(res);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Coupon could not be applied.';
+        setCouponError(msg);
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [applyCart],
+  );
+
+  const removeCouponCode = useCallback(
+    async (code: string) => {
+      setSyncing(true);
+      try {
+        const res = await cocart.removeCoupon(code);
+        applyCart(res);
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [applyCart],
+  );
+
   const buildLineItems = (): OrderLineItem[] =>
     items.map((item) => {
       const unit = +getDiscountedPrice(item.product.price, item.quantity).toFixed(2);
@@ -179,13 +287,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
       };
     });
 
+  const localSubtotal = items.reduce((sum, i) => {
+    const discounted = getDiscountedPrice(i.product.price, i.quantity);
+    return sum + discounted * i.quantity;
+  }, 0);
+
+  const itemsSubtotal = serverTotals.subtotal > 0 ? serverTotals.subtotal : localSubtotal;
+  const shipping = serverTotals.hasCalculatedShipping
+    ? serverTotals.shipping
+    : items.length > 0
+      ? SHIPPING_FLAT
+      : 0;
+  const tax = serverTotals.tax;
+  const discount = serverTotals.discount;
+  const grandTotal =
+    serverTotals.total > 0
+      ? serverTotals.total
+      : Math.max(0, itemsSubtotal + shipping + tax - discount);
+
   const checkout = async (): Promise<Order> => {
     if (items.length === 0) throw new Error('Your cart is empty');
     setCheckoutLoading(true);
     try {
       const lineItems = buildLineItems();
-      const subtotal = +lineItems.reduce((s, l) => s + l.lineTotal, 0).toFixed(2);
-      const total = +(subtotal + SHIPPING_FLAT).toFixed(2);
+      const subtotalAmt = +lineItems.reduce((s, l) => s + l.lineTotal, 0).toFixed(2);
+      const total = +grandTotal.toFixed(2);
 
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData.session?.user ?? null;
@@ -200,7 +326,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       const order = await createOrder({
         items: lineItems,
-        subtotal,
+        subtotal: subtotalAmt,
         total,
         cartKey: getCartKey() ?? '',
         userId: user?.id ?? null,
@@ -222,14 +348,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
-  const itemsSubtotal = items.reduce((sum, i) => {
-    const discounted = getDiscountedPrice(i.product.price, i.quantity);
-    return sum + discounted * i.quantity;
-  }, 0);
-
-  const shipping = items.length > 0 ? SHIPPING_FLAT : 0;
-  const grandTotal = itemsSubtotal + shipping;
-
   return (
     <CartContext.Provider
       value={{
@@ -238,12 +356,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         removeItem,
         clearCart,
+        refreshCart,
+        applyCoupon: applyCouponCode,
+        removeCoupon: removeCouponCode,
         checkout,
         totalItems,
         itemsSubtotal,
         shipping,
+        tax,
+        discount,
         grandTotal,
+        hasCalculatedShipping: serverTotals.hasCalculatedShipping,
+        needsShipping: serverTotals.needsShipping,
+        coupons: serverTotals.coupons,
         syncing,
+        couponError,
         checkoutLoading,
         activeOrder,
         setActiveOrder,
