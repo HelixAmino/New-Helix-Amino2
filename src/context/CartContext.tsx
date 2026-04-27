@@ -192,7 +192,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         setSyncing(true);
         await loadProductMap();
-        const remote = await cocart.getCart();
+        let remote = await cocart.getCart();
+        if (cancelled) return;
+        if (!remote.shipping?.has_calculated_shipping || !readShippingRates(remote).length) {
+          try {
+            remote = await cocart.updateCustomer({ country: 'US' });
+          } catch {
+            /* ignore */
+          }
+        }
         if (cancelled) return;
         applyCart(remote);
       } catch {
