@@ -44,6 +44,7 @@ interface CartContextValue {
   coupons: AppliedCoupon[];
   shippingRates: ShippingRate[];
   selectShipping: (rateKey: string) => Promise<void>;
+  computeShipping: (address?: { country?: string; state?: string; postcode?: string; city?: string }) => Promise<void>;
   syncing: boolean;
   couponError: string | null;
   checkoutLoading: boolean;
@@ -277,6 +278,45 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeItem = removeItemInternal;
 
+  const computeShipping = useCallback(
+    async (address?: { country?: string; state?: string; postcode?: string; city?: string }) => {
+      setSyncing(true);
+      try {
+        const res = await cocart.updateCustomer({
+          country: address?.country ?? 'US',
+          state: address?.state,
+          postcode: address?.postcode,
+          city: address?.city,
+        });
+        let final = res;
+        const totals = readServerTotals(res);
+        const hasNonFree = totals.shippingRates.some((r) => r.cost > 0);
+        const chosen = totals.shippingRates.find((r) => r.chosen);
+        if (
+          hasNonFree &&
+          chosen &&
+          chosen.cost === 0 &&
+          /free/i.test(chosen.key + ' ' + chosen.label)
+        ) {
+          const cheapest = totals.shippingRates
+            .filter((r) => r.cost > 0)
+            .sort((a, b) => a.cost - b.cost)[0];
+          if (cheapest) {
+            try {
+              final = await cocart.selectShippingMethod([cheapest.key]);
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+        applyCart(final);
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [applyCart],
+  );
+
   const selectShipping = useCallback(
     async (rateKey: string) => {
       setSyncing(true);
@@ -425,6 +465,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         coupons: serverTotals.coupons,
         shippingRates: serverTotals.shippingRates,
         selectShipping,
+        computeShipping,
         syncing,
         couponError,
         checkoutLoading,

@@ -26,7 +26,18 @@ const ZELLE_QR_PDF =
 type PayMethod = 'venmo' | 'zelle';
 
 export function CheckoutPage() {
-  const { activeOrder, items, clearCart, setActiveOrder, tax } = useCart();
+  const {
+    activeOrder,
+    items,
+    clearCart,
+    setActiveOrder,
+    tax,
+    shipping,
+    shippingRates,
+    hasCalculatedShipping,
+    computeShipping,
+    syncing,
+  } = useCart();
   const { navigate } = useNavigation();
   const [method, setMethod] = useState<PayMethod>('venmo');
   const [copied, setCopied] = useState<string | null>(null);
@@ -41,11 +52,25 @@ export function CheckoutPage() {
     }
   }, [activeOrder, navigate]);
 
+  useEffect(() => {
+    if (!activeOrder) return;
+    computeShipping().catch(() => {
+      /* surfaced via UI fallback */
+    });
+  }, [activeOrder, computeShipping]);
+
+  const chosenRate = shippingRates.find((r) => r.chosen);
+  const shippingLabel = chosenRate?.label ?? 'Shipping';
+  const showShipping = hasCalculatedShipping && shippingRates.length > 0;
+  const displayTotal = activeOrder
+    ? +(activeOrder.subtotal + tax + (showShipping ? shipping : 0)).toFixed(2)
+    : 0;
+
   const venmoLink = useMemo(() => {
     if (!activeOrder) return '';
     const handle = VENMO_HANDLE.replace(/^@/, '');
-    return `https://venmo.com/?txn=pay&audience=private&recipients=${encodeURIComponent(handle)}&amount=${activeOrder.total.toFixed(2)}&note=${encodeURIComponent(`Order ${activeOrder.order_number}`)}`;
-  }, [activeOrder]);
+    return `https://venmo.com/?txn=pay&audience=private&recipients=${encodeURIComponent(handle)}&amount=${displayTotal.toFixed(2)}&note=${encodeURIComponent(`Order ${activeOrder.order_number}`)}`;
+  }, [activeOrder, displayTotal]);
 
   const zelleLink = useMemo(() => {
     if (!activeOrder) return '';
@@ -227,7 +252,7 @@ export function CheckoutPage() {
                     type="button"
                     onClick={() =>
                       handleCopy(
-                        `Zelle: ${ZELLE_EMAIL}\nAmount: $${activeOrder.total.toFixed(2)}\nMemo: Order #${activeOrder.order_number}`,
+                        `Zelle: ${ZELLE_EMAIL}\nAmount: $${displayTotal.toFixed(2)}\nMemo: Order #${activeOrder.order_number}`,
                         'zelle-details'
                       )
                     }
@@ -251,7 +276,7 @@ export function CheckoutPage() {
                     type="button"
                     onClick={() =>
                       handleCopy(
-                        `Venmo Username: ${VENMO_HANDLE}\nAmount: $${activeOrder.total.toFixed(2)}\nMemo: Order #${activeOrder.order_number}`,
+                        `Venmo Username: ${VENMO_HANDLE}\nAmount: $${displayTotal.toFixed(2)}\nMemo: Order #${activeOrder.order_number}`,
                         'venmo-details'
                       )
                     }
@@ -303,9 +328,9 @@ export function CheckoutPage() {
                   />
                   <Row
                     label="Amount"
-                    value={`$${activeOrder.total.toFixed(2)} USD`}
+                    value={`$${displayTotal.toFixed(2)} USD`}
                     onCopy={() =>
-                      handleCopy(activeOrder.total.toFixed(2), 'amount')
+                      handleCopy(displayTotal.toFixed(2), 'amount')
                     }
                     copied={copied === 'amount'}
                   />
@@ -420,9 +445,22 @@ export function CheckoutPage() {
                 </span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-gray-500">Shipping</span>
-                <span className="text-gray-400 font-semibold">Invoiced separately</span>
+                <span className="text-gray-500">{shippingLabel}</span>
+                <span className="text-gray-200 font-semibold">
+                  {showShipping
+                    ? shipping > 0
+                      ? `$${shipping.toFixed(2)}`
+                      : 'Free'
+                    : syncing
+                      ? 'Calculating…'
+                      : 'Invoiced separately'}
+                </span>
               </div>
+              {showShipping && shippingRates.length > 1 && (
+                <p className="text-[10px] text-gray-600 leading-snug">
+                  Rate from carrier zone for your region.
+                </p>
+              )}
               {tax > 0 && (
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Tax</span>
@@ -432,7 +470,7 @@ export function CheckoutPage() {
               <div className="flex justify-between items-baseline pt-3">
                 <span className="text-gray-400 text-sm">Total due</span>
                 <span className="text-white font-black text-2xl">
-                  ${activeOrder.total.toFixed(2)}
+                  ${displayTotal.toFixed(2)}
                 </span>
               </div>
             </div>
