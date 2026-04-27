@@ -100,6 +100,8 @@ const NAME_ALIASES: Array<[string, string]> = [
   ["GLP-3 RZ", "Retatrutide"],
 ];
 
+const DELETE_ID_THRESHOLD = 110;
+
 function decodeEntities(s: string): string {
   return s
     .replace(/&amp;/g, "&")
@@ -128,15 +130,7 @@ function normalize(s: string): string {
   return out;
 }
 
-interface Action {
-  id: number;
-  name: string;
-  before: string;
-  after: string;
-  status: "skip" | "set" | "clear" | "error";
-  error?: string;
-  reason?: string;
-}
+interface Product { id: number; name: string; sku: string; }
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -150,111 +144,115 @@ Deno.serve(async (req: Request) => {
     const auth = "Basic " + btoa(`${ck}:${cs}`);
     const base = siteUrl.replace(/\/$/, "") + "/wp-json/wc/v3";
 
-    const all: Array<{ id: number; name: string; sku: string }> = [];
+    const all: Product[] = [];
     for (let page = 1; page < 30; page++) {
       const r = await fetch(
         `${base}/products?per_page=100&page=${page}&_fields=id,name,sku&status=any`,
         { headers: { Authorization: auth } },
       );
       if (!r.ok) throw new Error(`list ${r.status}`);
-      const data = await r.json() as Array<{ id: number; name: string; sku: string }>;
+      const data = await r.json() as Product[];
       if (!Array.isArray(data) || data.length === 0) break;
       all.push(...data);
       if (data.length < 100) break;
     }
 
-    const byNorm = new Map<string, Array<{ id: number; name: string; sku: string }>>();
-    for (const p of all) {
+    const toDelete = all.filter((p) => p.id >= DELETE_ID_THRESHOLD);
+    const deleted: Array<{ id: number; ok: boolean; status?: number; error?: string }> = [];
+
+    for (const p of toDelete) {
+      try {
+        const clearR = await fetch(`${base}/products/${p.id}`, {
+          method: "PUT",
+          headers: { Authorization: auth, "Content-Type": "application/json" },
+          body: JSON.stringify({ sku: "" }),
+        });
+        if (!clearR.ok) {
+        }
+        const r = await fetch(`${base}/products/${p.id}?force=true`, {
+          method: "DELETE",
+          headers: { Authorization: auth },
+        });
+        if (!r.ok) {
+          const t = await r.text();
+          deleted.push({ id: p.id, ok: false, status: r.status, error: t.slice(0, 200) });
+          continue;
+        }
+        deleted.push({ id: p.id, ok: true });
+      } catch (e) {
+        deleted.push({ id: p.id, ok: false, error: e instanceof Error ? e.message : String(e) });
+      }
+    }
+
+    const remaining = all.filter((p) => p.id < DELETE_ID_THRESHOLD);
+    const byNorm = new Map<string, Product[]>();
+    for (const p of remaining) {
       const k = normalize(p.name);
       const arr = byNorm.get(k) ?? [];
       arr.push(p);
       byNorm.set(k, arr);
     }
 
-    const desiredSkuByWooId = new Map<number, string>();
-    const ypbHandled = new Set<string>();
+    const skuActions: Array<{ id: number; name: string; before: string; after: string; status: string; error?: string }> = [];
+    const mappingsNoMatch: Array<{ ypb: string; name: string }> = [];
 
-    const planNotes: Array<{ ypb: string; name: string; chosen?: number; candidates: number[] }> = [];
-
+    const targetByWooId = new Map<number, string>();
     for (const m of MAPPINGS) {
       const k = normalize(m.name);
       const candidates = byNorm.get(k) ?? [];
-      planNotes.push({ ypb: m.ypb, name: m.name, candidates: candidates.map((c) => c.id) });
-      if (candidates.length === 0) continue;
-      const chosen = candidates.reduce((a, b) => (a.id > b.id ? a : b));
-      desiredSkuByWooId.set(chosen.id, m.ypb);
-      ypbHandled.add(m.ypb);
-      planNotes[planNotes.length - 1].chosen = chosen.id;
+      if (candidates.length === 0) {
+        mappingsNoMatch.push({ ypb: m.ypb, name: m.name });
+        continue;
+      }
+      const chosen = candidates.reduce((a, b) => (a.id < b.id ? a : b));
+      targetByWooId.set(chosen.id, m.ypb);
     }
 
-    const productsToClearSkuFirst = all.filter((p) => {
-      if (!p.sku) return false;
-      if (desiredSkuByWooId.get(p.id) === p.sku) return false;
-      return true;
-    });
-
-    const actions: Action[] = [];
-
-    for (const p of productsToClearSkuFirst) {
+    for (const p of remaining) {
+      const target = targetByWooId.get(p.id);
+      if (!target) {
+        if (p.sku && p.sku.length > 0) {
+          continue;
+        }
+        continue;
+      }
+      if (p.sku === target) {
+        skuActions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "skip-already-set" });
+        continue;
+      }
       try {
         const r = await fetch(`${base}/products/${p.id}`, {
           method: "PUT",
           headers: { Authorization: auth, "Content-Type": "application/json" },
-          body: JSON.stringify({ sku: "" }),
+          body: JSON.stringify({ sku: target }),
         });
         if (!r.ok) {
           const t = await r.text();
-          actions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: `clear ${r.status} ${t.slice(0, 150)}` });
+          skuActions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: `${r.status} ${t.slice(0, 200)}` });
           continue;
         }
-        actions.push({ id: p.id, name: p.name, before: p.sku, after: "", status: "clear" });
+        skuActions.push({ id: p.id, name: p.name, before: p.sku, after: target, status: "set" });
       } catch (e) {
-        actions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: e instanceof Error ? e.message : String(e) });
+        skuActions.push({ id: p.id, name: p.name, before: p.sku, after: p.sku, status: "error", error: e instanceof Error ? e.message : String(e) });
       }
     }
 
-    for (const [wooId, ypb] of desiredSkuByWooId) {
-      const product = all.find((p) => p.id === wooId)!;
-      if (product.sku === ypb) {
-        actions.push({ id: wooId, name: product.name, before: ypb, after: ypb, status: "skip", reason: "already set" });
-        continue;
-      }
-      try {
-        const r = await fetch(`${base}/products/${wooId}`, {
-          method: "PUT",
-          headers: { Authorization: auth, "Content-Type": "application/json" },
-          body: JSON.stringify({ sku: ypb }),
-        });
-        if (!r.ok) {
-          const t = await r.text();
-          actions.push({ id: wooId, name: product.name, before: product.sku, after: product.sku, status: "error", error: `set ${r.status} ${t.slice(0, 150)}` });
-          continue;
-        }
-        actions.push({ id: wooId, name: product.name, before: product.sku, after: ypb, status: "set" });
-      } catch (e) {
-        actions.push({ id: wooId, name: product.name, before: product.sku, after: product.sku, status: "error", error: e instanceof Error ? e.message : String(e) });
-      }
-    }
-
-    const summary = {
-      total_products: all.length,
-      mappings: MAPPINGS.length,
-      mappings_no_match: planNotes.filter((p) => !p.chosen).length,
-      cleared: actions.filter((a) => a.status === "clear").length,
-      set: actions.filter((a) => a.status === "set").length,
-      skipped: actions.filter((a) => a.status === "skip").length,
-      errors: actions.filter((a) => a.status === "error").length,
-    };
-
-    return new Response(
-      JSON.stringify({ summary, plan_no_match: planNotes.filter((p) => !p.chosen), actions: actions.filter((a) => a.status !== "skip") }, null, 2),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({
+      summary: {
+        total_before: all.length,
+        deleted_count: deleted.filter((d) => d.ok).length,
+        delete_errors: deleted.filter((d) => !d.ok).length,
+        sku_set: skuActions.filter((a) => a.status === "set").length,
+        sku_skip: skuActions.filter((a) => a.status === "skip-already-set").length,
+        sku_errors: skuActions.filter((a) => a.status === "error").length,
+        mappings_no_match: mappingsNoMatch.length,
+      },
+      mappings_no_match: mappingsNoMatch,
+      delete_errors: deleted.filter((d) => !d.ok),
+      sku_errors: skuActions.filter((a) => a.status === "error"),
+    }, null, 2), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
