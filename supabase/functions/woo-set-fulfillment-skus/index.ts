@@ -146,7 +146,11 @@ Deno.serve(async (req: Request) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            meta_data: [{ key: "fulfillment_sku", value: ypb }],
+            meta_data: [
+              { key: "fulfillment_sku", value: ypb },
+              { key: "inventory_sku", value: ypb },
+              { key: "_inventory_sku", value: ypb },
+            ],
           }),
         });
 
