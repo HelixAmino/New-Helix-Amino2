@@ -35,6 +35,7 @@ export interface StoreRate {
   cost: number;
   selected: boolean;
   methodId: string;
+  packageId: number;
 }
 
 function readToken(): string | null {
@@ -119,6 +120,7 @@ function flattenRates(cart: StoreCart): StoreRate[] {
   const minorUnit = cart.totals?.currency_minor_unit ?? 2;
   const out: StoreRate[] = [];
   for (const pkg of cart.shipping_rates ?? []) {
+    const packageId = Number(pkg.package_id) || 0;
     for (const rate of pkg.shipping_rates ?? []) {
       out.push({
         key: rate.rate_id,
@@ -126,6 +128,7 @@ function flattenRates(cart: StoreCart): StoreRate[] {
         cost: priceToNumber(rate.price, minorUnit),
         selected: rate.selected,
         methodId: rate.method_id,
+        packageId,
       });
     }
   }
@@ -196,11 +199,13 @@ export async function fetchStoreShipping(
   };
 }
 
-export async function selectStoreShipping(rateId: string): Promise<StoreShippingResult> {
-  const [packageId] = rateId.split(':');
+export async function selectStoreShipping(
+  rateId: string,
+  packageId: number = 0,
+): Promise<StoreShippingResult> {
   const res = await storeFetch('/cart/select-shipping-rate', {
     method: 'POST',
-    body: JSON.stringify({ package_id: Number(packageId) || 0, rate_id: rateId }),
+    body: JSON.stringify({ package_id: packageId, rate_id: rateId }),
   });
   const cart = await readJson<StoreCart>(res);
   return {

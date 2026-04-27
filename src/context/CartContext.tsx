@@ -125,6 +125,7 @@ export interface ShippingRate {
   label: string;
   cost: number;
   chosen: boolean;
+  packageId: number;
 }
 
 interface ServerTotals {
@@ -172,6 +173,7 @@ function readShippingRates(res: cocart.CoCartResponse): ShippingRate[] {
         label: r.label ?? key,
         cost: num(r.cost),
         chosen: Boolean(r.chosen_method) || pkg.chosen_method === key,
+        packageId: 0,
       });
     }
   }
@@ -337,6 +339,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       label: r.label,
       cost: r.cost,
       chosen: r.selected,
+      packageId: r.packageId,
     }));
     setServerTotals((prev) => {
       const chosen = mapped.find((r) => r.chosen);
@@ -377,13 +380,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     async (rateKey: string) => {
       setSyncing(true);
       try {
-        const result = await selectStoreShipping(rateKey);
+        const target = serverTotals.shippingRates.find((r) => r.key === rateKey);
+        const result = await selectStoreShipping(rateKey, target?.packageId ?? 0);
         applyStoreRates(result.rates, result.needsShipping);
       } finally {
         setSyncing(false);
       }
     },
-    [applyStoreRates],
+    [applyStoreRates, serverTotals.shippingRates],
   );
 
   const clearCart = useCallback(async () => {
