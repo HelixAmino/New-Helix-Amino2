@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Trash2, Plus, Minus, ShoppingCart, ChevronLeft, Tag, Loader as Loader2, RefreshCw, X, MapPin } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Trash2, Plus, Minus, ShoppingCart, ChevronLeft, Tag, Loader as Loader2, RefreshCw, X, MapPin, Truck } from 'lucide-react';
 import { useCart, CustomerInfo } from '../context/CartContext';
 import { useNavigation } from '../context/NavigationContext';
 import { getDiscountedPrice, getDiscountLabel } from '../data/products';
@@ -27,11 +27,22 @@ export function CartPage() {
     checkoutLoading,
     customer,
     setCustomer,
+    computeShipping,
+    selectShipping,
+    shipping,
+    shippingRates,
+    hasCalculatedShipping,
   } = useCart();
   const { navigate } = useNavigation();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [couponInput, setCouponInput] = useState('');
   const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [calculatingShipping, setCalculatingShipping] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
+
+  const shippingReady = hasCalculatedShipping && shippingRates.length > 0;
+  const chosenRate = shippingRates.find((r) => r.chosen);
+
   const addressComplete =
     !!customer.firstName.trim() &&
     !!customer.lastName.trim() &&
@@ -45,6 +56,38 @@ export function CartPage() {
   function updateCustomerField<K extends keyof CustomerInfo>(key: K, value: CustomerInfo[K]) {
     setCustomer({ ...customer, [key]: value });
   }
+
+  async function handleCalculateShipping() {
+    if (!addressComplete || calculatingShipping) return;
+    setShippingError(null);
+    setCalculatingShipping(true);
+    try {
+      await computeShipping({
+        country: customer.country,
+        state: customer.state,
+        postcode: customer.postcode,
+        city: customer.city,
+      });
+    } catch (e) {
+      setShippingError(e instanceof Error ? e.message : 'Could not calculate shipping. Try again.');
+    } finally {
+      setCalculatingShipping(false);
+    }
+  }
+
+  async function handleSelectRate(key: string) {
+    try {
+      await selectShipping(key);
+    } catch (e) {
+      setShippingError(e instanceof Error ? e.message : 'Could not switch shipping method.');
+    }
+  }
+
+  useEffect(() => {
+    if (!addressComplete || calculatingShipping || hasCalculatedShipping || items.length === 0) return;
+    handleCalculateShipping();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length]);
 
   async function handleApplyCoupon() {
     if (!couponInput.trim() || applyingCoupon) return;
@@ -243,9 +286,59 @@ export function CartPage() {
               </Field>
             </div>
 
-            <p className="text-[11px] text-gray-500 mt-4 leading-relaxed">
-              Carrier shipping is calculated from your address when the order is placed. You will see the final amount on your receipt.
-            </p>
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <button type="button" onClick={handleCalculateShipping}
+                disabled={!addressComplete || calculatingShipping}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-900/40 border border-cyan-700/50 hover:bg-cyan-800/50 disabled:opacity-40 disabled:cursor-not-allowed text-cyan-100 text-xs font-bold rounded-lg transition-colors">
+                {calculatingShipping && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {shippingReady ? 'Recalculate shipping' : 'Calculate shipping'}
+              </button>
+              {shippingReady && chosenRate && (
+                <span className="text-[11px] text-gray-500">
+                  {chosenRate.label}: <span className="text-cyan-300 font-semibold">{shipping > 0 ? `$${shipping.toFixed(2)}` : 'Free'}</span>
+                </span>
+              )}
+            </div>
+
+            {shippingError && (
+              <p className="text-red-400 text-[11px] mt-3 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                {shippingError}
+              </p>
+            )}
+
+            {shippingReady && shippingRates.length > 0 && (
+              <div className="mt-5 border-t border-cyan-900/20 pt-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-1.5">
+                  <Truck className="w-3 h-3" /> Shipping Method
+                </p>
+                <div className="space-y-2">
+                  {shippingRates.map((rate) => (
+                    <label
+                      key={rate.key}
+                      className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors ${
+                        rate.chosen
+                          ? 'border-cyan-600/60 bg-cyan-950/30'
+                          : 'border-cyan-900/30 hover:border-cyan-800/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <input
+                          type="radio"
+                          name="shippingRate"
+                          checked={rate.chosen}
+                          onChange={() => handleSelectRate(rate.key)}
+                          className="accent-cyan-500"
+                        />
+                        <span className="text-xs text-gray-200 font-medium truncate">{rate.label}</span>
+                      </div>
+                      <span className="text-xs font-bold text-white shrink-0">
+                        {rate.cost > 0 ? `$${rate.cost.toFixed(2)}` : 'Free'}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -344,8 +437,18 @@ export function CartPage() {
                 </div>
               )}
               <div className="flex justify-between text-xs">
-                <span className="text-gray-500">Shipping</span>
-                <span className="text-gray-400 font-semibold">Calculated at order placement</span>
+                <span className="text-gray-500">{chosenRate?.label ?? 'Shipping'}</span>
+                <span className="text-gray-200 font-semibold">
+                  {shippingReady
+                    ? shipping > 0
+                      ? `$${shipping.toFixed(2)}`
+                      : 'Free'
+                    : calculatingShipping
+                      ? 'Calculating…'
+                      : addressComplete
+                        ? 'Tap calculate'
+                        : 'Enter address'}
+                </span>
               </div>
               {tax > 0 && (
                 <div className="flex justify-between text-xs">
@@ -356,12 +459,9 @@ export function CartPage() {
               <div className="flex justify-between items-baseline pt-2 border-t border-cyan-900/20">
                 <span className="text-gray-400 text-sm">Total</span>
                 <span className="text-white font-black text-2xl">
-                  ${Math.max(0, itemsSubtotal + tax - discount).toFixed(2)}
+                  ${Math.max(0, itemsSubtotal + tax - discount + (shippingReady ? shipping : 0)).toFixed(2)}
                 </span>
               </div>
-              <p className="text-[10px] text-gray-600 leading-snug">
-                Final shipping is computed from your address by our carrier rates and added to your order receipt.
-              </p>
             </div>
 
             {checkoutError && (
@@ -371,7 +471,7 @@ export function CartPage() {
             )}
             <button
               onClick={handleCheckout}
-              disabled={checkoutLoading || !addressComplete}
+              disabled={checkoutLoading || !addressComplete || !shippingReady}
               className="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] active:scale-95 mb-3 flex items-center justify-center gap-2"
             >
               {checkoutLoading && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -379,7 +479,9 @@ export function CartPage() {
                 ? 'Preparing checkout…'
                 : !addressComplete
                   ? 'Enter shipping address'
-                  : 'Proceed to Checkout'}
+                  : !shippingReady
+                    ? 'Calculate shipping to continue'
+                    : 'Proceed to Checkout'}
             </button>
             <button
               onClick={() => navigate('home')}

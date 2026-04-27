@@ -11,6 +11,7 @@ import { CartItem, Order, OrderLineItem, Product } from '../types';
 import { PRODUCTS, getDiscountedPrice } from '../data/products';
 import { MEMBERS_PRODUCTS } from '../data/membersProducts';
 import * as cocart from '../services/cocart';
+import { fetchStoreShipping, selectStoreShipping, StoreRate } from '../services/storeApi';
 import { getCartKey } from '../lib/api';
 import { createOrder } from '../services/orderService';
 import { createWooOrder } from '../services/wooOrders';
@@ -330,62 +331,59 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeItem = removeItemInternal;
 
+  const applyStoreRates = useCallback((rates: StoreRate[], needsShipping: boolean) => {
+    const mapped = rates.map((r) => ({
+      key: r.key,
+      label: r.label,
+      cost: r.cost,
+      chosen: r.selected,
+    }));
+    setServerTotals((prev) => {
+      const chosen = mapped.find((r) => r.chosen);
+      const shippingTotal = chosen ? chosen.cost : 0;
+      return {
+        ...prev,
+        shipping: shippingTotal,
+        hasCalculatedShipping: mapped.length > 0,
+        needsShipping,
+        shippingRates: mapped,
+      };
+    });
+  }, []);
+
   const computeShipping = useCallback(
     async (address?: { country?: string; state?: string; postcode?: string; city?: string }) => {
+      const wooItems = items
+        .map((it) => ({ wooId: resolveWooId(it.product) ?? 0, quantity: it.quantity }))
+        .filter((i) => i.wooId > 0);
+      if (wooItems.length === 0) return;
       setSyncing(true);
       try {
-        const res = await cocart.updateCustomer({
+        const result = await fetchStoreShipping(wooItems, {
           country: address?.country ?? 'US',
-          state: address?.state,
-          postcode: address?.postcode,
-          city: address?.city,
+          state: address?.state ?? '',
+          postcode: address?.postcode ?? '',
+          city: address?.city ?? '',
         });
-        console.log('[computeShipping] CoCart response', {
-          shipping_total: res.totals?.shipping_total,
-          has_calculated_shipping: res.shipping?.has_calculated_shipping,
-          packages: res.shipping?.packages,
-        });
-        let final = res;
-        const totals = readServerTotals(res);
-        console.log('[computeShipping] parsed rates', totals.shippingRates);
-        const hasNonFree = totals.shippingRates.some((r) => r.cost > 0);
-        const chosen = totals.shippingRates.find((r) => r.chosen);
-        if (
-          hasNonFree &&
-          chosen &&
-          chosen.cost === 0 &&
-          /free/i.test(chosen.key + ' ' + chosen.label)
-        ) {
-          const cheapest = totals.shippingRates
-            .filter((r) => r.cost > 0)
-            .sort((a, b) => a.cost - b.cost)[0];
-          if (cheapest) {
-            try {
-              final = await cocart.selectShippingMethod([cheapest.key]);
-            } catch {
-              /* ignore */
-            }
-          }
-        }
-        applyCart(final);
+        applyStoreRates(result.rates, result.needsShipping);
       } finally {
         setSyncing(false);
       }
     },
-    [applyCart],
+    [items, applyStoreRates],
   );
 
   const selectShipping = useCallback(
     async (rateKey: string) => {
       setSyncing(true);
       try {
-        const res = await cocart.selectShippingMethod([rateKey]);
-        applyCart(res);
+        const result = await selectStoreShipping(rateKey);
+        applyStoreRates(result.rates, result.needsShipping);
       } finally {
         setSyncing(false);
       }
     },
-    [applyCart],
+    [applyStoreRates],
   );
 
   const clearCart = useCallback(async () => {
