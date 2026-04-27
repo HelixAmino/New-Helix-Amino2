@@ -16,25 +16,25 @@ Deno.serve(async (req: Request) => {
   const auth = "Basic " + btoa(`${ck}:${cs}`);
   const base = siteUrl.replace(/\/$/, "") + "/wp-json/wc/v3";
 
-  const all: Array<{ id: number; name: string; sku: string }> = [];
-  for (let page = 1; page < 30; page++) {
-    const r = await fetch(`${base}/products?per_page=100&page=${page}&_fields=id,name,sku&status=any`, { headers: { Authorization: auth } });
-    if (!r.ok) break;
-    const data = await r.json() as Array<{ id: number; name: string; sku: string }>;
-    if (!Array.isArray(data) || data.length === 0) break;
-    all.push(...data);
-    if (data.length < 100) break;
+  const probes: Array<{ url: string; status: number; bodyStart: string }> = [];
+  const urls = [
+    `${siteUrl.replace(/\/$/, "")}/wp-json/`,
+    `${base}/products?per_page=1&page=1`,
+    `${base}/products?per_page=5&page=1&status=publish`,
+    `${base}/products?per_page=5&page=1&status=any`,
+    `${base}/products/25?_fields=id,name,sku`,
+  ];
+  for (const u of urls) {
+    try {
+      const r = await fetch(u, { headers: { Authorization: auth } });
+      const t = await r.text();
+      probes.push({ url: u, status: r.status, bodyStart: t.slice(0, 300) });
+    } catch (e) {
+      probes.push({ url: u, status: -1, bodyStart: e instanceof Error ? e.message : String(e) });
+    }
   }
 
-  const ypb = all.filter((p) => /^YPB\.\d{3}$/.test(p.sku));
-  const slug = all.filter((p) => p.sku && !/^YPB\.\d{3}$/.test(p.sku));
-  const empty = all.filter((p) => !p.sku);
-
-  return new Response(JSON.stringify({
-    total: all.length,
-    ypb: ypb.length,
-    slug_style: slug.length,
-    empty: empty.length,
-    slug_products: slug.map((p) => ({ id: p.id, name: p.name, sku: p.sku })),
-  }, null, 2), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  return new Response(JSON.stringify({ probes }, null, 2), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 });

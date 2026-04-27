@@ -145,16 +145,27 @@ Deno.serve(async (req: Request) => {
     const base = siteUrl.replace(/\/$/, "") + "/wp-json/wc/v3";
 
     const all: Product[] = [];
-    for (let page = 1; page < 30; page++) {
-      const r = await fetch(
-        `${base}/products?per_page=100&page=${page}&_fields=id,name,sku&status=any`,
-        { headers: { Authorization: auth } },
-      );
-      if (!r.ok) throw new Error(`list ${r.status}`);
-      const data = await r.json() as Product[];
+    const perPage = 20;
+    for (let page = 1; page < 50; page++) {
+      let lastErr = "";
+      let data: Product[] | null = null;
+      for (let attempt = 0; attempt < 6; attempt++) {
+        const r = await fetch(
+          `${base}/products?per_page=${perPage}&page=${page}&_fields=id,name,sku&status=any&orderby=id&order=asc`,
+          { headers: { Authorization: auth } },
+        );
+        if (r.ok) {
+          data = await r.json() as Product[];
+          break;
+        }
+        lastErr = `${r.status}`;
+        await new Promise((res) => setTimeout(res, 2000 * (attempt + 1)));
+      }
+      if (data === null) throw new Error(`list ${lastErr}`);
       if (!Array.isArray(data) || data.length === 0) break;
       all.push(...data);
-      if (data.length < 100) break;
+      if (data.length < perPage) break;
+      await new Promise((res) => setTimeout(res, 500));
     }
 
     const toDelete = all.filter((p) => p.id >= DELETE_ID_THRESHOLD);
