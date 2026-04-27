@@ -16,21 +16,31 @@ Deno.serve(async (req: Request) => {
   const auth = "Basic " + btoa(`${ck}:${cs}`);
   const base = siteUrl.replace(/\/$/, "") + "/wp-json/wc/v3";
 
-  const probes: Array<{ url: string; status: number; bodyStart: string }> = [];
+  const probes: Array<{ url: string; status: number; ct: string; len: number; bodyStart: string }> = [];
   const urls = [
     `${siteUrl.replace(/\/$/, "")}/wp-json/`,
     `${base}/products?per_page=1&page=1`,
-    `${base}/products?per_page=5&page=1&status=publish`,
-    `${base}/products?per_page=5&page=1&status=any`,
-    `${base}/products/25?_fields=id,name,sku`,
+    `${base}/products/25`,
   ];
   for (const u of urls) {
     try {
-      const r = await fetch(u, { headers: { Authorization: auth } });
+      const r = await fetch(u, {
+        headers: {
+          Authorization: auth,
+          "User-Agent": "Mozilla/5.0 (compatible; HelixAmino-Sync/1.0)",
+          Accept: "application/json",
+        },
+      });
       const t = await r.text();
-      probes.push({ url: u, status: r.status, bodyStart: t.slice(0, 300) });
+      probes.push({
+        url: u,
+        status: r.status,
+        ct: r.headers.get("content-type") ?? "",
+        len: t.length,
+        bodyStart: t.slice(0, 400),
+      });
     } catch (e) {
-      probes.push({ url: u, status: -1, bodyStart: e instanceof Error ? e.message : String(e) });
+      probes.push({ url: u, status: -1, ct: "", len: 0, bodyStart: e instanceof Error ? e.message : String(e) });
     }
   }
 
