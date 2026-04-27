@@ -17,6 +17,8 @@ export function CartPage() {
     hasCalculatedShipping,
     needsShipping,
     coupons,
+    shippingRates,
+    selectShipping,
     applyCoupon,
     removeCoupon,
     refreshCart,
@@ -272,10 +274,37 @@ export function CartPage() {
                     : hasCalculatedShipping && shipping === 0
                       ? 'Free'
                       : needsShipping
-                        ? 'Calculated at checkout'
+                        ? 'Select method'
                         : '—'}
                 </span>
               </div>
+              {shippingRates.length > 0 && (
+                <div className="rounded-xl border border-cyan-900/30 bg-[#050d14]/60 p-2 mt-1 space-y-1">
+                  {shippingRates.map((rate) => (
+                    <label
+                      key={rate.key}
+                      className={`flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors ${
+                        rate.chosen ? 'bg-cyan-950/50 border border-cyan-700/50' : 'border border-transparent hover:bg-cyan-950/20'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 min-w-0">
+                        <input
+                          type="radio"
+                          name="shipping-method"
+                          checked={rate.chosen}
+                          onChange={() => selectShipping(rate.key)}
+                          disabled={syncing}
+                          className="accent-cyan-500"
+                        />
+                        <span className="text-gray-200 text-xs font-semibold truncate">{rate.label}</span>
+                      </span>
+                      <span className="text-cyan-300 text-xs font-bold shrink-0">
+                        {rate.cost > 0 ? `$${rate.cost.toFixed(2)}` : 'Free'}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
               {tax > 0 && (
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Tax</span>

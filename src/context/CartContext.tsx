@@ -42,6 +42,8 @@ interface CartContextValue {
   hasCalculatedShipping: boolean;
   needsShipping: boolean;
   coupons: AppliedCoupon[];
+  shippingRates: ShippingRate[];
+  selectShipping: (rateKey: string) => Promise<void>;
   syncing: boolean;
   couponError: string | null;
   checkoutLoading: boolean;
@@ -74,6 +76,13 @@ function num(v: unknown): number {
   return /[.,]/.test(v) ? n : n / 100;
 }
 
+export interface ShippingRate {
+  key: string;
+  label: string;
+  cost: number;
+  chosen: boolean;
+}
+
 interface ServerTotals {
   subtotal: number;
   shipping: number;
@@ -83,6 +92,7 @@ interface ServerTotals {
   hasCalculatedShipping: boolean;
   needsShipping: boolean;
   coupons: AppliedCoupon[];
+  shippingRates: ShippingRate[];
 }
 
 const EMPTY_TOTALS: ServerTotals = {
@@ -94,7 +104,35 @@ const EMPTY_TOTALS: ServerTotals = {
   hasCalculatedShipping: false,
   needsShipping: false,
   coupons: [],
+  shippingRates: [],
 };
+
+function readShippingRates(res: cocart.CoCartResponse): ShippingRate[] {
+  const packages = res.shipping?.packages;
+  if (!packages) return [];
+  const pkgList = Array.isArray(packages) ? packages : Object.values(packages);
+  const out: ShippingRate[] = [];
+  const seen = new Set<string>();
+  for (const pkg of pkgList) {
+    const rates = pkg.rates;
+    if (!rates) continue;
+    const rateEntries = Array.isArray(rates)
+      ? rates.map((r) => [r.key ?? r.method_id, r] as const)
+      : Object.entries(rates);
+    for (const [k, r] of rateEntries) {
+      const key = String(k);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({
+        key,
+        label: r.label ?? key,
+        cost: num(r.cost),
+        chosen: Boolean(r.chosen_method) || pkg.chosen_method === key,
+      });
+    }
+  }
+  return out;
+}
 
 function readServerTotals(res: cocart.CoCartResponse): ServerTotals {
   const t = res.totals ?? ({} as cocart.CoCartResponse['totals']);
@@ -112,6 +150,7 @@ function readServerTotals(res: cocart.CoCartResponse): ServerTotals {
     hasCalculatedShipping: Boolean(res.shipping?.has_calculated_shipping),
     needsShipping: Boolean(res.needs_shipping),
     coupons,
+    shippingRates: readShippingRates(res),
   };
 }
 
@@ -230,6 +269,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const removeItem = removeItemInternal;
+
+  const selectShipping = useCallback(
+    async (rateKey: string) => {
+      setSyncing(true);
+      try {
+        const res = await cocart.selectShippingMethod([rateKey]);
+        applyCart(res);
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [applyCart],
+  );
 
   const clearCart = useCallback(async () => {
     setSyncing(true);
@@ -364,6 +416,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         hasCalculatedShipping: serverTotals.hasCalculatedShipping,
         needsShipping: serverTotals.needsShipping,
         coupons: serverTotals.coupons,
+        shippingRates: serverTotals.shippingRates,
+        selectShipping,
         syncing,
         couponError,
         checkoutLoading,

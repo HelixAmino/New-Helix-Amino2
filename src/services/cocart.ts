@@ -185,6 +185,21 @@ export async function updateCustomer(address: {
   return res;
 }
 
+export async function selectShippingMethod(methods: string[]): Promise<CoCartResponse> {
+  const res = await apiFetch<CoCartResponse>('/cocart/v2/cart/update', {
+    method: 'POST',
+    auth: true,
+    cartKey: true,
+    captureCartKey: true,
+    body: JSON.stringify({
+      chosen_shipping_methods: methods,
+      return_cart: true,
+    }),
+  });
+  storeKeyFrom(res);
+  return res;
+}
+
 export function getCheckoutUrl(): string {
   const key = getCartKey();
   const base = `${WOO_SITE_URL.replace(/\/$/, '')}/checkout/`;
