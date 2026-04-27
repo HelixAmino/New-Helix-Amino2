@@ -69,10 +69,11 @@ function resolveWooId(product: Product): number | undefined {
 }
 
 function num(v: unknown): number {
-  if (typeof v === 'number') return v;
+  if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
   if (typeof v !== 'string' || v.length === 0) return 0;
   const n = parseFloat(v);
-  return Number.isFinite(n) ? n : 0;
+  if (!Number.isFinite(n)) return 0;
+  return /[.,]/.test(v) ? n : n / 100;
 }
 
 interface ServerTotals {
