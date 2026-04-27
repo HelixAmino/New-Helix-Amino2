@@ -53,6 +53,9 @@ Deno.serve(async (req: Request) => {
           body: JSON.stringify({
             meta_data: [
               { key: "customer_facing_sku", value: row.sku },
+              { key: "fulfillment_sku", value: row.sku },
+              { key: "inventory_sku", value: row.sku },
+              { key: "_inventory_sku", value: row.sku },
             ],
           }),
         });
