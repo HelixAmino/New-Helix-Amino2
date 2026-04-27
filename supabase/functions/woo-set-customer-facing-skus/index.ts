@@ -1,0 +1,98 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+};
+
+interface UpdateResult {
+  sku: string;
+  woo_id: number;
+  status: "updated" | "error";
+  error?: string;
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 200, headers: corsHeaders });
+  }
+
+  try {
+    const siteUrl = Deno.env.get("WOO_SITE_URL")!;
+    const ck = Deno.env.get("WOO_CONSUMER_KEY")!;
+    const cs = Deno.env.get("WOO_CONSUMER_SECRET")!;
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+
+    const auth = "Basic " + btoa(`${ck}:${cs}`);
+    const base = siteUrl.replace(/\/$/, "") + "/wp-json/wc/v3";
+
+    const url = new URL(req.url);
+    const prefix = url.searchParams.get("prefix") ?? "HA39.";
+
+    const { data: rows, error } = await supabase
+      .from("woo_product_map")
+      .select("sku, woo_id")
+      .like("sku", `${prefix}%`);
+    if (error) throw error;
+
+    const results: UpdateResult[] = [];
+
+    for (const row of rows ?? []) {
+      try {
+        const res = await fetch(`${base}/products/${row.woo_id}`, {
+          method: "PUT",
+          headers: {
+            Authorization: auth,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            meta_data: [
+              { key: "customer_facing_sku", value: row.sku },
+            ],
+          }),
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          results.push({
+            sku: row.sku,
+            woo_id: row.woo_id,
+            status: "error",
+            error: `${res.status} ${text.slice(0, 200)}`,
+          });
+          continue;
+        }
+
+        results.push({ sku: row.sku, woo_id: row.woo_id, status: "updated" });
+      } catch (e) {
+        results.push({
+          sku: row.sku,
+          woo_id: row.woo_id,
+          status: "error",
+          error: e instanceof Error ? e.message : String(e),
+        });
+      }
+    }
+
+    const summary = {
+      total: results.length,
+      updated: results.filter((r) => r.status === "updated").length,
+      errors: results.filter((r) => r.status === "error").length,
+    };
+
+    return new Response(JSON.stringify({ summary, results }, null, 2), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return new Response(JSON.stringify({ error: msg }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});
