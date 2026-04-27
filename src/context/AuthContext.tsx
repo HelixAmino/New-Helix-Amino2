@@ -1,12 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import {
-  loginWithPassword,
-  registerUser,
-  validateToken,
-  logout as wooLogout,
-  getCurrentUser,
-  WooUser,
-} from '../services/wooAuth';
+import type { Session, User } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 
 export interface AuthUser {
   id: string;
@@ -29,12 +23,14 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function toAuthUser(u: WooUser): AuthUser {
+function toAuthUser(u: User | null): AuthUser | null {
+  if (!u) return null;
+  const meta = (u.user_metadata ?? {}) as { full_name?: string };
   return {
-    id: String(u.id),
-    email: u.email,
-    user_metadata: { full_name: u.displayName },
-    wooId: u.id,
+    id: u.id,
+    email: u.email ?? '',
+    user_metadata: { full_name: meta.full_name ?? '' },
+    wooId: 0,
   };
 }
 
@@ -45,53 +41,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    (async () => {
-      try {
-        const stored = getCurrentUser();
-        if (stored) {
-          const valid = await validateToken();
-          if (cancelled) return;
-          if (valid) setUser(toAuthUser(stored));
-          else {
-            wooLogout();
-            setUser(null);
-          }
-        }
-      } catch (err) {
-        console.warn('[auth] bootstrap failed, continuing unauthenticated', err);
-        if (!cancelled) setUser(null);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      setUser(toAuthUser(data.session?.user ?? null));
+      setLoading(false);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session: Session | null) => {
+      setUser(toAuthUser(session?.user ?? null));
+    });
 
     return () => {
       cancelled = true;
+      sub.subscription.unsubscribe();
     };
   }, []);
 
   async function signIn(email: string, password: string) {
-    try {
-      const u = await loginWithPassword(email, password);
-      setUser(toAuthUser(u));
-      return { error: null };
-    } catch (e) {
-      return { error: e instanceof Error ? e.message : 'Login failed' };
-    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error: error.message };
+    return { error: null };
   }
 
   async function signUp(email: string, password: string, fullName: string) {
-    try {
-      const u = await registerUser(email, password, fullName);
-      setUser(toAuthUser(u));
-      return { error: null };
-    } catch (e) {
-      return { error: e instanceof Error ? e.message : 'Sign up failed' };
-    }
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    });
+    if (error) return { error: error.message };
+    return { error: null };
   }
 
   async function signOut() {
-    wooLogout();
+    await supabase.auth.signOut();
     setUser(null);
   }
 
