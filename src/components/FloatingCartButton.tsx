@@ -16,7 +16,7 @@ export function FloatingCartButton() {
   }, [totalItems]);
 
   if (totalItems === 0) return null;
-  if (page === 'cart' || page === 'checkout') return null;
+  if (page === 'checkout') return null;
 
   return (
     <button
