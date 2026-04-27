@@ -176,6 +176,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setServerTotals(readServerTotals(res));
   }, []);
 
+  const applyWithShippingRecalc = useCallback(
+    async (res: cocart.CoCartResponse) => {
+      let final = res;
+      try {
+        final = await cocart.updateCustomer({ country: 'US' });
+      } catch {
+        /* ignore */
+      }
+      applyCart(final);
+    },
+    [applyCart],
+  );
+
   const refreshCart = useCallback(async () => {
     setSyncing(true);
     try {
@@ -225,12 +238,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setSyncing(true);
       try {
         const res = await cocart.addItem(wooId, quantity);
-        applyCart(res);
+        await applyWithShippingRecalc(res);
       } finally {
         setSyncing(false);
       }
     },
-    [applyCart],
+    [applyWithShippingRecalc],
   );
 
   const removeItemInternal = useCallback(
@@ -243,12 +256,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setSyncing(true);
       try {
         const res = await cocart.removeItem(key);
-        applyCart(res);
+        await applyWithShippingRecalc(res);
       } finally {
         setSyncing(false);
       }
     },
-    [applyCart],
+    [applyWithShippingRecalc],
   );
 
   const updateQuantity = useCallback(
@@ -263,20 +276,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         if (key) {
           const res = await cocart.updateItem(key, clamped);
-          applyCart(res);
+          await applyWithShippingRecalc(res);
         } else {
           const product = ALL_PRODUCTS.find((p) => p.id === productId);
           if (!product) return;
           const wooId = resolveWooId(product);
           if (!wooId) return;
           const res = await cocart.addItem(wooId, clamped);
-          applyCart(res);
+          await applyWithShippingRecalc(res);
         }
       } finally {
         setSyncing(false);
       }
     },
-    [applyCart, removeItemInternal],
+    [applyWithShippingRecalc, removeItemInternal],
   );
 
   const removeItem = removeItemInternal;
@@ -298,11 +311,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setSyncing(true);
     try {
       const res = await cocart.clearCart();
-      applyCart(res);
+      await applyWithShippingRecalc(res);
     } finally {
       setSyncing(false);
     }
-  }, [applyCart]);
+  }, [applyWithShippingRecalc]);
 
   const applyCouponCode = useCallback(
     async (code: string) => {
@@ -312,7 +325,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setCouponError(null);
       try {
         const res = await cocart.applyCoupon(trimmed);
-        applyCart(res);
+        await applyWithShippingRecalc(res);
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Coupon could not be applied.';
         setCouponError(msg);
@@ -320,7 +333,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setSyncing(false);
       }
     },
-    [applyCart],
+    [applyWithShippingRecalc],
   );
 
   const removeCouponCode = useCallback(
@@ -328,12 +341,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setSyncing(true);
       try {
         const res = await cocart.removeCoupon(code);
-        applyCart(res);
+        await applyWithShippingRecalc(res);
       } finally {
         setSyncing(false);
       }
     },
-    [applyCart],
+    [applyWithShippingRecalc],
   );
 
   const buildLineItems = (): OrderLineItem[] =>
