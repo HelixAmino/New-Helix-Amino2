@@ -11,7 +11,7 @@ import { CartItem, Order, OrderLineItem, Product } from '../types';
 import { PRODUCTS, getDiscountedPrice } from '../data/products';
 import { MEMBERS_PRODUCTS } from '../data/membersProducts';
 import * as cocart from '../services/cocart';
-import { fetchStoreShipping, selectStoreShipping, StoreRate } from '../services/storeApi';
+import { fetchStoreShipping, StoreRate } from '../services/storeApi';
 import { getCartKey } from '../lib/api';
 import { createOrder } from '../services/orderService';
 import { createWooOrder } from '../services/wooOrders';
@@ -378,16 +378,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const selectShipping = useCallback(
     async (rateKey: string) => {
-      setSyncing(true);
-      try {
-        const target = serverTotals.shippingRates.find((r) => r.key === rateKey);
-        const result = await selectStoreShipping(rateKey, target?.packageId ?? 0);
-        applyStoreRates(result.rates, result.needsShipping);
-      } finally {
-        setSyncing(false);
-      }
+      setServerTotals((prev) => {
+        if (!prev.shippingRates.some((r) => r.key === rateKey)) return prev;
+        const updated = prev.shippingRates.map((r) => ({ ...r, chosen: r.key === rateKey }));
+        const chosen = updated.find((r) => r.chosen);
+        return {
+          ...prev,
+          shippingRates: updated,
+          shipping: chosen ? chosen.cost : 0,
+        };
+      });
     },
-    [applyStoreRates, serverTotals.shippingRates],
+    [],
   );
 
   const clearCart = useCallback(async () => {
