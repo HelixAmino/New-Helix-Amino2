@@ -38,12 +38,30 @@ Deno.serve(async (req: Request) => {
       if (data.length < 100) break;
     }
 
+    let removed = 0;
     if (rows.length > 0) {
       const { error } = await supabase.from("woo_product_map").upsert(rows, { onConflict: "sku" });
       if (error) throw error;
+
+      const liveIds = rows.map((r) => r.woo_id);
+      const { data: existing, error: selErr } = await supabase
+        .from("woo_product_map")
+        .select("woo_id");
+      if (selErr) throw selErr;
+      const stale = (existing ?? [])
+        .map((r) => r.woo_id)
+        .filter((id) => !liveIds.includes(id));
+      if (stale.length > 0) {
+        const { error: delErr } = await supabase
+          .from("woo_product_map")
+          .delete()
+          .in("woo_id", stale);
+        if (delErr) throw delErr;
+        removed = stale.length;
+      }
     }
 
-    return new Response(JSON.stringify({ synced: rows.length }), {
+    return new Response(JSON.stringify({ synced: rows.length, removed }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
