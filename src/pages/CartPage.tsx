@@ -265,11 +265,15 @@ export function CartPage() {
                 </div>
               )}
               <div className="flex justify-between text-xs">
-                <span className="text-gray-500">
-                  Shipping{!hasCalculatedShipping && needsShipping ? ' (estimated)' : ''}
-                </span>
+                <span className="text-gray-500">Shipping</span>
                 <span className="text-gray-200 font-semibold">
-                  {shipping > 0 ? `$${shipping.toFixed(2)}` : 'Calculated at checkout'}
+                  {hasCalculatedShipping && shipping > 0
+                    ? `$${shipping.toFixed(2)}`
+                    : hasCalculatedShipping && shipping === 0
+                      ? 'Free'
+                      : needsShipping
+                        ? 'Calculated at checkout'
+                        : '—'}
                 </span>
               </div>
               {tax > 0 && (

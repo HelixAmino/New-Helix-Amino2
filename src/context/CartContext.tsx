@@ -17,8 +17,6 @@ import { createWooOrder } from '../services/wooOrders';
 import { loadProductMap, getSkuForWooId, getWooIdForSku } from '../services/productMap';
 import { supabase } from '../lib/supabase';
 
-export const SHIPPING_FLAT = 5;
-
 export interface AppliedCoupon {
   code: string;
   label?: string;
@@ -294,11 +292,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, 0);
 
   const itemsSubtotal = serverTotals.subtotal > 0 ? serverTotals.subtotal : localSubtotal;
-  const shipping = serverTotals.hasCalculatedShipping
-    ? serverTotals.shipping
-    : items.length > 0
-      ? SHIPPING_FLAT
-      : 0;
+  const shipping = serverTotals.shipping;
   const tax = serverTotals.tax;
   const discount = serverTotals.discount;
   const grandTotal =
