@@ -35,7 +35,6 @@ export function CheckoutPage() {
     shipping,
     shippingRates,
     hasCalculatedShipping,
-    computeShipping,
     syncing,
   } = useCart();
   const { navigate } = useNavigation();
@@ -52,12 +51,8 @@ export function CheckoutPage() {
     }
   }, [activeOrder, navigate]);
 
-  useEffect(() => {
-    if (!activeOrder) return;
-    computeShipping().catch(() => {
-      /* surfaced via UI fallback */
-    });
-  }, [activeOrder, computeShipping]);
+  // Shipping is calculated by WooCommerce when the order is created from the
+  // address captured on the cart page; no client-side recalculation is needed.
 
   const chosenRate = shippingRates.find((r) => r.chosen);
   const shippingLabel = chosenRate?.label ?? 'Shipping';
