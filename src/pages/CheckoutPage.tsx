@@ -26,7 +26,7 @@ const ZELLE_QR_PDF =
 type PayMethod = 'venmo' | 'zelle';
 
 export function CheckoutPage() {
-  const { activeOrder, items, clearCart, setActiveOrder, shipping, tax, shippingRates } = useCart();
+  const { activeOrder, items, clearCart, setActiveOrder, tax } = useCart();
   const { navigate } = useNavigation();
   const [method, setMethod] = useState<PayMethod>('venmo');
   const [copied, setCopied] = useState<string | null>(null);
@@ -420,12 +420,8 @@ export function CheckoutPage() {
                 </span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-gray-500">
-                  {shippingRates.find((r) => r.chosen)?.label ?? 'Shipping'}
-                </span>
-                <span className="text-gray-200 font-semibold">
-                  {shipping > 0 ? `$${shipping.toFixed(2)}` : 'Free'}
-                </span>
+                <span className="text-gray-500">Shipping</span>
+                <span className="text-gray-400 font-semibold">Invoiced separately</span>
               </div>
               {tax > 0 && (
                 <div className="flex justify-between text-xs">
