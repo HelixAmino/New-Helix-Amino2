@@ -33,6 +33,44 @@ Deno.serve(async (req: Request) => {
 
     const url = new URL(req.url);
     const prefix = url.searchParams.get("prefix") ?? "HA39.";
+    const debugSku = url.searchParams.get("debug");
+    const dryRun = url.searchParams.get("dry_run") === "1";
+
+    if (debugSku) {
+      const { data: row, error: dErr } = await supabase
+        .from("woo_product_map")
+        .select("sku, woo_id")
+        .eq("sku", debugSku)
+        .maybeSingle();
+      if (dErr) throw dErr;
+      if (!row) {
+        return new Response(
+          JSON.stringify({ error: `SKU not found in woo_product_map: ${debugSku}` }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      const r = await fetch(`${base}/products/${row.woo_id}`, {
+        headers: { Authorization: auth, Accept: "application/json" },
+      });
+      const product = await r.json();
+      return new Response(
+        JSON.stringify(
+          {
+            mapping_row: row,
+            woo_status: r.status,
+            woo_product: {
+              id: product?.id,
+              name: product?.name,
+              sku: product?.sku,
+              meta_data: product?.meta_data,
+            },
+          },
+          null,
+          2,
+        ),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     const { data: rows, error } = await supabase
       .from("woo_product_map")
