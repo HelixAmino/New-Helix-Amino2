@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { IS_BOT } from './lib/botDetection';
 import { RedBanner } from './components/RedBanner';
 import { Header } from './components/Header';
+import { MemberWelcomeBar } from './components/MemberWelcomeBar';
 import { HeroSection } from './components/HeroSection';
 import { TrustBadges } from './components/TrustBadges';
 import { Footer } from './components/Footer';
@@ -14,6 +15,7 @@ import { FloatingCartButton } from './components/FloatingCartButton';
 import { PageSeo } from './components/PageSeo';
 import { AgeGateModal } from './components/AgeGateModal';
 import { AgreementModal } from './components/AgreementModal';
+import { LoginPromptModal } from './components/LoginPromptModal';
 import { HomePage } from './pages/HomePage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CartPage } from './pages/CartPage';
@@ -88,9 +90,11 @@ function AppContent() {
       {/* Compliance modals — block the site until verified */}
       {showAgeGate && <AgeGateModal onVerified={handleAgeVerified} />}
       {showAgreement && <AgreementModal onAgreed={handleTermsAgreed} />}
+      {!showAgeGate && !showAgreement && page === 'home' && <LoginPromptModal />}
 
       <RedBanner />
       <Header />
+      <MemberWelcomeBar />
 
       <main>
         {page === 'home' && (

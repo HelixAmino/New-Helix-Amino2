@@ -126,7 +126,15 @@ export function Header() {
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${catDropOpen ? 'rotate-180' : ''}`} />
               </button>
               {catDropOpen && (
-                <div className="absolute top-full left-0 mt-1.5 w-56 bg-[#060e17] border border-cyan-900/40 rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.7)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150 z-50">
+                <div className="absolute top-full left-0 mt-1.5 w-60 bg-[#060e17] border border-cyan-900/40 rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.7)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150 z-50">
+                  <button
+                    onClick={() => { navigate('members'); setCatDropOpen(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-3 text-left text-sm font-bold bg-gradient-to-r from-orange-950/70 to-amber-950/40 text-orange-300 hover:text-white hover:from-orange-900/80 hover:to-amber-900/50 border-b border-orange-800/40 transition-colors duration-150"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-orange-400 shrink-0" />
+                    <span className="flex-1">Members Only</span>
+                    <span className="text-[9px] uppercase tracking-widest text-orange-500/90 font-black">Exclusive</span>
+                  </button>
                   {NAV_CATEGORIES.map((cat) => (
                     <button
                       key={cat}
@@ -326,6 +334,14 @@ export function Header() {
           className="fixed top-[64px] left-0 right-0 z-[39] bg-[#060e17] border-b border-cyan-900/30 shadow-[0_8px_40px_rgba(0,0,0,0.7)] animate-in slide-in-from-top-2 fade-in duration-150 md:hidden"
         >
           <div className="max-w-7xl mx-auto px-4 py-4">
+            <button
+              onClick={() => { navigate('members'); setMenuOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-3.5 mb-3 rounded-xl bg-gradient-to-r from-orange-950/60 to-amber-950/40 text-orange-300 hover:text-white hover:from-orange-900/70 hover:to-amber-900/50 border border-orange-700/50 hover:border-orange-500/70 transition-all duration-150 text-sm font-bold text-left shadow-[0_0_20px_rgba(249,115,22,0.15)]"
+            >
+              <ShieldCheck className="w-5 h-5 shrink-0" />
+              <span className="flex-1">Members Only</span>
+              <span className="text-[10px] uppercase tracking-widest text-orange-500/80 font-black">Exclusive</span>
+            </button>
             <p className="text-gray-500 text-[10px] uppercase tracking-widest font-semibold mb-3 px-2">Browse Categories</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 pb-2">
               <button
@@ -358,13 +374,6 @@ export function Header() {
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/70 shrink-0 mt-0.5" />
                 Blog
-              </button>
-              <button
-                onClick={() => { navigate('members'); setMenuOpen(false); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-orange-400 hover:text-white hover:bg-orange-950/40 border border-orange-900/30 transition-all duration-150 text-sm font-bold text-left"
-              >
-                <ShieldCheck className="w-4 h-4 shrink-0" />
-                Members — GLP-1 &amp; Metabolic
               </button>
             </div>
             <div className="border-t border-cyan-900/30 pt-3 mt-1 pb-1">
