@@ -234,7 +234,7 @@ function MembersProductCard({ group, onSelect }: { group: ProductGroup; onSelect
 
       <div className="p-4 flex flex-col flex-1">
         <span className="self-start text-[10px] font-bold border rounded-full px-2 py-0.5 mb-2.5 text-orange-400 bg-orange-950/40 border-orange-800/40">
-          Metabolic &amp; GLP-1 Related
+          Metabolic &amp; Appetite Research
         </span>
 
         <h3 className="text-white font-bold text-sm leading-tight mb-1 line-clamp-2 group-hover:text-orange-300 transition-colors duration-200">

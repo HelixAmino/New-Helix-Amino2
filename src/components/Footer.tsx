@@ -25,10 +25,10 @@ const COMPANY_LINKS: { label: string; page: Page | null }[] = [
 const PRODUCT_CATEGORIES = [
   { label: 'Recovery & Healing', cat: 'Recovery & Healing' },
   { label: 'GH & Growth Axis', cat: 'GH & Growth Axis' },
-  { label: 'Metabolic & GLP-1', cat: 'Metabolic & GLP-1 Related' },
-  { label: 'Nootropics & Cognition', cat: 'Nootropics and Cognition' },
-  { label: 'Longevity & Mitochondrial', cat: 'Longevity and Mitochondrial' },
-  { label: 'Blends & Specialty', cat: 'Blends & Specialty' },
+  { label: 'Longevity & Mitochondrial', cat: 'Longevity & Mitochondrial' },
+  { label: 'Metabolic & Appetite', cat: 'Metabolic & Appetite Research' },
+  { label: 'Nootropics & Specialty', cat: 'Nootropics & Specialty' },
+  { label: 'Blends & Other', cat: 'Blends & Other' },
 ];
 
 const PRODUCT_PAGES: { label: string; page: Page }[] = [

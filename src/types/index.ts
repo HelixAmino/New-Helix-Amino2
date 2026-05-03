@@ -1,12 +1,10 @@
 export type Category =
   | 'Recovery & Healing'
   | 'GH & Growth Axis'
-  | 'Metabolic & GLP-1 Related'
-  | 'Nootropics and Cognition'
-  | 'Longevity and Mitochondrial'
-  | 'Hormones & Reproductive'
-  | 'Blends & Specialty'
-  | 'Misc / Rare';
+  | 'Longevity & Mitochondrial'
+  | 'Metabolic & Appetite Research'
+  | 'Nootropics & Specialty'
+  | 'Blends & Other';
 
 export interface BlendComponent {
   name: string;

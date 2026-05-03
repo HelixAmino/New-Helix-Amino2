@@ -14,12 +14,10 @@ interface ReportEntry {
 const CATEGORY_COLORS: Record<string, string> = {
   'Recovery & Healing': 'text-emerald-400',
   'GH & Growth Axis': 'text-sky-400',
-  'Metabolic & GLP-1 Related': 'text-amber-400',
-  'Nootropics and Cognition': 'text-violet-400',
-  'Longevity and Mitochondrial': 'text-cyan-400',
-  'Hormones & Reproductive': 'text-rose-400',
-  'Blends & Specialty': 'text-teal-400',
-  'Misc / Rare': 'text-gray-400',
+  'Longevity & Mitochondrial': 'text-cyan-400',
+  'Metabolic & Appetite Research': 'text-amber-400',
+  'Nootropics & Specialty': 'text-blue-400',
+  'Blends & Other': 'text-teal-400',
   'Accessories': 'text-orange-400',
 };
 

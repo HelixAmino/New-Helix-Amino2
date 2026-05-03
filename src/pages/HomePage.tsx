@@ -7,7 +7,7 @@ import { Glp1Banner } from '../components/Glp1Banner';
 import { MembersMobileCta } from '../components/MembersMobileCta';
 import { useNavigation } from '../context/NavigationContext';
 
-const GLP1_CATEGORY = 'Metabolic & GLP-1 Related';
+const GLP1_CATEGORY = 'Metabolic & Appetite Research';
 
 export function HomePage() {
   const { pendingCategory, clearPendingCategory } = useNavigation();

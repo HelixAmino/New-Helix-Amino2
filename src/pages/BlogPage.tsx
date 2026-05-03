@@ -5,8 +5,8 @@ import { useNavigation } from '../context/NavigationContext';
 const CATEGORY_COLORS: Record<string, string> = {
   'Recovery & Healing': 'text-emerald-400 bg-emerald-950/50 border-emerald-900/40',
   'GH & Growth Axis': 'text-sky-400 bg-sky-950/50 border-sky-900/40',
-  'Metabolic & GLP-1 Related': 'text-amber-400 bg-amber-950/50 border-amber-900/40',
-  'Longevity and Mitochondrial': 'text-cyan-400 bg-cyan-950/50 border-cyan-900/40',
+  'Metabolic & Appetite Research': 'text-amber-400 bg-amber-950/50 border-amber-900/40',
+  'Longevity & Mitochondrial': 'text-cyan-400 bg-cyan-950/50 border-cyan-900/40',
 };
 
 export function BlogPage() {

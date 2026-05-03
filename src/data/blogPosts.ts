@@ -80,7 +80,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'The copper peptide GHK-Cu has attracted significant interest for its role in modulating gene expression related to tissue remodeling and antioxidant defense. Laboratory findings indicate stimulation of collagen and glycosaminoglycan synthesis in fibroblast cultures. Researchers are also examining its potential influence on matrix metalloproteinase balance and cellular senescence pathways.',
     date: 'February 21, 2025',
-    category: 'Longevity and Mitochondrial',
+    category: 'Longevity & Mitochondrial',
     readTime: '7 min read',
   },
   {
@@ -89,7 +89,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'As a selective inhibitor of nicotinamide N-methyltransferase (NNMT), 5-Amino-1MQ has emerged as a tool compound for studying metabolic flux in adipocyte and muscle cell models. By reducing NNMT activity, cellular NAD+ levels may be preserved, potentially enhancing mitochondrial efficiency. Preclinical data suggest effects on lipid accumulation and energy expenditure that warrant further controlled investigation.',
     date: 'February 10, 2025',
-    category: 'Metabolic & GLP-1 Related',
+    category: 'Metabolic & Appetite Research',
     readTime: '6 min read',
   },
   {
@@ -158,7 +158,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'AOD-9604 is a truncated analog of the C-terminal fragment of human growth hormone, designed to retain lipolytic activity while reducing mitogenic and diabetogenic effects. Adipocyte cultures treated with AOD-9604 demonstrate increased hormone-sensitive lipase activation and elevated free fatty acid release. Research is ongoing to characterize its receptor binding profile and downstream metabolic signaling cascades.',
     date: 'December 30, 2024',
-    category: 'Metabolic & GLP-1 Related',
+    category: 'Metabolic & Appetite Research',
     readTime: '6 min read',
     content: [
       {
@@ -188,7 +188,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'MOTS-c is a 16-amino acid peptide encoded within the mitochondrial 12S rRNA gene, representing a novel class of mitochondrial-derived peptides (MDPs). Studies indicate that MOTS-c translocates to the nucleus under metabolic stress and regulates adaptive nuclear gene expression. In vitro investigations have linked MOTS-c to improved insulin sensitivity, AMPK activation, and enhanced glucose metabolism in skeletal muscle cells.',
     date: 'December 16, 2024',
-    category: 'Longevity and Mitochondrial',
+    category: 'Longevity & Mitochondrial',
     readTime: '7 min read',
     content: [
       {
@@ -218,7 +218,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'SS-31 (Elamipretide) is a mitochondria-targeted tetrapeptide that selectively concentrates at the inner mitochondrial membrane through electrostatic interactions with cardiolipin. Laboratory models demonstrate that SS-31 preserves electron transport chain efficiency and reduces reactive oxygen species production under conditions of ischemic stress. These properties position it as an important research tool for studying mitochondrial dysfunction in age-related cellular models.',
     date: 'November 29, 2024',
-    category: 'Longevity and Mitochondrial',
+    category: 'Longevity & Mitochondrial',
     readTime: '6 min read',
     content: [
       {
@@ -244,7 +244,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'Retatrutide is an investigational tri-agonist molecule targeting GLP-1, GIP, and glucagon receptors simultaneously, representing a mechanistically distinct approach compared to dual-agonist compounds. Cell-based functional assays confirm potent activity at all three receptor classes with differentiated downstream cAMP signaling profiles. Researchers are examining additive versus synergistic receptor co-activation effects on adipogenesis and energy expenditure pathways.',
     date: 'November 12, 2024',
-    category: 'Metabolic & GLP-1 Related',
+    category: 'Metabolic & Appetite Research',
     readTime: '8 min read',
     content: [
       {
@@ -270,7 +270,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'Tirzepatide functions as a glucose-dependent insulinotropic polypeptide (GIP) and GLP-1 receptor dual agonist, engineered on a fatty acid-modified peptide scaffold for extended half-life. In vitro studies reveal differential receptor trafficking and internalization kinetics compared to monoagonist controls, potentially contributing to its distinct pharmacodynamic profile. Research continues to investigate the contribution of each receptor pathway to observed cellular metabolic responses.',
     date: 'October 28, 2024',
-    category: 'Metabolic & GLP-1 Related',
+    category: 'Metabolic & Appetite Research',
     readTime: '7 min read',
     content: [
       {
@@ -300,7 +300,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       'Semaglutide is a GLP-1 receptor agonist modified with a C18 fatty diacid chain, enabling albumin binding and prolonged circulatory half-life. In cellular models, semaglutide activates GLP-1R-coupled adenylate cyclase, elevating intracellular cAMP and modulating downstream PKA and EPAC signaling nodes. Laboratory investigations continue to characterize its effects on beta-cell function, hepatic glucose output, and neuronal appetite-regulatory circuits.',
     date: 'October 10, 2024',
-    category: 'Metabolic & GLP-1 Related',
+    category: 'Metabolic & Appetite Research',
     readTime: '7 min read',
     content: [
       {

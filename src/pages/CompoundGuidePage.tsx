@@ -6,12 +6,10 @@ import { useNavigation } from '../context/NavigationContext';
 const CATEGORY_COLORS: Record<string, string> = {
   'Recovery & Healing': 'text-emerald-400 bg-emerald-950/40 border-emerald-900/40',
   'GH & Growth Axis': 'text-sky-400 bg-sky-950/40 border-sky-900/40',
-  'Metabolic & GLP-1 Related': 'text-amber-400 bg-amber-950/40 border-amber-900/40',
-  'Nootropics and Cognition': 'text-violet-400 bg-violet-950/40 border-violet-900/40',
-  'Longevity and Mitochondrial': 'text-cyan-400 bg-cyan-950/40 border-cyan-900/40',
-  'Hormones & Reproductive': 'text-rose-400 bg-rose-950/40 border-rose-900/40',
-  'Blends & Specialty': 'text-teal-400 bg-teal-950/40 border-teal-900/40',
-  'Misc / Rare': 'text-gray-400 bg-gray-900/40 border-gray-800/40',
+  'Longevity & Mitochondrial': 'text-cyan-400 bg-cyan-950/40 border-cyan-900/40',
+  'Metabolic & Appetite Research': 'text-amber-400 bg-amber-950/40 border-amber-900/40',
+  'Nootropics & Specialty': 'text-blue-400 bg-blue-950/40 border-blue-900/40',
+  'Blends & Other': 'text-teal-400 bg-teal-950/40 border-teal-900/40',
   'Accessories': 'text-orange-400 bg-orange-950/40 border-orange-900/40',
 };
 
