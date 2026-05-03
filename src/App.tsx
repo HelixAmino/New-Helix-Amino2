@@ -46,7 +46,7 @@ function AppContent() {
   const { page } = useNavigation();
   const [isUnitQr] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return /^\/unitqr\/?$/i.test(window.location.pathname);
+    return /^\/(unitqr|itemqr)\/?$/i.test(window.location.pathname);
   });
 
   useEffect(() => {
