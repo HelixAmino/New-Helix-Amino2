@@ -87,10 +87,18 @@ function buildHeaders(extra?: Record<string, string>): Record<string, string> {
 
 async function storeFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const url = `${STORE_BASE}${path}`;
-  const res = await fetch(url, {
-    ...init,
-    headers: buildHeaders(init.headers as Record<string, string> | undefined),
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      headers: buildHeaders(init.headers as Record<string, string> | undefined),
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Could not reach the store to calculate shipping (${msg}). Please check your connection and try again.`,
+    );
+  }
   const newToken = res.headers.get('Cart-Token');
   if (newToken) writeToken(newToken);
   const newNonce = res.headers.get('Nonce');
