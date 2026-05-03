@@ -18,7 +18,26 @@ export async function createChatSession(visitorId: string, visitorName: string):
     .select()
     .single();
   if (error) return null;
-  return data as ChatSession;
+  const session = data as ChatSession;
+  void notifyNewChat(session.id);
+  return session;
+}
+
+async function notifyNewChat(sessionId: string): Promise<void> {
+  try {
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-new-chat`;
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY as string,
+      },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+  } catch {
+    /* best-effort */
+  }
 }
 
 export async function getActiveSession(visitorId: string): Promise<ChatSession | null> {
