@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ShieldAlert, Circle as XCircle } from 'lucide-react';
 import { DnaHelixLogoSmall } from './DnaHelixSvg';
 import { IS_BOT } from '../lib/botDetection';
@@ -13,6 +13,8 @@ export function AgeGateModal({ onVerified }: Props) {
   const [year, setYear] = useState('');
   const [denied, setDenied] = useState(false);
   const [error, setError] = useState('');
+  const dayRef = useRef<HTMLInputElement>(null);
+  const yearRef = useRef<HTMLInputElement>(null);
 
   if (IS_BOT) return null;
 
@@ -92,23 +94,39 @@ export function AgeGateModal({ onVerified }: Props) {
                       maxLength={2}
                       placeholder="MM"
                       value={month}
-                      onChange={(e) => setMonth(e.target.value.replace(/\D/g, ''))}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\D/g, '');
+                        setMonth(v);
+                        if (v.length === 2) dayRef.current?.focus();
+                      }}
                       className="w-16 bg-[#050d14] border border-cyan-900/40 text-white rounded-xl px-3 py-3 text-center text-sm font-bold focus:outline-none focus:border-cyan-500 placeholder-gray-600"
                     />
                     <input
                       type="text"
                       maxLength={2}
                       placeholder="DD"
+                      ref={dayRef}
                       value={day}
-                      onChange={(e) => setDay(e.target.value.replace(/\D/g, ''))}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\D/g, '');
+                        setDay(v);
+                        if (v.length === 2) yearRef.current?.focus();
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Backspace' && !day) dayRef.current?.previousElementSibling instanceof HTMLInputElement && (dayRef.current.previousElementSibling as HTMLInputElement).focus();
+                      }}
                       className="w-16 bg-[#050d14] border border-cyan-900/40 text-white rounded-xl px-3 py-3 text-center text-sm font-bold focus:outline-none focus:border-cyan-500 placeholder-gray-600"
                     />
                     <input
                       type="text"
                       maxLength={4}
                       placeholder="YYYY"
+                      ref={yearRef}
                       value={year}
                       onChange={(e) => setYear(e.target.value.replace(/\D/g, ''))}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Backspace' && !year) dayRef.current?.focus();
+                      }}
                       className="flex-1 bg-[#050d14] border border-cyan-900/40 text-white rounded-xl px-3 py-3 text-center text-sm font-bold focus:outline-none focus:border-cyan-500 placeholder-gray-600"
                     />
                   </div>
