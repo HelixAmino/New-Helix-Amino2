@@ -370,6 +370,9 @@ export function ProductDetailPage() {
             Research Profile
           </h2>
           <p className="text-gray-400 text-sm leading-relaxed mb-4">{product.description}</p>
+          {product.researchNotes && (
+            <p className="text-gray-400 text-sm leading-relaxed mb-4">{product.researchNotes}</p>
+          )}
           <div className="bg-red-950/20 border border-red-900/30 rounded-xl p-3 flex gap-2.5">
             <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
             <p className="text-red-300/80 text-xs leading-relaxed">

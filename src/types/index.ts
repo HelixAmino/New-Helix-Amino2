@@ -22,6 +22,7 @@ export interface Product {
   category: Category;
   quantityLabel: string;
   description: string;
+  researchNotes?: string;
   form: string;
   purity: string;
   storage: string;
