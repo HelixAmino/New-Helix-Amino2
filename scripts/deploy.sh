@@ -45,8 +45,8 @@ if [[ -d "$NEW/dist" && ! -f "$NEW/index.html" ]]; then
 fi
 
 echo "==> Swapping symlink -> $NEW"
-sudo -u "$DEPLOY_USER" ln -sfn "$NEW" "$CURRENT.new"
-sudo -u "$DEPLOY_USER" mv -Tf "$CURRENT.new" "$CURRENT"
+ln -sfn "$NEW" "$CURRENT.new"
+mv -Tf "$CURRENT.new" "$CURRENT"
 
 echo "==> Testing and reloading nginx"
 nginx -t
