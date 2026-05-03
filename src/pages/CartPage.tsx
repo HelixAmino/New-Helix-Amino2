@@ -450,7 +450,7 @@ export function CartPage() {
                         : 'Enter address'}
                 </span>
               </div>
-              {tax > 0 && (
+              {shippingReady && (
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Tax</span>
                   <span className="text-gray-200 font-semibold">${tax.toFixed(2)}</span>

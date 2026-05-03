@@ -333,7 +333,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeItem = removeItemInternal;
 
-  const applyStoreRates = useCallback((rates: StoreRate[], needsShipping: boolean) => {
+  const applyStoreRates = useCallback((rates: StoreRate[], needsShipping: boolean, tax: number) => {
     const mapped = rates.map((r) => ({
       key: r.key,
       label: r.label,
@@ -347,6 +347,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return {
         ...prev,
         shipping: shippingTotal,
+        tax,
         hasCalculatedShipping: mapped.length > 0,
         needsShipping,
         shippingRates: mapped,
@@ -368,7 +369,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           postcode: address?.postcode ?? '',
           city: address?.city ?? '',
         });
-        applyStoreRates(result.rates, result.needsShipping);
+        applyStoreRates(result.rates, result.needsShipping, result.tax);
       } finally {
         setSyncing(false);
       }

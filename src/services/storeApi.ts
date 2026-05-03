@@ -25,6 +25,9 @@ interface StoreCart {
   needs_shipping?: boolean;
   totals?: {
     total_shipping?: string;
+    total_tax?: string;
+    total_shipping_tax?: string;
+    total_items_tax?: string;
     currency_minor_unit?: number;
   };
 }
@@ -138,6 +141,12 @@ function flattenRates(cart: StoreCart): StoreRate[] {
 export interface StoreShippingResult {
   rates: StoreRate[];
   needsShipping: boolean;
+  tax: number;
+}
+
+function readTax(cart: StoreCart): number {
+  const minorUnit = cart.totals?.currency_minor_unit ?? 2;
+  return priceToNumber(cart.totals?.total_tax, minorUnit);
 }
 
 interface StoreCartItem {
@@ -196,6 +205,7 @@ export async function fetchStoreShipping(
   return {
     rates: flattenRates(cart),
     needsShipping: Boolean(cart.needs_shipping),
+    tax: readTax(cart),
   };
 }
 
@@ -211,5 +221,6 @@ export async function selectStoreShipping(
   return {
     rates: flattenRates(cart),
     needsShipping: Boolean(cart.needs_shipping),
+    tax: readTax(cart),
   };
 }
