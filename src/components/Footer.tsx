@@ -20,6 +20,7 @@ const COMPANY_LINKS: { label: string; page: Page | null }[] = [
   { label: 'Returns', page: 'returns' },
   { label: 'Privacy Policy', page: 'privacy' },
   { label: 'Terms of Service', page: 'terms' },
+  { label: 'Compliance', page: 'compliance' },
 ];
 
 const PRODUCT_CATEGORIES = [

@@ -33,6 +33,7 @@ import { ShippingPage } from './pages/ShippingPage';
 import { ReturnsPage } from './pages/ReturnsPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
+import { CompliancePage } from './pages/CompliancePage';
 import { CoaLibraryPage } from './pages/CoaLibraryPage';
 import { MembersPage } from './pages/MembersPage';
 import { LabSuppliesPage } from './pages/LabSuppliesPage';
@@ -119,6 +120,7 @@ function AppContent() {
         {page === 'returns' && <ReturnsPage />}
         {page === 'privacy' && <PrivacyPage />}
         {page === 'terms' && <TermsPage />}
+        {page === 'compliance' && <CompliancePage />}
         {page === 'coa-library' && <CoaLibraryPage />}
         {page === 'members' && <MembersPage />}
         {page === 'lab-supplies' && <LabSuppliesPage />}
