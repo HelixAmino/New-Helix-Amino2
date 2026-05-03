@@ -1,7 +1,6 @@
 import { useSeo, SITE_URL, DEFAULT_IMAGE } from '../hooks/useSeo';
 import { useNavigation } from '../context/NavigationContext';
 import { PRODUCTS, getGroupByProductId } from '../data/products';
-import { MEMBERS_PRODUCTS, MEMBERS_GROUPS } from '../data/membersProducts';
 import { BLOG_POSTS } from '../data/blogPosts';
 import { Page } from '../types';
 
@@ -116,11 +115,17 @@ type ComputedSeo = {
 
 function computeSeo(page: Page, currentProductId: string | null): ComputedSeo {
   if (page === 'product') {
-    const allProducts = [...PRODUCTS, ...MEMBERS_PRODUCTS];
-    const product = allProducts.find((p) => p.id === currentProductId);
-    const group =
-      (currentProductId && getGroupByProductId(currentProductId)) ||
-      MEMBERS_GROUPS.find((g) => g.variants.some((v) => v.id === currentProductId));
+    const isMembersProduct = (currentProductId ?? '').startsWith('members-');
+    if (isMembersProduct) {
+      return {
+        title: 'Members Research Compound',
+        description: 'Private members research compound.',
+        canonical: `${SITE_URL}/?page=members`,
+        noindex: true,
+      };
+    }
+    const product = PRODUCTS.find((p) => p.id === currentProductId);
+    const group = currentProductId ? getGroupByProductId(currentProductId) : undefined;
     const displayName = group?.baseName ?? product?.name ?? 'Research Compound';
     const url = `${SITE_URL}/?page=product&id=${currentProductId ?? ''}`;
     const imageAbs = product?.image?.startsWith('http') ? product.image : DEFAULT_IMAGE;

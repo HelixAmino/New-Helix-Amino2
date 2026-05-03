@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Lock, ShieldCheck, FlaskConical, Layers, FileText, LogIn, Dna, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '../context/NavigationContext';
-import { MEMBERS_GROUPS } from '../data/membersProducts';
+import { loadMembersProducts } from '../data/membersProducts';
 import { AuthModal } from '../components/AuthModal';
 import { ProductGroup } from '../types';
 
@@ -112,6 +112,28 @@ function MembersGate({ onSignIn }: { onSignIn: () => void }) {
 
 function MembersCatalog() {
   const { navigate } = useNavigation();
+  const [groups, setGroups] = useState<ProductGroup[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadMembersProducts().then((data) => {
+      if (cancelled) return;
+      setGroups(data.groups);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-32">
@@ -135,7 +157,7 @@ function MembersCatalog() {
           <div className="flex items-center gap-2 shrink-0 px-4 py-3 bg-[#07111d] border border-orange-900/30 rounded-xl">
             <Dna className="w-5 h-5 text-orange-400 shrink-0" />
             <div>
-              <p className="text-white text-xs font-bold">{MEMBERS_GROUPS.length} Compounds</p>
+              <p className="text-white text-xs font-bold">{groups.length} Compounds</p>
               <p className="text-gray-500 text-[10px]">In-vitro research only</p>
             </div>
           </div>
@@ -156,7 +178,7 @@ function MembersCatalog() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {MEMBERS_GROUPS.map((group) => (
+        {groups.map((group) => (
           <MembersProductCard
             key={group.groupId}
             group={group}

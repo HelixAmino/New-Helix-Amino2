@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { CartItem, Order, OrderLineItem, Product } from '../types';
 import { PRODUCTS, getDiscountedPrice } from '../data/products';
-import { MEMBERS_PRODUCTS } from '../data/membersProducts';
+import { loadMembersProducts, getCachedMembersProducts } from '../data/membersProducts';
 import * as cocart from '../services/cocart';
 import { fetchStoreShipping, StoreRate } from '../services/storeApi';
 import { getCartKey } from '../lib/api';
@@ -97,14 +97,17 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const ALL_PRODUCTS: Product[] = [...PRODUCTS, ...MEMBERS_PRODUCTS];
+function getAllProducts(): Product[] {
+  return [...PRODUCTS, ...getCachedMembersProducts().products];
+}
 
 function findProductByWooId(wooId: number): Product | undefined {
-  const direct = ALL_PRODUCTS.find((p) => p.wooId === wooId);
+  const all = getAllProducts();
+  const direct = all.find((p) => p.wooId === wooId);
   if (direct) return direct;
   const sku = getSkuForWooId(wooId);
   if (!sku) return undefined;
-  return ALL_PRODUCTS.find((p) => p.id === sku);
+  return all.find((p) => p.id === sku);
 }
 
 function resolveWooId(product: Product): number | undefined {
@@ -219,10 +222,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const applyCart = useCallback((res: cocart.CoCartResponse) => {
+  const applyCart = useCallback(async (res: cocart.CoCartResponse) => {
     itemKeyMap.current.clear();
+    const rawItems = res.items ?? [];
+    const hasUnmatched = rawItems.some((it) => !findProductByWooId(Number(it.id)));
+    if (hasUnmatched) {
+      try { await loadMembersProducts(); } catch { /* ignore */ }
+    }
     const next: CartItem[] = [];
-    for (const it of res.items ?? []) {
+    for (const it of rawItems) {
       const product = findProductByWooId(Number(it.id));
       if (!product) continue;
       itemKeyMap.current.set(product.id, it.item_key);
@@ -317,7 +325,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const res = await cocart.updateItem(key, clamped);
           await applyWithShippingRecalc(res);
         } else {
-          const product = ALL_PRODUCTS.find((p) => p.id === productId);
+          const product = getAllProducts().find((p) => p.id === productId);
           if (!product) return;
           const wooId = resolveWooId(product);
           if (!wooId) return;

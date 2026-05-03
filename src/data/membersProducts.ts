@@ -1,4 +1,5 @@
 import { Product, ProductGroup } from '../types';
+import { supabase } from '../lib/supabase';
 import { WOO_ID_BY_PRODUCT_ID } from './products';
 
 import imgMaz from '../assets/HAmaz.png';
@@ -27,432 +28,106 @@ import imgTirz60 from '../assets/HATriz60.png';
 import imgCag25 from '../assets/HACag2.5.png';
 import imgCag5 from '../assets/HACag5.png';
 import imgCag10 from '../assets/HACAG.png';
-import imgCagSema5 from '../assets/HACag5.png';
-import imgCagSema25 from '../assets/HACag2.5.png';
 
-export const MEMBERS_PRODUCTS: Product[] = [
-  // ── Retatrutide ──────────────────────────────────────────────────────────────
-  {
-    id: 'members-reta-10mg',
-    name: 'Retatrutide (10mg)',
-    price: 85,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '10mg',
-    image: imgReta10,
-    cas: '2381272-77-9',
-    molecularWeight: '4731.4 g/mol',
-    description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
-    researchNotes: 'Preclinical studies have demonstrated retatrutide\'s triple agonist activity leads to substantial weight loss, increased energy expenditure, and fat mass reduction in animal models. Research reported enhanced effects on liver fat, glycemic control, and metabolic rate. In vitro receptor binding assays and in vivo rodent studies have examined its balanced activation across the three pathways.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-reta-20mg',
-    name: 'Retatrutide (20mg)',
-    price: 170,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '20mg',
-    image: imgReta20,
-    cas: '2381272-77-9',
-    molecularWeight: '4731.4 g/mol',
-    description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
-    researchNotes: 'Preclinical studies have demonstrated retatrutide\'s triple agonist activity leads to substantial weight loss, increased energy expenditure, and fat mass reduction in animal models. Research reported enhanced effects on liver fat, glycemic control, and metabolic rate. In vitro receptor binding assays and in vivo rodent studies have examined its balanced activation across the three pathways.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-reta-30mg',
-    name: 'Retatrutide (30mg)',
-    price: 230,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '30mg',
-    image: imgReta30,
-    cas: '2381272-77-9',
-    molecularWeight: '4731.4 g/mol',
-    description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
-    researchNotes: 'Preclinical studies have demonstrated retatrutide\'s triple agonist activity leads to substantial weight loss, increased energy expenditure, and fat mass reduction in animal models. Research reported enhanced effects on liver fat, glycemic control, and metabolic rate. In vitro receptor binding assays and in vivo rodent studies have examined its balanced activation across the three pathways.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-reta-40mg',
-    name: 'Retatrutide (40mg)',
-    price: 285,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '40mg',
-    image: imgReta40,
-    cas: '2381272-77-9',
-    molecularWeight: '4731.4 g/mol',
-    description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
-    researchNotes: 'Preclinical studies have demonstrated retatrutide\'s triple agonist activity leads to substantial weight loss, increased energy expenditure, and fat mass reduction in animal models. Research reported enhanced effects on liver fat, glycemic control, and metabolic rate. In vitro receptor binding assays and in vivo rodent studies have examined its balanced activation across the three pathways.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-reta-50mg',
-    name: 'Retatrutide (50mg)',
-    price: 330,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '50mg',
-    image: imgReta50,
-    cas: '2381272-77-9',
-    molecularWeight: '4731.4 g/mol',
-    description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
-    researchNotes: 'Preclinical studies have demonstrated retatrutide\'s triple agonist activity leads to substantial weight loss, increased energy expenditure, and fat mass reduction in animal models. Research reported enhanced effects on liver fat, glycemic control, and metabolic rate. In vitro receptor binding assays and in vivo rodent studies have examined its balanced activation across the three pathways.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-reta-60mg',
-    name: 'Retatrutide (60mg)',
-    price: 370,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '60mg',
-    image: imgReta60,
-    cas: '2381272-77-9',
-    molecularWeight: '4731.4 g/mol',
-    description: 'Triple GIP/GLP-1/glucagon receptor agonist under active metabolic research.',
-    researchNotes: 'Preclinical studies have demonstrated retatrutide\'s triple agonist activity leads to substantial weight loss, increased energy expenditure, and fat mass reduction in animal models. Research reported enhanced effects on liver fat, glycemic control, and metabolic rate. In vitro receptor binding assays and in vivo rodent studies have examined its balanced activation across the three pathways.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
+const IMAGE_MAP: Record<string, string> = {
+  'HAmaz.png': imgMaz,
+  'HAsurv.png': imgSurv,
+  'HAbac3.png': imgBac3,
+  'HAbac10.png': imgBac10,
+  'HAReta10.png': imgReta10,
+  'HAReta20.png': imgReta20,
+  'HAReta30.png': imgReta30,
+  'HAReta40.png': imgReta40,
+  'HAReta50.png': imgReta50,
+  'HAReta60.png': imgReta60,
+  'HAsema10.png': imgSema10,
+  'HAsema20.png': imgSema20,
+  'HAsema30.png': imgSema30,
+  'HATriz10.png': imgTirz10,
+  'HATriz20.png': imgTirz20,
+  'HATriz30.png': imgTirz30,
+  'HATriz40.png': imgTirz40,
+  'HATriz50.png': imgTirz50,
+  'HATriz60.png': imgTirz60,
+  'HACag2.5.png': imgCag25,
+  'HACag5.png': imgCag5,
+  'HACAG.png': imgCag10,
+};
 
-  // ── Semaglutide ──────────────────────────────────────────────────────────────
-  {
-    id: 'members-sema-10mg',
-    name: 'Semaglutide (10mg)',
-    price: 65,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '10mg',
-    image: imgSema10,
-    cas: '910463-68-2',
-    molecularWeight: '4113.58 g/mol',
-    description: 'GLP-1 receptor agonist widely studied for glucose homeostasis and metabolic research.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-sema-20mg',
-    name: 'Semaglutide (20mg)',
-    price: 105,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '20mg',
-    image: imgSema20,
-    cas: '910463-68-2',
-    molecularWeight: '4113.58 g/mol',
-    description: 'GLP-1 receptor agonist widely studied for glucose homeostasis and metabolic research.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-sema-30mg',
-    name: 'Semaglutide (30mg)',
-    price: 140,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '30mg',
-    image: imgSema30,
-    cas: '910463-68-2',
-    molecularWeight: '4113.58 g/mol',
-    description: 'GLP-1 receptor agonist widely studied for glucose homeostasis and metabolic research.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-
-  // ── Tirzepatide ──────────────────────────────────────────────────────────────
-  {
-    id: 'members-tirz-10mg',
-    name: 'Tirzepatide (10mg)',
-    price: 79,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '10mg',
-    image: imgTirz10,
-    cas: '2023788-19-2',
-    molecularWeight: '4813.48 g/mol',
-    description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
-    researchNotes: 'Preclinical animal studies have shown tirzepatide activates both GLP-1 and GIP receptors, resulting in significant reductions in body weight, food intake, and improved glucose homeostasis. Research in obese and diabetic rodent models demonstrated superior effects on insulin sensitivity and lipid metabolism compared to single agonists. In vitro and in vivo work has explored its dual-incretin mechanism and long-acting pharmacokinetics.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-tirz-20mg',
-    name: 'Tirzepatide (20mg)',
-    price: 125,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '20mg',
-    image: imgTirz20,
-    cas: '2023788-19-2',
-    molecularWeight: '4813.48 g/mol',
-    description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
-    researchNotes: 'Preclinical animal studies have shown tirzepatide activates both GLP-1 and GIP receptors, resulting in significant reductions in body weight, food intake, and improved glucose homeostasis. Research in obese and diabetic rodent models demonstrated superior effects on insulin sensitivity and lipid metabolism compared to single agonists. In vitro and in vivo work has explored its dual-incretin mechanism and long-acting pharmacokinetics.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-tirz-30mg',
-    name: 'Tirzepatide (30mg)',
-    price: 175,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '30mg',
-    image: imgTirz30,
-    cas: '2023788-19-2',
-    molecularWeight: '4813.48 g/mol',
-    description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
-    researchNotes: 'Preclinical animal studies have shown tirzepatide activates both GLP-1 and GIP receptors, resulting in significant reductions in body weight, food intake, and improved glucose homeostasis. Research in obese and diabetic rodent models demonstrated superior effects on insulin sensitivity and lipid metabolism compared to single agonists. In vitro and in vivo work has explored its dual-incretin mechanism and long-acting pharmacokinetics.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-tirz-40mg',
-    name: 'Tirzepatide (40mg)',
-    price: 220,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '40mg',
-    image: imgTirz40,
-    cas: '2023788-19-2',
-    molecularWeight: '4813.48 g/mol',
-    description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
-    researchNotes: 'Preclinical animal studies have shown tirzepatide activates both GLP-1 and GIP receptors, resulting in significant reductions in body weight, food intake, and improved glucose homeostasis. Research in obese and diabetic rodent models demonstrated superior effects on insulin sensitivity and lipid metabolism compared to single agonists. In vitro and in vivo work has explored its dual-incretin mechanism and long-acting pharmacokinetics.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-tirz-50mg',
-    name: 'Tirzepatide (50mg)',
-    price: 260,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '50mg',
-    image: imgTirz50,
-    cas: '2023788-19-2',
-    molecularWeight: '4813.48 g/mol',
-    description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
-    researchNotes: 'Preclinical animal studies have shown tirzepatide activates both GLP-1 and GIP receptors, resulting in significant reductions in body weight, food intake, and improved glucose homeostasis. Research in obese and diabetic rodent models demonstrated superior effects on insulin sensitivity and lipid metabolism compared to single agonists. In vitro and in vivo work has explored its dual-incretin mechanism and long-acting pharmacokinetics.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-tirz-60mg',
-    name: 'Tirzepatide (60mg)',
-    price: 295,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '60mg',
-    image: imgTirz60,
-    cas: '2023788-19-2',
-    molecularWeight: '4813.48 g/mol',
-    description: 'Dual GIP/GLP-1 receptor agonist studied extensively in metabolic and adipose tissue research.',
-    researchNotes: 'Preclinical animal studies have shown tirzepatide activates both GLP-1 and GIP receptors, resulting in significant reductions in body weight, food intake, and improved glucose homeostasis. Research in obese and diabetic rodent models demonstrated superior effects on insulin sensitivity and lipid metabolism compared to single agonists. In vitro and in vivo work has explored its dual-incretin mechanism and long-acting pharmacokinetics.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-
-  // ── Cagrilintide ─────────────────────────────────────────────────────────────
-  {
-    id: 'members-cag-2.5mg',
-    name: 'Cagrilintide (2.5mg)',
-    price: 62,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '2.5mg',
-    image: imgCag25,
-    cas: '2054934-60-8',
-    molecularWeight: '3918.5 g/mol',
-    description: 'Long-acting amylin analogue studied for appetite regulation and metabolic homeostasis.',
-    researchNotes: 'Preclinical animal models have shown cagrilintide, as an amylin analog, influences satiety signaling and reduces food intake. Research demonstrated effects on gastric emptying and metabolic parameters in obesity models. In vitro and in vivo studies have explored its role in combination with other incretin pathways for weight and glucose regulation research.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-cag-5mg',
-    name: 'Cagrilintide (5mg)',
-    price: 89,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '5mg',
-    image: imgCag5,
-    cas: '2054934-60-8',
-    molecularWeight: '3918.5 g/mol',
-    description: 'Long-acting amylin analogue studied for appetite regulation and metabolic homeostasis.',
-    researchNotes: 'Preclinical animal models have shown cagrilintide, as an amylin analog, influences satiety signaling and reduces food intake. Research demonstrated effects on gastric emptying and metabolic parameters in obesity models. In vitro and in vivo studies have explored its role in combination with other incretin pathways for weight and glucose regulation research.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-cag-10mg',
-    name: 'Cagrilintide (10mg)',
-    price: 99,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '10mg',
-    image: imgCag10,
-    cas: '2054934-60-8',
-    molecularWeight: '3918.5 g/mol',
-    description: 'Long-acting amylin analogue studied for appetite regulation and metabolic homeostasis.',
-    researchNotes: 'Preclinical animal models have shown cagrilintide, as an amylin analog, influences satiety signaling and reduces food intake. Research demonstrated effects on gastric emptying and metabolic parameters in obesity models. In vitro and in vivo studies have explored its role in combination with other incretin pathways for weight and glucose regulation research.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-
-  // ── Cagrilintide + Semaglutide Blend (Members Only) ─────────────────────────
-  {
-    id: 'members-cagsema-5-5mg',
-    name: 'Cagrilintide 5mg + Semaglutide 5mg',
-    price: 149,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '5mg Cagrilintide + 5mg Semaglutide',
-    image: imgCagSema5,
-    blendComponents: [
-      { name: 'Cagrilintide', cas: '2054934-60-8', mw: '3918.5 g/mol' },
-      { name: 'Semaglutide', cas: '910463-68-2', mw: '4113.58 g/mol' },
-    ],
-    description: 'Dual-peptide research blend combining an amylin analogue with a GLP-1 receptor agonist for advanced metabolic and appetite regulation studies.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-  {
-    id: 'members-cagsema-25-25mg',
-    name: 'Cagrilintide 2.5mg + Semaglutide 2.5mg',
-    price: 99,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '2.5mg Cagrilintide + 2.5mg Semaglutide',
-    image: imgCagSema25,
-    blendComponents: [
-      { name: 'Cagrilintide', cas: '2054934-60-8', mw: '3918.5 g/mol' },
-      { name: 'Semaglutide', cas: '910463-68-2', mw: '4113.58 g/mol' },
-    ],
-    description: 'Lower-dose Cagrilintide + Semaglutide research blend for metabolic and appetite regulation studies.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-
-  // ── Mazdutide ─────────────────────────────────────────────────────────────────
-  {
-    id: 'members-maz-100mg',
-    name: 'Mazdutide (100mg)',
-    price: 110,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '100mg',
-    image: imgMaz,
-    cas: '2413069-18-6',
-    molecularWeight: '3958.4 g/mol',
-    description: 'GLP-1/glucagon dual receptor agonist investigated for metabolic and body composition research.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-
-  // ── Survodutide ──────────────────────────────────────────────────────────────
-  {
-    id: 'members-surv-10mg',
-    name: 'Survodutide (10mg)',
-    price: 165,
-    category: 'Metabolic & GLP-1 Related',
-    quantityLabel: '10mg',
-    image: imgSurv,
-    cas: '2381272-15-5',
-    molecularWeight: '4638.3 g/mol',
-    description: 'GLP-1/glucagon dual receptor agonist studied in metabolic and liver disease research contexts.',
-    form: 'Lyophilized powder (vial)',
-    purity: '≥99% (third-party tested)',
-    storage: 'Refrigerate at 2–8°C after reconstitution',
-  },
-
-  // ── Bacteriostatic Water ──────────────────────────────────────────────────
-  {
-    id: 'members-bac-water-3ml',
-    name: 'Reconstitution Water (3mL)',
-    price: 15,
-    category: 'Misc / Rare',
-    quantityLabel: '3mL vial',
-    image: imgBac3,
-    cas: 'N/A (solvent)',
-    molecularWeight: 'N/A (solvent)',
-    description: 'USP-grade bacteriostatic water with 0.9% benzyl alcohol for peptide reconstitution. Preserves sterility for up to 28 days after puncture.',
-    form: 'Sterile Solution',
-    purity: 'USP Grade',
-    storage: 'Refrigerate at 2–8°C after opening',
-  },
-  {
-    id: 'members-bac-water-10ml',
-    name: 'Reconstitution Water (10mL)',
-    price: 22,
-    category: 'Misc / Rare',
-    quantityLabel: '10mL vial',
-    image: imgBac10,
-    cas: 'N/A (solvent)',
-    molecularWeight: 'N/A (solvent)',
-    description: 'Larger volume USP-grade bacteriostatic water ideal for high-volume peptide reconstitution in lab workflows.',
-    form: 'Sterile Solution',
-    purity: 'USP Grade',
-    storage: 'Refrigerate at 2–8°C after opening',
-  },
-];
-
-function buildGroup(baseName: string, ids: string[]): ProductGroup {
-  const variants = ids.map((id) => MEMBERS_PRODUCTS.find((p) => p.id === id)!).filter(Boolean);
-  return {
-    groupId: ids[0],
-    baseName,
-    category: 'Metabolic & GLP-1 Related',
-    image: variants[0].image,
-    description: variants[0].description,
-    cas: variants[0].cas,
-    molecularWeight: variants[0].molecularWeight,
-    variants,
-  };
+interface MembersRow {
+  id: string;
+  data: Product;
+  group_id: string;
+  group_name: string;
+  group_order: number;
+  variant_order: number;
 }
 
-export const MEMBERS_GROUPS: ProductGroup[] = [
-  buildGroup('Retatrutide', [
-    'members-reta-10mg',
-    'members-reta-20mg',
-    'members-reta-30mg',
-    'members-reta-40mg',
-    'members-reta-50mg',
-    'members-reta-60mg',
-  ]),
-  buildGroup('Semaglutide', [
-    'members-sema-10mg',
-    'members-sema-20mg',
-    'members-sema-30mg',
-  ]),
-  buildGroup('Tirzepatide', [
-    'members-tirz-10mg',
-    'members-tirz-20mg',
-    'members-tirz-30mg',
-    'members-tirz-40mg',
-    'members-tirz-50mg',
-    'members-tirz-60mg',
-  ]),
-  buildGroup('Cagrilintide', [
-    'members-cag-2.5mg',
-    'members-cag-5mg',
-    'members-cag-10mg',
-  ]),
-  buildGroup('Cagrilintide + Semaglutide Blend', [
-    'members-cagsema-25-25mg',
-    'members-cagsema-5-5mg',
-  ]),
-  buildGroup('Mazdutide', ['members-maz-100mg']),
-  buildGroup('Survodutide', ['members-surv-10mg']),
-];
+export interface MembersData {
+  products: Product[];
+  groups: ProductGroup[];
+}
 
-for (const product of MEMBERS_PRODUCTS) {
-  const wooId = WOO_ID_BY_PRODUCT_ID[product.id];
-  if (wooId) product.wooId = wooId;
+const EMPTY: MembersData = { products: [], groups: [] };
+
+let cache: MembersData | null = null;
+let inflight: Promise<MembersData> | null = null;
+
+export async function loadMembersProducts(): Promise<MembersData> {
+  if (cache) return cache;
+  if (inflight) return inflight;
+  inflight = (async () => {
+    const { data, error } = await supabase
+      .from('members_products')
+      .select('id, data, group_id, group_name, group_order, variant_order')
+      .order('group_order', { ascending: true })
+      .order('variant_order', { ascending: true });
+    if (error || !data) {
+      inflight = null;
+      return EMPTY;
+    }
+    const products: Product[] = [];
+    const groupOrder: string[] = [];
+    const groupMap = new Map<string, { name: string; variants: Product[] }>();
+    for (const row of data as MembersRow[]) {
+      const raw = row.data;
+      const filename = typeof raw.image === 'string' ? raw.image : '';
+      const resolved = IMAGE_MAP[filename] ?? '';
+      const product: Product = { ...raw, image: resolved };
+      const wooId = WOO_ID_BY_PRODUCT_ID[product.id];
+      if (wooId) product.wooId = wooId;
+      products.push(product);
+      if (!groupMap.has(row.group_id)) {
+        groupOrder.push(row.group_id);
+        groupMap.set(row.group_id, { name: row.group_name, variants: [] });
+      }
+      groupMap.get(row.group_id)!.variants.push(product);
+    }
+    const groups: ProductGroup[] = groupOrder.map((gid) => {
+      const g = groupMap.get(gid)!;
+      const first = g.variants[0];
+      return {
+        groupId: gid,
+        baseName: g.name,
+        category: first.category,
+        image: first.image,
+        description: first.description,
+        cas: first.cas,
+        molecularWeight: first.molecularWeight,
+        variants: g.variants,
+      };
+    });
+    cache = { products, groups };
+    return cache;
+  })();
+  return inflight;
+}
+
+export function clearMembersProductsCache() {
+  cache = null;
+  inflight = null;
+}
+
+export function getCachedMembersProducts(): MembersData {
+  return cache ?? EMPTY;
 }

@@ -1,20 +1,38 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ShieldCheck, FileText, FileDown, Minus, Plus, ShoppingCart, TriangleAlert as AlertTriangle, Package, Thermometer, CircleCheck as CheckCircle, ShieldAlert } from 'lucide-react';
 import { PRODUCTS, getDiscountedPrice, getDiscountLabel, getGroupByProductId, getProductGroups } from '../data/products';
-import { MEMBERS_PRODUCTS, MEMBERS_GROUPS } from '../data/membersProducts';
+import { loadMembersProducts, getCachedMembersProducts } from '../data/membersProducts';
+import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '../context/NavigationContext';
 import { useCart } from '../context/CartContext';
-import { Product } from '../types';
+import { Product, ProductGroup } from '../types';
 
 export function ProductDetailPage() {
   const { currentProductId, navigate } = useNavigation();
   const { addItem } = useCart();
+  const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [membersData, setMembersData] = useState(() => getCachedMembersProducts());
 
-  const allProducts = [...PRODUCTS, ...MEMBERS_PRODUCTS];
+  const isMembersId = (currentProductId ?? '').startsWith('members-');
+
+  useEffect(() => {
+    if (!isMembersId || !user) return;
+    let cancelled = false;
+    loadMembersProducts().then((data) => {
+      if (cancelled) return;
+      setMembersData(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isMembersId, user]);
+
+  const allProducts: Product[] = [...PRODUCTS, ...membersData.products];
+  const memberGroups: ProductGroup[] = membersData.groups;
   const group = currentProductId
-    ? (getGroupByProductId(currentProductId) ?? MEMBERS_GROUPS.find((g) => g.variants.some((v) => v.id === currentProductId)))
+    ? (getGroupByProductId(currentProductId) ?? memberGroups.find((g) => g.variants.some((v) => v.id === currentProductId)))
     : undefined;
   const initialVariant = allProducts.find((p) => p.id === currentProductId) ?? group?.variants[0];
   const [selectedVariant, setSelectedVariant] = useState<Product | undefined>(initialVariant);
@@ -23,9 +41,26 @@ export function ProductDetailPage() {
     const v = allProducts.find((p) => p.id === currentProductId) ?? group?.variants[0];
     setSelectedVariant(v);
     setQuantity(1);
-  }, [currentProductId]);
+  }, [currentProductId, membersData]);
 
   if (!group || !selectedVariant) {
+    if (isMembersId && !user) {
+      return (
+        <div className="text-center py-20">
+          <p className="text-gray-400">Sign in to access this research compound.</p>
+          <button onClick={() => navigate('members')} className="mt-4 text-orange-400 hover:text-white transition-colors">
+            Go to members area
+          </button>
+        </div>
+      );
+    }
+    if (isMembersId && user && membersData.products.length === 0) {
+      return (
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+        </div>
+      );
+    }
     return (
       <div className="text-center py-20">
         <p className="text-gray-400">Product not found.</p>
@@ -52,7 +87,7 @@ export function ProductDetailPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const allGroups = [...getProductGroups(), ...MEMBERS_GROUPS];
+  const allGroups = [...getProductGroups(), ...memberGroups];
   const related = allGroups
     .filter((g) => g.category === group.category && g.groupId !== group.groupId)
     .slice(0, 4);
