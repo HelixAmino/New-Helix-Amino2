@@ -4,7 +4,8 @@ import { useCart } from '../context/CartContext';
 import { useNavigation } from '../context/NavigationContext';
 
 export function FloatingCartButton() {
-  const { totalItems, grandTotal } = useCart();
+  const { totalItems, itemsSubtotal, tax, discount, shipping, hasCalculatedShipping } = useCart();
+  const displayTotal = Math.max(0, itemsSubtotal + tax - discount + (hasCalculatedShipping ? shipping : 0));
   const { navigate, page } = useNavigation();
   const [pulse, setPulse] = useState(false);
 
@@ -35,7 +36,7 @@ export function FloatingCartButton() {
       </span>
       <span className="flex flex-col items-start leading-tight">
         <span className="text-[10px] uppercase tracking-[0.14em] text-white/80">Cart</span>
-        <span className="text-sm font-bold">${grandTotal.toFixed(2)}</span>
+        <span className="text-sm font-bold">${displayTotal.toFixed(2)}</span>
       </span>
     </button>
   );
