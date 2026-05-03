@@ -1,6 +1,6 @@
-import { API_BASE_URL } from '../lib/api';
-
-const STORE_BASE = `${API_BASE_URL}/wc/store/v1`;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const STORE_BASE = `${SUPABASE_URL}/functions/v1/woo-store-proxy`;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 const TOKEN_STORAGE_KEY = 'helix_store_cart_token';
 const NONCE_STORAGE_KEY = 'helix_store_nonce';
 
@@ -76,6 +76,8 @@ function buildHeaders(extra?: Record<string, string>): Record<string, string> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    apikey: SUPABASE_ANON_KEY,
     ...(extra ?? {}),
   };
   const token = readToken();
