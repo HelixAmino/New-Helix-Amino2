@@ -62,6 +62,7 @@ import imgFox10 from '../assets/HAfox10.png';
 import imgKpv from '../assets/HAkpv.png';
 import imgMel from '../assets/HAmel.png';
 import imgDisp2 from '../assets/HAdisp-2.png';
+import imgPt141 from '../assets/HA141.png';
 
 export const PRODUCTS: Product[] = [
   // ─── Recovery & Healing ───────────────────────────────────────────────────
@@ -1096,7 +1097,7 @@ export const PRODUCTS: Product[] = [
     price: 49,
     category: 'Hormones & Reproductive',
     quantityLabel: '10mg',
-    image: imgDisp2,
+    image: imgPt141,
     cas: '189691-06-3',
     molecularWeight: '1025.18 g/mol',
     description: 'Bremelanotide researched for melanocortin receptor activity and sexual response models.',
