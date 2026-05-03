@@ -11,7 +11,6 @@ const NOT_ELIGIBLE = [
   'Change of mind or accidental purchase',
   'Products that have been opened, used, or stored improperly',
   'Claims submitted more than 48 hours after delivery',
-  'International orders (all international sales are final)',
   'Products purchased during clearance or promotional sales',
 ];
 

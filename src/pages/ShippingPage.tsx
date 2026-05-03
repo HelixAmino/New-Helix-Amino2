@@ -1,4 +1,4 @@
-import { Truck, Package, Clock, Shield, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle } from 'lucide-react';
+import { Truck, Package, Clock, Shield, CircleCheck as CheckCircle } from 'lucide-react';
 import { PolicyPageLayout } from '../components/PolicyPageLayout';
 
 const HIGHLIGHTS = [
@@ -30,8 +30,12 @@ const POLICIES = [
     body: 'Shipping is free on all domestic orders over $150. Orders below this threshold are subject to a standard shipping fee calculated at checkout.',
   },
   {
-    title: 'Carrier Delays & International Orders',
-    body: 'We are not responsible for delays caused by carriers or customs. International orders are shipped at the buyer\'s own risk and may incur additional import fees, taxes, or customs duties. International buyers are responsible for compliance with their local laws. All shipments are final once they leave our facility.',
+    title: 'Domestic Only',
+    body: 'We ship to addresses within the United States only. We do not fulfill international orders.',
+  },
+  {
+    title: 'Carrier Delays',
+    body: 'We are not responsible for delays caused by carriers. All shipments are final once they leave our facility.',
   },
 ];
 
@@ -72,15 +76,6 @@ export function ShippingPage() {
         ))}
       </div>
 
-      {/* International note */}
-      <div className="bg-amber-950/20 border border-amber-900/30 rounded-xl p-4">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-          <p className="text-amber-300/70 text-xs leading-relaxed">
-            <strong className="text-amber-400">International Buyers:</strong> International orders are shipped at the buyer's own risk. You are solely responsible for compliance with import regulations, customs duties, and local laws in your jurisdiction. We recommend checking your country's import policies before ordering.
-          </p>
-        </div>
-      </div>
     </PolicyPageLayout>
   );
 }
