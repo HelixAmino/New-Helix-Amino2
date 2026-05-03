@@ -1,7 +1,7 @@
 import { Product, ProductGroup } from '../types';
 
-import imgBpc10 from '../assets/HAbpc10.png';
 import imgBpc20 from '../assets/HAbpc20.png';
+const imgBpc10 = imgBpc20;
 import imgWol5 from '../assets/HAwol5.png';
 import imgWol10 from '../assets/HAwol10.png';
 import imgKlow from '../assets/HAklow.png';
