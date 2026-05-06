@@ -1266,6 +1266,7 @@ export const WOO_ID_BY_PRODUCT_ID: Record<string, number> = {
   'members-reta-60mg': 90,
   'members-cagsema-5-5mg': 106,
   'members-cagsema-25-25mg': 107,
+  'members-cag-10mg': 47,
 };
 
 for (const product of PRODUCTS) {
