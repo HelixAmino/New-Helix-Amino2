@@ -12,7 +12,7 @@ interface NavigationContextValue {
 const NavigationContext = createContext<NavigationContextValue | null>(null);
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
-  const [page, setPage] = useState<Page>('home');
+  const [page, setPage] = useState<Page>('cart');
   const [currentProductId, setCurrentProductId] = useState<string | null>(null);
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
